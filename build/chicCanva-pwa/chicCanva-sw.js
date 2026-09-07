@@ -1,0 +1,10 @@
+const SHELL_CACHE='chiccanva-shell-v8-2026-09-07';
+const REMOTE_CACHE='chiccanva-remote-v8-2026-09-07';
+const SHELL=['./','./index.html','./chicCanva.webmanifest','./chiccanva-192.png','./chiccanva-512.png'];
+const CACHEABLE_REMOTE=new Set(['fonts.googleapis.com','fonts.gstatic.com','cdn.jsdelivr.net']);
+self.addEventListener('install',event=>event.waitUntil(caches.open(SHELL_CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{const current=new Set([SHELL_CACHE,REMOTE_CACHE]);for(const name of await caches.keys())if(name.startsWith('chiccanva-')&&!current.has(name))await caches.delete(name);await self.clients.claim()})()));
+async function networkFirst(request){const cache=await caches.open(SHELL_CACHE);try{const response=await fetch(request);if(response&&response.ok)await cache.put(request,response.clone());return response}catch(error){return(await cache.match(request))||(await cache.match('./index.html'))||(await cache.match('./'))||Response.error()}}
+async function cacheFirst(request,cacheName){const cache=await caches.open(cacheName),stored=await cache.match(request);if(stored)return stored;const response=await fetch(request);if(response&&(response.ok||response.type==='opaque'))await cache.put(request,response.clone());return response}
+self.addEventListener('fetch',event=>{const request=event.request;if(request.method!=='GET')return;const url=new URL(request.url);if(request.mode==='navigate'){event.respondWith(networkFirst(request));return}if(url.origin===self.location.origin&&/(?:\/|\/index\.html|\/chicCanva\.webmanifest|\/chiccanva-(?:192|512)\.png)$/.test(url.pathname)){event.respondWith(cacheFirst(request,SHELL_CACHE));return}if(CACHEABLE_REMOTE.has(url.hostname)&&(request.destination==='style'||request.destination==='font'||request.destination==='image'))event.respondWith(cacheFirst(request,REMOTE_CACHE))});
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting()});

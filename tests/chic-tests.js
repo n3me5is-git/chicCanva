@@ -1,0 +1,25 @@
+async function runChicChecks(ok){
+ ok('Catalog contains all 2100 fonts',state.fontCatalog.length===2100);
+ ok('Every font has a complete style profile',state.fontCatalog.every(f=>['weight','shape','art'].every(k=>Number.isFinite(f[k]))));
+ ok('Child-friendly means rounded/colorable, not numeric font weight',matchesFontCategory(fontMeta('Baloo 2'),'child')&&!matchesFontCategory(fontMeta('Anton'),'child'));
+ state.fontCategory='round';state.fontSearch='';renderFontResults();ok('Round category filters all results',[...$('fontResults').querySelectorAll('[data-font]')].every(el=>fontMeta(el.dataset.font).shape>=72));
+ state.fontCategory='all';state.fontSearch='bambino';renderFontResults();ok('Search accepts style keywords',$('fontResults').querySelectorAll('[data-font]').length>5);
+ state.fontSearch='Fredoka';renderFontResults();ok('Search by font name',!!$('fontResults').querySelector('[data-font="Fredoka"]'));
+ ok('Preview sample says Outline',$('fontResults').querySelector('.font-sample')?.textContent==='Outline');
+ await loadFont('Fredoka');ok('Font file actually loads',loadedFonts.has('Fredoka'));
+ state.fontSearch='';state.fontCategory='all';renderFontResults();
+ canvas.discardActiveObject();$('disableOutline').checked=true;state.outline=false;$('uppercaseText').checked=true;$('textInput').value='Ciao bimbi';$('splitText').checked=false;await addTextUnified();const text=canvas.getObjects().at(-1);ok('Uppercase insertion',text.text==='CIAO BIMBI');ok('Standard font mode creates filled text',text.fill===state.strokeColor&&text.strokeWidth===0&&text.outlineMode===false);
+ canvas.setActiveObject(text);$('disableOutline').checked=false;applyTextStyle();ok('Switch selection back to outline',text.outlineMode===true&&text.strokeWidth>0);
+ $('disableOutline').checked=true;applyTextStyle();await duplicateSelection();ok('Duplicate preserves text mode and content',canvas.getObjects().at(-1).text==='CIAO BIMBI'&&canvas.getObjects().at(-1).outlineMode===false);
+ state.emojiStyle='black';state.emojiInk='#247b69';$('emojiInk').value=state.emojiInk;const aid=await emojiAssetFor('😀');const svg=await(await fetch(state.assets[aid].dataUrl)).text();ok('New outlined emoji uses chosen ink',svg.includes('#247b69'));
+ const emoji=await addImageAsset(aid,'emoji');const pose=[emoji.left,emoji.top,emoji.scaleX,emoji.scaleY];$('emojiInk').value='#993399';await applyEmojiInk();const recolored=await(await fetch(state.assets[emoji.assetId].dataUrl)).text();ok('Selected emoji can change color',recolored.includes('#993399'));ok('Recolor preserves transforms',[emoji.left,emoji.top,emoji.scaleX,emoji.scaleY].every((x,i)=>x===pose[i]));
+ canvas.setActiveObject(emoji);startCrop();window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));ok('Escape still cancels crop',cropSession===null);
+ canvas.setActiveObject(emoji);const oldX=emoji.left;window.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',shiftKey:true,bubbles:true}));ok('Keyboard nudge moves selected object by 10',emoji.left===oldX+10);
+ const fixture=await(await fetch('test-photo.png')).blob();await setAiReference(new File([fixture],'astronaut.png',{type:'image/png'}));ok('AI reference attached with preview',state.aiReference.mime==='image/png'&&!$('aiReferencePreview').classList.contains('hidden'));
+ let captured=null,calls=0;const oldPuter=window.puter;window.puter={ai:{txt2img:async(prompt,opts)=>{captured={prompt,opts};calls++;const img=new Image();img.src=state.aiReference.dataUrl;await img.decode();return img}}};
+ $('aiProvider').value='openai-image-generation';populateAiModels();$('aiModel').value='gpt-image-2';$('aiPrompt').value='Una maestra con un libro';$('aiStyle').value='Pagina da colorare';await generateAi();ok('Reference passed via documented Puter input_images',captured?.opts.input_images?.[0]===state.aiReference.dataUrl&&captured.opts.input_image_mime_type==='image/png');ok('User prompt and style both retained',captured.prompt.includes('Una maestra')&&captured.prompt.includes('coloring book'));
+ $('aiProvider').value='together';populateAiModels();await generateAi();ok('Unsupported reference model does not call API',calls===1);$('aiProvider').value='openai-image-generation';populateAiModels();window.puter=oldPuter;
+ const payload=projectPayload();ok('Renamed project format',payload.app==='chicCanva');await importJsonFile(new File([JSON.stringify(payload)],'roundtrip.json'));ok('New settings and reference survive JSON',state.uppercase===true&&state.aiReference?.name==='astronaut.png'&&state.emojiInk==='#993399');ok('Filled object survives JSON',canvas.getObjects().some(o=>o.objectType==='text'&&o.outlineMode===false&&o.strokeWidth===0));
+ openHelp();ok('Help is accessible modal and traps background',$('helpLayer').querySelector('[aria-modal="true"]')&&document.querySelector('.app').inert);closeHelp();ok('Help closes without changing project',!document.querySelector('.app').inert);
+ ok('No Fontsource API request required',!performance.getEntriesByType('resource').some(r=>r.name.includes('api.fontsource.org')));
+}
