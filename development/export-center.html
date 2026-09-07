@@ -1,0 +1,25 @@
+<section class="card" id="exportCard">
+  <div class="card-h"><div><div class="card-title">Esporta progetto o selezioni</div><div class="card-sub">Salva una pagina, tutte le pagine o una zona disegnata nel formato più adatto.</div></div><span class="asset-count" id="assetCount">0 asset</span></div>
+  <div class="card-b">
+    <label class="small">Cosa vuoi esportare</label>
+    <select id="exportScope"><option value="project" selected>Tutte le pagine del progetto</option><option value="current">Pagina corrente</option><option value="selection">Selezione nella pagina</option></select>
+    <label class="small">Formato</label>
+    <select id="exportFormat"><option value="pdf" selected>PDF</option><option value="png">PNG</option><option value="jpg">JPG</option></select>
+    <select id="pdfMode" class="hidden" aria-hidden="true"><option value="current">Pagina corrente</option><option value="set" selected>Tutte le pagine del progetto corrente</option></select>
+    <div id="exportResolutionOptions">
+      <label class="small">Risoluzione</label><select id="pdfDpi"><option value="96">96 dpi · bozza</option><option value="150" selected>150 dpi · standard</option><option value="200">200 dpi · nitido</option><option value="300">300 dpi · stampa</option></select>
+    </div>
+    <div id="exportImageOptions" class="hidden export-options-box">
+      <label class="effect-label" for="exportQuality">Qualità immagine <strong id="exportQualityValue">92%</strong></label><input id="exportQuality" type="range" min="40" max="100" value="92">
+      <label class="small">Sfondo</label><select id="cropBg"><option value="transparent">Trasparente</option><option value="white">Bianco</option></select>
+    </div>
+    <div id="exportSelectionOptions" class="hidden export-options-box">
+      <label class="small">Margine attorno alla selezione</label><div class="row"><input class="field grow" id="cropMargin" type="number" min="0" max="100" value="5" step="1"><span class="help">mm</span></div>
+      <button class="btn" id="drawExportRegion">Disegna o ridisegna l’area</button><p class="help" id="exportRegionHint">Trascina sul foglio per delimitare la zona. Il rettangolo guida non viene esportato.</p>
+    </div>
+    <button class="btn accent" id="exportPdfPanel" style="width:100%;margin-top:12px">Esporta tutte le pagine in PDF</button><button class="hidden" id="exportCropPng" aria-hidden="true"></button>
+    <div class="row export-json-actions"><button class="btn grow" id="exportJsonPanel">Esporta JSON</button><button class="btn grow" id="importJsonPanel">Importa JSON</button></div>
+    <div class="status" id="projectStatus">Il JSON conserva il progetto modificabile; PDF e immagini producono file pronti da condividere o stampare.</div>
+  </div>
+</section>
+

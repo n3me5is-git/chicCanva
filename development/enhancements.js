@@ -2,7 +2,7 @@
 let previewReorder=false,previewSelected=-1,pageDragIndex=-1;
 const copyIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
 const pasteIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h6M9 3h6v4H9z"/><rect x="5" y="5" width="14" height="16" rx="2"/></svg>';
-const trashIcon='<span class="trash-css" aria-hidden="true"></span>';
+const trashIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg>';
 const exportRegionIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" stroke-dasharray="2 1"/><path d="M12 7v9M9 13l3 3 3-3"/></svg>';
 function objectTree(objects){const out=[];const walk=o=>{out.push(o);if(o.type==='group'||o.objectType==='group')o.getObjects?.().forEach(walk)};objects.forEach(walk);return out}
 function selectedTree(){return objectTree(selectionObjects().filter(o=>o!==exportRegion&&o!==cropSession?.rect))}

@@ -1,13 +1,9 @@
 <div class="image-effects-box">
   <label class="small">Trasformazioni immagine</label>
-  <label class="effect-label" for="graySoftness">Bianco e nero <strong id="graySoftnessLabel">Bilanciato</strong></label>
-  <input id="graySoftness" type="range" min="0" max="100" value="60" aria-label="Stile bianco e nero: da al tratto a soft">
-  <div class="range-ends"><span>Al tratto</span><span>Soft</span></div>
-  <button class="btn image-effect-action" id="duplicateGrayBtn">Duplica e converti in B/N</button>
-  <label class="effect-label" for="outlineSensitivity">Sensibilità contorni <strong id="outlineSensitivityLabel">42%</strong></label>
-  <input id="outlineSensitivity" type="range" min="15" max="90" value="42" aria-label="Sensibilità estrazione contorni">
-  <button class="btn image-effect-action" id="duplicateOutlineBtn">Duplica e rendi outline</button>
-  <button class="btn accent image-effect-action" id="prepareColoringAiBtn">Prepara disegno da colorare con AI</button>
-  <p class="help">Le prime due funzioni lavorano nel browser e conservano l’originale. La funzione AI prepara riferimento, modello e prompt: la generazione parte solo quando premi Genera.</p>
+  <div class="effect-block"><label class="effect-label" for="graySoftness">Bianco e nero <strong id="graySoftnessLabel">Bilanciato</strong></label><input id="graySoftness" type="range" min="0" max="100" value="60" aria-label="Stile bianco e nero: da al tratto a soft"><div class="range-ends"><span>Al tratto</span><span>Soft</span></div><button class="btn image-effect-action" id="duplicateGrayBtn">Duplica e converti in B/N</button></div>
+  <div class="effect-divider" role="separator"></div>
+  <div class="effect-block"><label class="effect-label" for="outlineSensitivity">Sensibilità contorni <strong id="outlineSensitivityLabel">42%</strong></label><input id="outlineSensitivity" type="range" min="15" max="90" value="42" aria-label="Sensibilità estrazione contorni"><button class="btn image-effect-action" id="duplicateOutlineBtn">Duplica e rendi outline</button><p class="help">Estrae i contorni con un algoritmo locale e conserva l’immagine originale.</p></div>
+  <div class="effect-divider" role="separator"></div>
+  <div class="effect-block"><button class="btn accent image-effect-action" id="prepareColoringAiBtn">Prepara disegno da colorare con AI</button><p class="help">Prepara riferimento, modello e prompt. La generazione parte soltanto quando premi Genera nel widget AI.</p></div>
   <div class="status" id="imageEffectStatus" role="status"></div>
 </div>

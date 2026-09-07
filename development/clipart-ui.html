@@ -1,0 +1,27 @@
+<section class="card" id="clipartCard">
+  <div class="card-h"><div><div class="card-title">Clipart · Openclipart</div><div class="card-sub">Cerca illustrazioni libere e inseriscile nei materiali.</div></div></div>
+  <div class="card-b">
+    <label class="small" for="clipartQuery">PAROLA CHIAVE</label>
+    <div class="row clipart-search-row"><input class="field grow" id="clipartQuery" type="search" placeholder="child, school, elephant…"><button class="btn accent" id="clipartSearchBtn">Cerca</button></div>
+    <p class="help">Usa preferibilmente termini inglesi, per esempio <strong>child</strong> invece di bambino.</p>
+    <label class="check"><input id="clipartTranslate" type="checkbox">Traduzione automatica della keyword italiano → inglese</label>
+    <p class="help">Prova il servizio online; se non risponde usa un piccolo dizionario didattico incorporato.</p>
+    <label class="small" for="clipartCategory">CATEGORIA</label>
+    <select id="clipartCategory">
+      <option value="">Nessuna · ricerca libera</option><option value="school">Scuola</option><option value="children">Bambini</option><option value="animals">Animali</option><option value="alphabet">Alfabeto</option><option value="numbers">Numeri</option><option value="science">Scienze</option><option value="nature">Natura</option><option value="transport">Trasporti</option><option value="food">Cibo</option><option value="music">Musica</option><option value="sports">Sport</option><option value="weather">Meteo</option><option value="holiday">Festività</option><option value="shapes">Forme</option><option value="emotions">Emozioni</option>
+    </select>
+    <label class="check clipart-puter-option"><input id="clipartUsePuter" type="checkbox">Mostra il pulsante per inserire direttamente con Puter</label>
+    <p class="help">Puter usa banda o quota dell’account. Senza Puter puoi aprire l’anteprima, salvare oppure copiare l’immagine dal browser e incollarla in chicCanva.</p>
+    <div class="status" id="clipartStatus" role="status">Scrivi una parola o scegli una categoria.</div>
+    <div class="clipart-grid" id="clipartResults" aria-live="polite"></div>
+    <div class="clipart-pages hidden" id="clipartPages"><button class="btn" id="clipartPrev">← Precedente</button><strong id="clipartPageLabel">Pagina 1</strong><button class="btn" id="clipartNext">Successiva →</button></div>
+    <p class="clipart-credit">Contenuti da <a href="https://openclipart.org/" target="_blank" rel="noopener">Openclipart</a>.</p>
+  </div>
+</section>
+<dialog id="clipartPreviewDialog" class="chic-dialog clipart-preview-dialog">
+  <div class="clipart-preview-head"><div><h2 id="clipartPreviewTitle">Anteprima clipart</h2><p id="clipartPreviewMeta"></p></div><button class="iconbtn" id="clipartPreviewClose" aria-label="Chiudi anteprima">×</button></div>
+  <div class="clipart-large-wrap"><img id="clipartPreviewImage" alt="Anteprima clipart"></div>
+  <div class="clipart-instructions"><strong>Come usarla senza Puter</strong><p>Puoi salvarla sul dispositivo. In alternativa apri l’immagine grande, usa il comando del browser <em>Copia immagine</em>, torna in chicCanva e premi Ctrl+V oppure Incolla speciale.</p></div>
+  <div class="row clipart-preview-actions"><button class="btn" id="clipartDownloadBtn">Salva su dispositivo</button><button class="btn" id="clipartOpenBtn">Apri immagine grande</button><button class="btn accent" id="clipartInsertPuterBtn">Usa Puter per scaricare e inserire</button></div>
+  <div class="status" id="clipartPreviewStatus" role="status"></div>
+</dialog>
