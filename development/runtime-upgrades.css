@@ -6,3 +6,7 @@
 @media(max-width:720px){.puter-account{align-items:flex-start;flex-direction:column}.puter-account .row{width:100%}.puter-account .row .btn{flex:1}}
 
 .puter-option-disabled{opacity:.55}.puter-login-hint{padding:8px 10px;border-radius:9px;background:#f4f7f6}.text-link{appearance:none;border:0;background:none;color:#176f62;text-decoration:underline;font:inherit;font-weight:700;padding:0;cursor:pointer}.text-link:hover{color:#0e574c}.text-link:focus-visible{outline:2px solid #298879;outline-offset:2px;border-radius:3px}
+
+.stage-space{max-width:none;max-height:none}.stage-wrap.pinching .canvas-container,.stage-wrap.pinching .lower-canvas,.stage-wrap.pinching .upper-canvas{backface-visibility:hidden;transform:translateZ(0)}.stage-wrap.pinching .canvas-shell{will-change:left,top,width,height}
+
+.stage-wrap{place-items:normal;justify-items:normal;align-items:normal}

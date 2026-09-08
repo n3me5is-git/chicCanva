@@ -4,6 +4,9 @@ from datetime import date
 root=Path(__file__).resolve().parent.parent;dev=root/'development'
 version=json.loads((dev/'version.json').read_text(encoding='utf-8'))['version']
 build_date=date.today().isoformat()
+public_url=os.environ.get('CHICCANVA_PUBLIC_URL','https://chiccanva.testthis.one/').strip().rstrip('/')+'/'
+assert re.fullmatch(r'https://[^\s]+/',public_url), 'CHICCANVA_PUBLIC_URL deve essere un URL HTTPS pubblico'
+share_image_url=public_url+'chiccanva-512.png'
 subprocess.run([sys.executable,str(dev/'build-guide.py')],cwd=root,check=True)
 subprocess.run([sys.executable,str(dev/'build-docs.py')],cwd=root,check=True)
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
@@ -13,22 +16,27 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <meta name="description" content="Laboratorio creativo didattico per creare schede, cartelloni, scritte, immagini e materiali da stampare.">
 <meta name="author" content="chicCanva contributors">
 <meta name="theme-color" content="#298879">
+<link rel="canonical" href="__PUBLIC_URL__">
 <meta property="og:type" content="website">
+<meta property="og:url" content="__PUBLIC_URL__">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="chicCanva">
 <meta property="og:title" content="chicCanva · Piccole idee, grandi progetti">
 <meta property="og:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
-<meta property="og:image" content="chiccanva-512.png">
+<meta property="og:image" content="__SHARE_IMAGE_URL__">
+<meta property="og:image:url" content="__SHARE_IMAGE_URL__">
+<meta property="og:image:secure_url" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta property="og:image:alt" content="Chicca, la mascotte insegnante di chicCanva">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="chicCanva · Piccole idee, grandi progetti">
 <meta name="twitter:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
-<meta name="twitter:image" content="chiccanva-512.png">
+<meta name="twitter:image" content="__SHARE_IMAGE_URL__">
 <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,'''+share_icon_b64+'''">
 <link rel="apple-touch-icon" sizes="192x192" href="chiccanva-192.png">'''
+share_meta=share_meta.replace('__PUBLIC_URL__',public_url).replace('__SHARE_IMAGE_URL__',share_image_url)
 s=s.replace('<meta name="description" content="Editor single-page HTML per testi outlined, OpenMoji, immagini, crop, pagine custom, PDF e asset serializzati.">',share_meta,1)
 pdfjs=(dev/'vendor/pdf.min.js').read_text(encoding='utf-8')
 assert '</script' not in pdfjs.lower(), 'PDF.js contiene una chiusura script non incorporabile'
@@ -56,6 +64,7 @@ nav_next=re.search(r'<button class="iconbtn" id="nextPage"[^>]*>.*?</button>',s)
 s=s[:nav_next.end()]+'<button class="iconbtn" id="quickAddNav" title="Aggiungi dopo la pagina attiva">＋</button>'+s[nav_next.end():]
 before('fontMode','<div class="font-fixed-preview"><small>Font impostato · <strong id="currentFontName"></strong></small><div id="currentFontSample" class="sample">Outline</div></div>')
 before('wizardResultName','<div class="font-fixed-preview"><small>Anteprima proposta dal wizard</small><div id="wizardFontSample" class="sample">Outline</div></div>')
+before('emojiCategory','<label class="check emoji-translate-option"><input id="emojiTranslate" type="checkbox">Traduzione automatica italiano → inglese</label><p class="help">Se attiva, prova la traduzione online e usa il dizionario didattico incorporato come fallback.</p>')
 before('helpBtn','<button class="btn hidden" id="installPwaBtn" title="Installa chicCanva su questo dispositivo" aria-label="Installa chicCanva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v3h14v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Installa</span></button>')
 rep('<label class="small">Simboli uniti alla precedente / successiva</label>','<label class="small" data-symbol-options>Simboli uniti alla precedente / successiva</label>')
 rep('<div class="grid2"><input class="field" id="symbolsPrev"','<div class="grid2" data-symbol-options><input class="field" id="symbolsPrev"')

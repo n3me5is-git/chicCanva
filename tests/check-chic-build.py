@@ -17,6 +17,7 @@ assert 'api.fontsource.org' not in s
 assert "puter.auth.getMonthlyUsage()" in s and 'allowanceInfo' in s and 'puterUsageBar' in ids
 assert 'openclipart.org/search/' in s and 'parseOpenclipartResults' in s and 'clipartCard' in ids
 assert 'api.mymemory.translated.net/get' in s and 'CLIPART_IT_EN' in s and 'translateClipartLocally' in s and 'clipartTranslate' in ids
+assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
 pwa=root/'build/chicCanva-pwa'
 expected={'index.html','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png'}
 assert {p.name for p in pwa.iterdir()}==expected
@@ -32,17 +33,21 @@ for size in (192,512):
  data=(pwa/f'chiccanva-{size}.png').read_bytes();assert data[:8]==b'\x89PNG\r\n\x1a\n'
  width,height=struct.unpack('>II',data[16:24]);assert (width,height)==(size,size)
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
-assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey'}.issubset(ids)
+assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
 vendor=root/'development/vendor'
 assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
 assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
 assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
-assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.1.1' and 'id="appVersion">v1.1.1' in s
+assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.1.3' and 'id="appVersion">v1.1.3' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
-assert 'name="twitter:card" content="summary"' in s and 'data:image/png;base64,' in s
+assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
+assert 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-512.png"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
 assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class="license">' in s
-assert 'stopImmediatePropagation' in s and 'beginPuterLoginPrompt' in s
+assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-puter-login-link' in s
+assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s
+assert 'exportImageToClipboard' in s and 'writeImageBlobToClipboard' in s
+assert 'layoutCanvasViewport' in s and "fitStageZoom({light:true,preserve:false})" in s and "$('resetCropActiveBtn').onclick=resetActiveCrop" in s
 docs=root/'docs'
 expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
 assert expected_docs.issubset({p.name for p in docs.iterdir()})

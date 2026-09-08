@@ -17,9 +17,8 @@
       <label class="small">Margine attorno alla selezione</label><div class="row"><input class="field grow" id="cropMargin" type="number" min="0" max="100" value="5" step="1"><span class="help">mm</span></div>
       <button class="btn" id="drawExportRegion">Disegna o ridisegna l’area</button><p class="help" id="exportRegionHint">Trascina sul foglio per delimitare la zona. Il rettangolo guida non viene esportato.</p>
     </div>
-    <button class="btn accent" id="exportPdfPanel" style="width:100%;margin-top:12px">Esporta tutte le pagine in PDF</button><button class="hidden" id="exportCropPng" aria-hidden="true"></button>
+    <div class="export-primary-actions"><button class="btn accent" id="exportPdfPanel">Esporta tutte le pagine in PDF</button><button class="btn hidden" id="exportClipboardBtn" title="Copia l’immagine esportata negli appunti">Copia negli appunti</button></div><button class="hidden" id="exportCropPng" aria-hidden="true"></button>
     <div class="row export-json-actions"><button class="btn grow" id="exportJsonPanel">Esporta JSON</button><button class="btn grow" id="importJsonPanel">Importa JSON</button></div>
     <div class="status" id="projectStatus">Il JSON conserva il progetto modificabile; PDF e immagini producono file pronti da condividere o stampare.</div>
   </div>
 </section>
-

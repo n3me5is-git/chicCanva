@@ -33,7 +33,7 @@ La cartella `build/chicCanva-pwa/` è pronta da pubblicare insieme su un dominio
 
 Carica il contenuto della cartella mantenendo i cinque file nello stesso percorso. Il pulsante **Installa** compare soltanto su un vero dominio HTTPS. L'app non collega il manifest e non registra il service worker da `file://`, localhost, indirizzi IP, domini `.local` o reti private; il launcher locale continua quindi a comportarsi come prima.
 
-La build pubblicabile include nome applicazione, descrizione, metadati Open Graph/Twitter, favicon incorporata e icona PWA da 512 px per le anteprime quando il link viene condiviso. Il piè di pagina della sidebar collega il repository ufficiale. Su Chrome, Edge e Android il pulsante compatto apre il prompt nativo. Su iPhone/iPad mostra la procedura Safari **Condividi → Aggiungi alla schermata Home**. La struttura dell'app funziona offline dopo il primo caricamento; funzioni online come Puter, font non ancora scaricati e modelli AI continuano a richiedere rete. Ogni build usa una cache con versione propria e, quando è disponibile un aggiornamento, mostra un comando esplicito per applicarlo senza lasciare la PWA bloccata su una copia precedente.
+La build pubblicabile include nome applicazione, descrizione, metadati Open Graph/Twitter con URL HTTPS assoluti, favicon incorporata e icona PWA da 512 px per le anteprime quando il link viene condiviso. Il dominio predefinito è `https://chiccanva.testthis.one/`; per un altro dominio esegui la build impostando `CHICCANVA_PUBLIC_URL` sul suo URL pubblico HTTPS. Il piè di pagina della sidebar collega il repository ufficiale. Su Chrome, Edge e Android il pulsante compatto apre il prompt nativo. Su iPhone/iPad mostra la procedura Safari **Condividi → Aggiungi alla schermata Home**. La struttura dell'app funziona offline dopo il primo caricamento; funzioni online come Puter, font non ancora scaricati e modelli AI continuano a richiedere rete. Ogni build usa una cache con versione propria e, quando è disponibile un aggiornamento, mostra un comando esplicito per applicarlo senza lasciare la PWA bloccata su una copia precedente.
 
 ## Architettura e sorgenti
 
@@ -69,7 +69,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.1.1**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.1.3**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -107,7 +107,7 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 
 ## Immagini e AI
 
-- Upload da file, appunti o URL, crop non distruttivo, ridimensionamento, rotazione e asset serializzati nel JSON.
+- Upload da file, appunti o URL, crop non distruttivo con anteprima traslucida dell’intera sorgente, reset senza deformazioni, ridimensionamento, rotazione e asset serializzati nel JSON.
 - Importazione PDF completamente locale: pagina specifica o tutte, nuovo progetto o append, pagine A4 con orientamento automatico/verticale/orizzontale e PNG a qualità 1×–3×.
 - Il dialogo URL usa il fetch diretto per impostazione predefinita. **Usa Puter per scaricare l’immagine** abilita esplicitamente `puter.net.fetch()` per i siti che bloccano CORS; il traffico usa banda/quota dell’account Puter secondo il modello user-pays. Se il relay WebSocket Puter non risponde su localhost, il BAT aggiornato ripiega sul proprio downloader PowerShell, limitato alle immagini pubbliche e a 12 MB. La stessa scelta vale per i riferimenti AI.
 - Le immagini copiate da browser o altre applicazioni possono essere incollate dal widget Immagini, dal widget Riferimento AI, dalla toolbar Incolla speciale o con Ctrl+V quando il browser consente l’accesso agli appunti.

@@ -55,7 +55,7 @@ chiccanva-192.png
 chiccanva-512.png
 ```
 
-The HTML includes an embedded favicon plus Open Graph and Twitter Card metadata. Social previews use the adjacent 512 px PNG, so keep `chiccanva-512.png` publicly reachable at the same path as `index.html`. Do not rename or split these files without updating manifest, preview, and service-worker references. The service worker scope is its containing directory. Hosting at `/tools/chiccanva/` is supported when all files remain together at that path.
+The HTML includes an embedded favicon plus Open Graph and Twitter Card metadata. Crawlers such as Telegram receive an absolute HTTPS `og:url`, canonical URL, and image URL in the initial HTML response without running JavaScript. The default public origin is `https://chiccanva.testthis.one/`. For another host or subpath, set `CHICCANVA_PUBLIC_URL` to the complete public HTTPS base URL before running `python development/build-workspace.py`. Keep `chiccanva-512.png` publicly reachable beside `index.html`; the generated absolute URL points to it. The service worker scope remains its containing directory.
 
 Recommended server behavior:
 
@@ -165,7 +165,7 @@ To roll back, redeploy a complete earlier five-file PWA set. Its service-worker 
 - [ ] Public HTTPS URL resolves.
 - [ ] All PWA files return HTTP 200 with correct MIME types.
 - [ ] Manifest `start_url` and icon paths resolve within scope.
-- [ ] The public page source exposes chicCanva Open Graph/Twitter metadata and `chiccanva-512.png` is reachable by link-preview crawlers.
+- [ ] The public page source exposes absolute chicCanva Open Graph/Twitter/canonical URLs and `chiccanva-512.png` is reachable by link-preview crawlers without authentication or bot filtering.
 - [ ] Service worker is revalidated and contains no `__BUILD_ID__` placeholder.
 - [ ] Install UI is hidden on localhost/file and available on the public domain where supported.
 - [ ] Reload while offline reaches the editor after one successful online load.

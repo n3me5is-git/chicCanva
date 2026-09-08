@@ -83,7 +83,7 @@ The toolbar makes modes explicit:
 - grid visibility;
 - snapping.
 
-Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop changes one image's visible window, while export selection defines output bounds only.
+Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop begins at the current visible image boundary, cannot exceed the original source, and changes one image's visible window; export selection defines output bounds only. Image output exposes **Copy to clipboard** only for a single page or region, where the result is one unambiguous image rather than a multi-page ZIP.
 
 Keyboard support includes common editing conventions (`Ctrl/Cmd+C`, `V`, `D`, `Z`, `Y`, `S`) plus feature shortcuts (`F`, `H`, `G`, `R`, `F1`). Shortcuts are ignored while typing in form fields.
 
@@ -154,3 +154,8 @@ When changing layout or controls, verify at least:
 - eyedropper samples correctly at 50%, 100%, 200%, Fit, and after pan;
 - a long project/page name does not break tabs or navigation;
 - online-only widgets are disabled with the approved message in direct-file mode.
+
+
+## Zoom motion quality
+
+The pinch interaction prioritizes continuity: each gesture frame changes only presentation size and scroll position, then a single final raster refresh restores full display quality. The hand tool receives viewport-relative free space around a zoomed page so users can bring any edge or corner into the center instead of hitting an early horizontal scroll limit.

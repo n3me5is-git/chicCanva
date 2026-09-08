@@ -79,7 +79,7 @@ When smart emoji is enabled, text and emoji are separate children in a group. Ap
 
 ### OpenMoji asset construction
 
-The full OpenMoji metadata catalog supports global search, relevant ordering, and category browsing. An emoji becomes an SVG-backed image asset:
+The full OpenMoji metadata catalog supports global search, relevant ordering, and category browsing. Italian-to-English keyword translation is opt-in and reuses the Clipart search policy: timed MyMemory lookup, compact internal didactic dictionary, then the original term. The translated query participates only in filtering and is reset whenever translation is disabled. An emoji becomes an SVG-backed image asset:
 
 ```js
 emojiAssetFor = async function (grapheme, style = state.emojiStyle) {
@@ -138,7 +138,7 @@ Destination pages are always A4. Auto orientation reads the unscaled PDF viewpor
 
 ### Crop
 
-Crop stores a viewing rectangle relative to the original image. Applying crop changes the Fabric object's crop/window properties while the original asset stays untouched. Reset restores the original source. Export respects the crop and object rotation.
+Crop stores a viewing rectangle relative to the original image. The editor starts the helper at the exact current crop, maps it against the full-source transform, and constrains movement and scaling to the original pixel bounds. Applying crop changes the Fabric object's crop/window properties without changing its image scale; the original asset stays untouched. Reset restores the full source without stretching. Export respects the crop and object rotation.
 
 ### Grayscale and outline
 
@@ -206,7 +206,7 @@ The operation always creates a derived copy and records the source asset, select
 
 Puter is loaded only in HTTP(S) mode. AI controls are hidden until `puter.auth.isSignedIn()` reports an authenticated session. The explicit login button calls `puter.auth.signIn()` from its click handler; account switching calls `signIn({request_auth:true})`; logout calls `signOut()`. The user then chooses provider, model, quality, aspect ratio, style, prompt, and optional reference. Presets append prompt text; they do not replace the user's description. The chroma-key option adds an instruction requiring a completely uniform, texture-free background whose color is visually distant from the subject.
 
-Puter-assisted URL and Clipart paths call a shared session guard. If a related checkbox is selected while signed out, the login procedure appears inside the already open URL or Clipart modal, avoiding a nested-dialog top-layer lock. The checkbox remains selected during the procedure; cancel or failed authentication clears it, while successful login keeps it selected. Direct Puter actions use the same guard. These transient controls do not trigger project history or autosave serialization.
+Puter-assisted URL and Clipart paths share the session state used by the AI widget. While signed out, every Puter fetch checkbox is disabled and cleared, and direct Puter insertion is disabled. A small login link closes the current URL or Clipart dialog, opens the AI section, and focuses its login button. This avoids any nested or replaced modal backdrop. After authentication, the controls become available; logout clears and disables them again.
 
 Representative flow:
 
@@ -258,7 +258,7 @@ jsPDF creates millimetre-based pages in project order. Each Fabric page is rende
 
 ### PNG/JPG
 
-The unified export center chooses scope, format, DPI, quality, background, and optional region margin. PNG can preserve transparency; JPG always receives a white background. Multiple pages are collected into an uncompressed ZIP assembled directly in JavaScript with local headers, central-directory records, UTF-8 names, and CRC-32. No JSZip dependency is used.
+The unified export center chooses scope, format, DPI, quality, background, and optional region margin. PNG can preserve transparency; JPG always receives a white background. For the current page or an export region, **Copy to clipboard** renders the same output and writes it through the Async Clipboard API, so it can immediately become an AI reference or be pasted into another application. Browsers that reject JPEG clipboard items receive a PNG-compatible copy of the already rendered image. Multiple pages are collected into an uncompressed ZIP assembled directly in JavaScript with local headers, central-directory records, UTF-8 names, and CRC-32. No JSZip dependency is used.
 
 ### Export region
 
@@ -272,3 +272,8 @@ The export-region tool switches the sidebar to “selection in page,” defaults
 - Stale search/generation results must not replace current state.
 - Browser restrictions should produce a user-facing fallback path, not console-oriented instructions.
 - Destructive page/project actions use app dialogs and history where possible.
+
+
+### Canvas viewport
+
+During pinch, the viewport updates canvas CSS dimensions inside `requestAnimationFrame` without rebuilding the Fabric backing raster. On gesture completion it performs one retina-aware refresh. Manual zoom preserves the page-space center, while non-fit mode adds 75% of the viewport as navigation padding on each side so the hand tool can move the whole canvas horizontally and vertically.

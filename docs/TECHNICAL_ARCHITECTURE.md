@@ -84,7 +84,7 @@ flowchart TD
     HASH --> PWA
 ```
 
-`build-workspace.py` performs deterministic string insertion and replacement against the baseline. Assertions on every replacement fail fast if an expected anchor disappears. It reads the semantic display version from `development/version.json`, injects the current ISO build date into the license footer, then extracts each inline script and asks `node --check -` to validate syntax through standard input. Node is a developer-side validation aid; setting `CHICCANVA_SKIP_NODE_CHECK=1` skips that check, and a missing Node binary produces a warning instead of making the application impossible to build.
+`build-workspace.py` performs deterministic string insertion and replacement against the baseline. Assertions on every replacement fail fast if an expected anchor disappears. It reads the semantic display version from `development/version.json`, injects the current ISO build date and absolute social metadata derived from `CHICCANVA_PUBLIC_URL` (defaulting to `https://chiccanva.testthis.one/`), then extracts each inline script and asks `node --check -` to validate syntax through standard input. Node is a developer-side validation aid; setting `CHICCANVA_SKIP_NODE_CHECK=1` skips that check, and a missing Node binary produces a warning instead of making the application impossible to build.
 
 The composer writes the root HTML, copies the local build, copies the hosted HTML, computes the first 16 hexadecimal characters of the HTML SHA-256, and injects that identifier into the service worker. It asserts that root, local, and PWA HTML bytes are identical.
 
@@ -262,3 +262,8 @@ The current mitigation is a modular authoring layer, assertion-based composition
 8. Keep mobile background removal on the small model and release worker memory after each job.
 9. Update the user guide, technical docs, context, build copies, and tests with material changes.
 10. Treat IMG.LY AGPL obligations and OpenMoji attribution/share-alike terms as release constraints.
+
+
+## Viewport rendering and navigation
+
+Pinch gestures use lightweight CSS sizing for every animation frame and rebuild Fabric’s retina raster only once when the gesture ends. This avoids clearing and reallocating the backing canvas while fingers are moving. Non-fit zoom creates navigation padding equal to 75% of the visible viewport on every side, allowing the hand tool to move all page edges through the useful center area. Zoom changes preserve the current page-space center.
