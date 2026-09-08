@@ -1,0 +1,17 @@
+<dialog id="pdfImportDialog" class="chic-dialog pdf-import-dialog">
+  <h2>Importa PDF come immagini</h2>
+  <p id="pdfImportInfo">Scegli quali pagine trasformare in immagini PNG.</p>
+  <fieldset><legend>Pagine da importare</legend>
+    <label class="check"><input type="radio" name="pdfImportScope" value="all" checked>Tutte le pagine</label>
+    <label class="check pdf-page-choice"><input type="radio" name="pdfImportScope" value="single">Una pagina specifica <input class="field" id="pdfImportPage" type="number" min="1" value="1" disabled aria-label="Numero pagina PDF"></label>
+  </fieldset>
+  <fieldset><legend>Destinazione</legend>
+    <label class="check"><input type="radio" name="pdfImportDestination" value="new" checked>Nuovo progetto</label>
+    <label class="check"><input type="radio" name="pdfImportDestination" value="current">Aggiungi al progetto corrente</label>
+  </fieldset>
+  <label>Orientamento pagine A4<select id="pdfImportOrientation"><option value="auto" selected>Auto · segue ogni pagina PDF</option><option value="portrait">Verticale</option><option value="landscape">Orizzontale</option></select></label>
+  <label class="pdf-quality-label">Qualità PNG <strong id="pdfImportQualityValue">2×</strong><input id="pdfImportQuality" type="range" min="1" max="3" step="1" value="2"><span><small>1× · leggera</small><small>2× · consigliata</small><small>3× · alta</small></span></label>
+  <p class="help">Il PDF viene elaborato nel browser. Ogni pagina scelta diventa un PNG adattato a una nuova pagina A4.</p>
+  <div class="row"><button class="btn accent" id="pdfImportConfirm">Importa pagine</button><button class="btn" id="pdfImportCancel">Annulla</button></div>
+  <div class="status" id="pdfImportStatus" aria-live="polite"></div>
+</dialog>

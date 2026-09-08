@@ -1,0 +1,156 @@
+# UI and UX architecture
+
+## 1. Audience and interaction goals
+
+The primary user is a teacher preparing printable material, often without design-software training and sometimes on a phone or tablet. The interface therefore favors recognizable actions, reversible editing, preserved originals, contextual widgets, and print-oriented terminology. Advanced capabilities remain available without requiring the user to understand the internal object or asset model.
+
+Core UX principles:
+
+1. **The page is the center of attention.** Controls should not cover a fitted page.
+2. **One visible task at a time.** Sidebar sections start collapsed and “expand one section” is the default.
+3. **Operations are explicit.** Puter generation, assisted download, project replacement, and destructive actions require a clear user action.
+4. **Touch navigation is direct.** Two fingers zoom around their midpoint and pan in the same gesture while object editing is temporarily suspended.
+4. **Derived image workflows preserve the source.** Crop is reversible; grayscale, outline, and background removal create copies.
+5. **View and output are separate.** Zoom, pan, grid, guides, and selection boxes never alter physical output.
+6. **Mobile uses the same document model.** Layout changes, while projects and exports remain compatible.
+
+## 2. Interface regions
+
+```mermaid
+flowchart TB
+    TOP[Application bar: identity, undo/redo, memory, guide, import/export]
+    TOOL[Canvas toolbar: pan, zoom, pages, selection, edit, layers]
+    TABS[Project tabs and page navigator]
+    WORK[Canvas workspace and active physical page]
+    SIDE[Task sidebar: page, text, fonts, emoji, images, clipart, AI, export]
+    TOP --> TOOL
+    TOOL --> TABS
+    TABS --> WORK
+    WORK --- SIDE
+```
+
+The application bar owns workspace-level actions. The canvas toolbar owns view and selected-object actions. Project tabs and page navigation sit close to the canvas because they change its content. The right sidebar is activity-oriented and can be resized or hidden on desktop.
+
+## 3. Sidebar information architecture
+
+Quick-jump buttons represent the main tasks:
+
+- Page
+- Special workflows
+- Text
+- Fonts
+- Emoji
+- Images
+- Clipart
+- AI
+- Export
+
+Clicking a quick jump opens its category before scrolling. With single-section mode enabled, opening a section closes the others. “Expand all” and “Collapse all” intentionally disable single-section mode because those commands express a different layout preference.
+
+Sections start collapsed on each application launch. This prevents a previously used, content-heavy widget such as Clipart from dominating mobile startup and reduces initial layout work.
+
+## 4. Desktop behavior
+
+Desktop uses a resizable right sidebar and a scrollable toolbar. Fit zoom calculates the available canvas region after the sidebar width is applied and centers the page in that region. Changing page orientation, opening/closing/resizing the sidebar, or selecting Fit triggers recomputation rather than preserving an obsolete offset.
+
+Hover tooltips explain icon-only toolbar controls. Every icon-only control also has an accessible name. The delete action uses a visible vector icon rather than a font glyph, avoiding missing-glyph boxes and inconsistent emoji rendering.
+
+Context menus supplement, rather than replace, visible commands. Object menus expose copy, paste, group, ungroup, split, duplicate, layers, crop, background removal, and AI reference actions where applicable. Project and page context menus expose rename and related lifecycle actions.
+
+## 5. Mobile and installed-PWA behavior
+
+On small/coarse-pointer screens:
+
+- the sidebar becomes an overlay that can be closed to reveal the full canvas;
+- toolbars scroll horizontally without wrapping individual actions into unexpected rows;
+- the install action is icon-only and compact;
+- page reordering remains possible with arrow buttons instead of requiring drag precision;
+- using the eyedropper closes the sidebar so the user can touch the canvas;
+- AI background removal is constrained to the small model and a disposable worker;
+- physical page preview preserves portrait/landscape orientation at a comparable long-edge scale.
+
+The installed PWA uses the same origin storage as its browser counterpart for the same URL. Startup recovery reads IndexedDB even when a small localStorage pointer is absent. The application requests persistent origin storage after the first meaningful interaction because some mobile browsers require a user gesture.
+
+## 6. Selection and manipulation states
+
+The toolbar makes modes explicit:
+
+- hand/pan;
+- normal selection and marquee;
+- rotation enabled;
+- crop;
+- export-region drawing;
+- grid visibility;
+- snapping.
+
+Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop changes one image's visible window, while export selection defines output bounds only.
+
+Keyboard support includes common editing conventions (`Ctrl/Cmd+C`, `V`, `D`, `Z`, `Y`, `S`) plus feature shortcuts (`F`, `H`, `G`, `R`, `F1`). Shortcuts are ignored while typing in form fields.
+
+## 7. Dialog policy
+
+Native browser dialogs are avoided for core workflows because they are visually inconsistent and hard to test. Application dialogs are used for:
+
+- new/rename/close project;
+- rename/delete page;
+- PDF scope;
+- URL import and optional Puter transport;
+- PDF import modal with source-page scope, project destination, A4 orientation, and resolution controls;
+- Clipart preview;
+- autosave recovery;
+- settings and memory clearing.
+
+A dialog should state the affected project/page, the consequence, and the reversible or recovery path. The primary action should describe the operation, while cancel remains visually secondary.
+
+## 8. Loading and progress feedback
+
+Any action that may exceed a perceptible delay needs immediate feedback:
+
+- Clipart search shows a global spinner and per-thumbnail loading states;
+- AI generation shows a spinner/status and disables its launch button;
+- background removal shows stage/progress text plus a scan effect over the duplicate workflow;
+- large exports report page number progress;
+- font and emoji loading update previews only after usable assets arrive.
+
+Busy state begins before translation, fetch, dynamic import, or model initialization. Controls are restored in `finally` so errors do not leave the interface permanently disabled.
+
+## 9. Color controls and eyedropper
+
+Every HTML color input receives a neighboring vector eyedropper button at binding time. This covers current and future color selectors without duplicating markup. The canvas enters a clear crosshair mode and displays a short toast. Escape cancels.
+
+Sampling uses the lower rendered canvas rather than the upper control layer, preventing selection borders and handles from contaminating the chosen color. Transparent pixels are represented as white because HTML color inputs cannot express alpha.
+
+In the chroma-key panel, the color/pipette and automatic detection are mutually exclusive. Choosing with the pipette turns off automatic detection. The tolerance slider occupies a full row below color selection to remain usable in the narrow sidebar.
+
+## 10. Accessibility requirements
+
+- Use semantic buttons, labels, inputs, dialogs, tabs, and expanded/collapsed states.
+- Every icon-only button needs `title` and `aria-label` or an equivalent accessible name.
+- Busy controls expose `aria-busy`; disabled controls use the native `disabled` property.
+- Do not convey group state or errors using color alone; pair visual distinction with status text.
+- Keep focus within native `<dialog>` behavior and return focus after closing where practical.
+- Respect touch target size, especially for page arrows, toolbar icons, and close actions.
+- Preserve keyboard alternatives for drag-only interactions.
+- Keep the guide usable without hover.
+
+## 11. Content and tone
+
+User-facing copy is in Italian, task-oriented, and aimed at teachers. It should explain what to do and what will happen. Console errors, implementation stack names, and developer debugging procedures belong in technical documentation. Necessary service/license names may appear where they affect privacy, cost, or attribution.
+
+The internal guide is intentionally much more detailed than tooltips. Tooltips answer “what is this button”; widget help answers “what happens here”; the guide supports complete workflows and recovery.
+
+## 12. UX regression checklist
+
+When changing layout or controls, verify at least:
+
+- Fit centers portrait and landscape pages with sidebar open and closed;
+- toolbar controls do not wrap into overlapping rows at mobile width;
+- all sidebar cards are collapsed on fresh startup;
+- quick jumps open the expected card;
+- tolerance and other ranges remain full-width and touchable;
+- icon-only actions remain visible without webfonts;
+- page preview gives landscape pages a landscape container;
+- modals name the target and cancel safely;
+- eyedropper samples correctly at 50%, 100%, 200%, Fit, and after pan;
+- a long project/page name does not break tabs or navigation;
+- online-only widgets are disabled with the approved message in direct-file mode.

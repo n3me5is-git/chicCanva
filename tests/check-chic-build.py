@@ -3,7 +3,7 @@ import re,json,struct,hashlib
 root=Path(__file__).resolve().parent.parent
 s=(root/'chicCanva.html').read_text(encoding='utf-8')
 scripts=re.findall(r'<script>([\s\S]*?)</script>',s)
-body=s[s.index('<body>'):s.rindex('<script>')]
+body=s[s.index('\n<body>'):s.rindex('<script>')]
 ids=re.findall(r'\bid="([^"]+)"',body)
 refs=re.findall(r"\$\('([^']+)'\)",scripts[-1])
 assert len(ids)==len(set(ids)), 'Duplicate IDs'
@@ -34,4 +34,20 @@ for size in (192,512):
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
 assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
-print(f'{len(ids)} unique IDs; all references present; local build and protected image proxy valid; PWA bundle and icons valid; no Fontsource API dependency.')
+vendor=root/'development/vendor'
+assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
+assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
+assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
+assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.1.1' and 'id="appVersion">v1.1.1' in s
+assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
+assert 'name="twitter:card" content="summary"' in s and 'data:image/png;base64,' in s
+assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class="license">' in s
+assert 'stopImmediatePropagation' in s and 'beginPuterLoginPrompt' in s
+docs=root/'docs'
+expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
+assert expected_docs.issubset({p.name for p in docs.iterdir()})
+guide=(root/'development/help-v7.html').read_text(encoding='utf-8')
+assert guide in (docs/'user-guide.html').read_text(encoding='utf-8')
+assert guide in s and 'build-docs.py' in (root/'development/build-workspace.py').read_text(encoding='utf-8')
+assert (root/'CONTEXT.md').is_file() and (root/'LICENSE').is_file()
+print(f'{len(ids)} unique IDs; all references present; local build, documentation and protected image proxy valid; PWA bundle and icons valid; no Fontsource API dependency.')

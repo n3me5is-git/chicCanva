@@ -35,6 +35,22 @@ async function autoRemoveGeneratedBackground(assetId,targetPage){
 const AI_CHROMA_INSTRUCTION='Genera l’immagine su uno sfondo completamente uniforme, piatto e senza texture, ombre o gradienti, adatto al chroma key. Scegli automaticamente un colore di sfondo molto distante da tutti i colori del soggetto e dei suoi dettagli, in modo che la rimozione non cancelli parti del soggetto.';
 generateAi=async function(){const before=new Set(Object.keys(state.assets)),targetPage=currentPage,prompt=$('aiPrompt'),originalPrompt=prompt.value;if($('aiChromaKey')?.checked)prompt.value=originalPrompt.trim()+'\n\n'+AI_CHROMA_INSTRUCTION;try{await baseGenerateAiFinal()}finally{prompt.value=originalPrompt}if(!$('aiRemoveBackground')?.checked)return;const generated=Object.values(state.assets).find(a=>!before.has(a.id)&&a.kind==='ai');if(generated)try{await autoRemoveGeneratedBackground(generated.id,targetPage)}catch(error){console.error(error);$('aiStatus').textContent='Immagine generata; la copia senza sfondo non è riuscita: '+(error.message||error);toast('Immagine creata, rimozione sfondo non riuscita')}};
 
+async function canvasCroppedReferenceFile(image){
+ if(!image||image.type!=='image')throw new Error('Seleziona un’immagine nel canvas');
+ const source=image.getElement?.()||image._element,sourceWidth=source?.naturalWidth||source?.videoWidth||source?.width||0,sourceHeight=source?.naturalHeight||source?.videoHeight||source?.height||0;
+ if(!source||!sourceWidth||!sourceHeight)throw new Error('Immagine selezionata non leggibile');
+ const cropX=clamp(Number(image.cropX)||0,0,Math.max(0,sourceWidth-1)),cropY=clamp(Number(image.cropY)||0,0,Math.max(0,sourceHeight-1)),cropWidth=clamp(Number(image.width)||sourceWidth,1,sourceWidth-cropX),cropHeight=clamp(Number(image.height)||sourceHeight,1,sourceHeight-cropY),ratio=Math.min(1,2048/Math.max(cropWidth,cropHeight)),surface=document.createElement('canvas');
+ surface.width=Math.max(1,Math.round(cropWidth*ratio));surface.height=Math.max(1,Math.round(cropHeight*ratio));surface.getContext('2d').drawImage(source,cropX,cropY,cropWidth,cropHeight,0,0,surface.width,surface.height);
+ const blob=await new Promise((resolve,reject)=>surface.toBlob(value=>value?resolve(value):reject(new Error('Conversione del ritaglio non riuscita')),'image/png'));
+ surface.width=surface.height=1;return new File([blob],'Riferimento dal canvas - ritaglio.png',{type:'image/png'})
+}
+async function useCroppedCanvasImageAsReference(){
+ if(cropSession){toast('Conferma o annulla il crop prima di usare il riferimento');return}
+ const image=selectedImage();if(!image){toast('Seleziona un’immagine nel canvas');return}
+ try{await setAiReference(await canvasCroppedReferenceFile(image));$('aiReferenceStatus').textContent='Riferimento pronto · usa il ritaglio visibile, senza rotazione o scala del canvas.'}
+ catch(error){toast(error.message||'Impossibile creare il riferimento dal canvas')}
+}
+
 function cleanExportName(name,fallback='pagina'){let value=String(name||fallback).normalize('NFKC').replace(/[<>:"/\\|?*\x00-\x1F]/g,' ').replace(/\s+/g,' ').replace(/[. ]+$/g,'').trim();if(!value)value=fallback;if(/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(value))value='pagina '+value;return value.slice(0,90)}
 const crcTable=(()=>{const table=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;table[n]=c>>>0}return table})();
 function crc32(bytes){let c=0xffffffff;for(const b of bytes)c=crcTable[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0}
@@ -51,7 +67,7 @@ function openExportForSelection(startDrawing=true){$('exportScope').value='selec
 function bindFinalUpgrades(){
  $('deleteTool').className='iconbtn delete-icon';$('deleteTool').innerHTML=deleteCircleIcon;$('deleteTool').setAttribute('aria-label','Elimina selezione');
  $('pasteImageTool').innerHTML=pasteImageIcon;$('pasteImageTool').onclick=()=>pasteClipboardImage('canvas');
- $('pasteImageCanvasBtn').onclick=()=>pasteClipboardImage('canvas');$('pasteAiReferenceBtn').onclick=()=>pasteClipboardImage('reference');
+ $('pasteImageCanvasBtn').onclick=()=>pasteClipboardImage('canvas');$('pasteAiReferenceBtn').onclick=()=>pasteClipboardImage('reference');$('useCanvasReference').onclick=useCroppedCanvasImageAsReference;
  if(location.protocol==='file:'){$('imageUrlUsePuter').disabled=true;$('imageUrlUsePuter').closest('label').title='Per usare Puter apri l’app tramite webserver'}
  $('exportScope').onchange=syncExportCenter;$('exportFormat').onchange=syncExportCenter;$('exportQuality').oninput=syncExportCenter;$('exportPdfPanel').onclick=runUnifiedExport;$('drawExportRegion').onclick=()=>setRegionMode(true);$('exportRegionTool').onclick=()=>{if(state.regionMode)setRegionMode(false);else openExportForSelection(true)};syncExportCenter()
 }

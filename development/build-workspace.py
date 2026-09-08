@@ -1,8 +1,38 @@
 from pathlib import Path
-import os,re,shutil,subprocess,hashlib
+import os,re,shutil,subprocess,hashlib,sys,json,base64
+from datetime import date
 root=Path(__file__).resolve().parent.parent;dev=root/'development'
+version=json.loads((dev/'version.json').read_text(encoding='utf-8'))['version']
+build_date=date.today().isoformat()
+subprocess.run([sys.executable,str(dev/'build-guide.py')],cwd=root,check=True)
+subprocess.run([sys.executable,str(dev/'build-docs.py')],cwd=root,check=True)
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
 s=s.replace('<title>chicCanva — editor outline multi-page</title>','<title>chicCanva — mini editor didattico</title>',1)
+share_icon_b64=base64.b64encode((dev/'pwa/chiccanva-192.png').read_bytes()).decode('ascii')
+share_meta='''<meta name="application-name" content="chicCanva">
+<meta name="description" content="Laboratorio creativo didattico per creare schede, cartelloni, scritte, immagini e materiali da stampare.">
+<meta name="author" content="chicCanva contributors">
+<meta name="theme-color" content="#298879">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:site_name" content="chicCanva">
+<meta property="og:title" content="chicCanva · Piccole idee, grandi progetti">
+<meta property="og:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
+<meta property="og:image" content="chiccanva-512.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="Chicca, la mascotte insegnante di chicCanva">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="chicCanva · Piccole idee, grandi progetti">
+<meta name="twitter:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
+<meta name="twitter:image" content="chiccanva-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,'''+share_icon_b64+'''">
+<link rel="apple-touch-icon" sizes="192x192" href="chiccanva-192.png">'''
+s=s.replace('<meta name="description" content="Editor single-page HTML per testi outlined, OpenMoji, immagini, crop, pagine custom, PDF e asset serializzati.">',share_meta,1)
+pdfjs=(dev/'vendor/pdf.min.js').read_text(encoding='utf-8')
+assert '</script' not in pdfjs.lower(), 'PDF.js contiene una chiusura script non incorporabile'
+s=s.replace('</head>','<script>'+pdfjs+'</script>\n</head>',1)
 pending_start=s.index('// Workspace persistence, undo/redo and the complete emoji browser.')
 pending_end=s.index("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",pending_start)
 s=s[:pending_start]+(dev/'pending.js').read_text(encoding='utf-8').strip()+'\n'+s[pending_end:]
@@ -14,13 +44,14 @@ def before(id,markup):
  global s
  m=re.search(r'<[a-zA-Z][^>]*\bid="'+id+r'"[^>]*>',s);assert m,id
  s=s[:m.start()]+markup+s[m.start():]
-rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n</style>')
-rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8'))
+rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8'))
 rep('<aside class="sidebar" id="sidebar">','<aside class="sidebar" id="sidebar"><div class="sidebar-controls"><button class="btn" id="collapseSections">Richiudi sezioni</button><button class="btn" id="expandSections">Espandi sezioni</button><label class="check"><input id="singleSection" type="checkbox" checked>Espandi singolarmente</label></div>'+(dev/'clipart-ui.html').read_text(encoding='utf-8'))
 rep('<div class="tabs"><button class="active" data-mode="whole">Frase su pagina</button><button data-mode="single">1 lettera/gruppo</button><button data-mode="custom">Multi custom page</button></div>','<div class="project-strip"><div id="projectTabs" class="project-tabs" role="tablist" aria-label="Progetti aperti"></div><button class="btn" id="newProjectBtn" title="Crea un nuovo progetto">+ Progetto</button></div>')
 before('previewBtn','<button class="btn" id="quickAddPage" title="Aggiungi una pagina vuota al progetto">+ Pagina</button>')
 before('deleteTool','<button class="iconbtn" id="copyTool" title="Copia oggetti · Ctrl+C"></button><button class="iconbtn" id="pasteTool" title="Incolla oggetti · Ctrl+V"></button><button class="iconbtn" id="groupTool" title="Raggruppa la selezione · Ctrl+G">⊞</button><button class="iconbtn" id="ungroupTool" title="Dividi il gruppo · Ctrl+Maiusc+G">⊟</button><button class="iconbtn" id="splitTool" title="Splitta il testo in caratteri e gruppi">✂</button>')
 before('deleteTool','<button class="iconbtn" id="pasteImageTool" title="Incolla speciale · immagine dagli appunti" aria-label="Incolla speciale: immagine dagli appunti"></button>')
+before('applyCropBtn','<button class="btn" id="resetCropActiveBtn" title="Rimuove il crop senza deformare l’immagine">Reset crop</button>')
 nav_next=re.search(r'<button class="iconbtn" id="nextPage"[^>]*>.*?</button>',s);assert nav_next
 s=s[:nav_next.end()]+'<button class="iconbtn" id="quickAddNav" title="Aggiungi dopo la pagina attiva">＋</button>'+s[nav_next.end():]
 before('fontMode','<div class="font-fixed-preview"><small>Font impostato · <strong id="currentFontName"></strong></small><div id="currentFontSample" class="sample">Outline</div></div>')
@@ -31,9 +62,10 @@ rep('<div class="grid2"><input class="field" id="symbolsPrev"','<div class="grid
 rep('<label class="check"><input type="checkbox" id="smartApostrophe"','<label class="check" data-symbol-options><input type="checkbox" id="smartApostrophe"')
 rep('<span>Separa in singole lettere / emoji</span>','<span>Un oggetto per lettera / gruppo di simboli</span>')
 rep('<button class="btn" id="imageFromUrl" title="Carica un’immagine tramite il suo indirizzo web">Da URL</button><button class="btn accent" id="uploadImageBtn" style="width:100%">Carica immagine</button>','<div class="row image-source-actions"><button class="btn" id="imageFromUrl" title="Carica un’immagine tramite il suo indirizzo web">Da URL</button><button class="btn accent" id="uploadImageBtn">Carica immagine</button></div><button class="btn paste-image-button" id="pasteImageCanvasBtn">Incolla immagine dagli appunti</button>')
+before('startCropBtn','<button class="btn pdf-import-button" id="importPdfBtn">Importa PDF come immagini</button><input id="pdfFile" type="file" accept="application/pdf,.pdf" hidden>')
 rep('<label class="small">Immagine di riferimento · opzionale</label><div class="row"><button class="btn" id="referenceFromUrl" title="Allega un’immagine di riferimento tramite URL">Riferimento da URL</button><button class="btn grow" id="attachAiReference">＋ Allega immagine</button><button class="btn" id="useCanvasReference" title="Usa l’immagine selezionata come riferimento AI">Dal canvas</button></div>','<label class="small">Immagine di riferimento · opzionale</label><div class="row reference-source-actions"><button class="btn" id="referenceFromUrl" title="Allega un’immagine di riferimento tramite URL">Da URL</button><button class="btn grow" id="attachAiReference">＋ Allega</button><button class="btn" id="pasteAiReferenceBtn">Incolla</button><button class="btn" id="useCanvasReference" title="Usa l’immagine selezionata come riferimento AI">Dal canvas</button></div>')
-rep('<div id="puterControls">','<div id="puterControls">'+(dev/'puter-usage.html').read_text(encoding='utf-8'))
-rep('<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><p class="help">Usa il link diretto a un’immagine. Il sito deve consentire il caricamento da altre origini (CORS). Se non lo consente, scarica l’immagine e caricala da file.</p>','<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><label class="check puter-url-option"><input id="imageUrlUsePuter" type="checkbox">Usa Puter per scaricare l’immagine</label><p class="help">Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Se non funziona, prova Puter: usa banda o quota dell’account. Se il relay Puter non risponde su localhost, il launcher PowerShell prova automaticamente il download. Puoi anche copiare l’immagine dal sito e usare <strong>Incolla immagine dagli appunti</strong>.</p>')
+rep('<div id="puterControls">',(dev/'puter-auth.html').read_text(encoding='utf-8')+'<div id="puterControls">'+(dev/'puter-usage.html').read_text(encoding='utf-8'))
+rep('<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><p class="help">Usa il link diretto a un’immagine. Il sito deve consentire il caricamento da altre origini (CORS). Se non lo consente, scarica l’immagine e caricala da file.</p>','<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><label class="check puter-url-option"><input id="imageUrlUsePuter" type="checkbox">Usa Puter per scaricare l’immagine</label><p class="help puter-login-hint" data-puter-login-hint>Per usare il caricamento tramite Puter effettua il login nella sezione Generazione immagini AI · Puter. <button type="button" class="text-link" data-puter-login-link>Vai al login</button></p><p class="help">Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare <strong>Incolla immagine dagli appunti</strong>.</p>')
 rep('<label class="small">Rimozione sfondo</label>',(dev/'image-effects.html').read_text(encoding='utf-8')+'<div class="background-box"><label class="small">Rimozione sfondo</label>')
 bg_status=re.search(r'<div class="status" id="removeBgStatus">.*?</div>',s);assert bg_status
 s=s[:bg_status.end()]+'</div>'+s[bg_status.end():]
@@ -57,7 +89,10 @@ project_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div 
 s=s[:project_card.start()]+(dev/'export-center.html').read_text(encoding='utf-8')+s[project_card.end():]
 rep('<label class="check"><input type="radio" name="pdfScope" value="current" checked>Solo la pagina corrente</label><label class="check"><input type="radio" name="pdfScope" value="set">Tutte le pagine del progetto corrente</label>','<div class="pdf-dialog-options"><label class="check"><input type="radio" name="pdfScope" value="current" checked>Solo la pagina corrente</label><label class="check"><input type="radio" name="pdfScope" value="set">Tutte le pagine del progetto corrente</label></div>')
 # Keep the existing asynchronous runtime and rendering features; replace the application entry point.
-rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+pdf_import=(dev/'pdf-import.js').read_text(encoding='utf-8')
+pdf_worker=base64.b64encode((dev/'vendor/pdf.worker.min.js').read_bytes()).decode('ascii')
+pdf_import="const PDF_WORKER_BASE64='"+pdf_worker+"';\n"+pdf_import
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
 # Remove obsolete mode explanations from the guide.
 s=s.replace('<h3>1. Scegli come lavorare</h3>', '<h3>1. Progetti e funzioni speciali</h3>')
 start=s.index('<h3>1. Progetti e funzioni speciali</h3>');end=s.index('<h3>2. Trova il carattere giusto</h3>',start)
@@ -70,6 +105,9 @@ guide=re.search(r'<div class="help-content">[\s\S]*?</div></section></div>',s);a
 s=s[:guide.start()]+'<div class="help-content">'+(dev/'help-v7.html').read_text(encoding='utf-8')+'</div></section></div>'+s[guide.end():]
 s=s.replace('serve il launcher','apri l’app tramite webserver').replace('Serve il launcher','Apri l’app tramite webserver').replace('dal launcher','tramite webserver').replace('Il launcher','Il webserver')
 s=s.replace('Piccole idee, grandi scoperte · con Chicca','Piccole idee, grandi progetti · con Chicca')
+license=re.search(r'<details class="license"><summary>Librerie e licenze</summary><p>.*?</p></details>',s,re.S);assert license
+license_html='''<div class="app-footer-meta"><p class="app-repository"><a href="https://github.com/n3me5is-git/chicCanva" target="_blank" rel="noopener noreferrer">Repository GitHub di chicCanva</a></p><div class="app-build-info">chicCanva <strong id="appVersion">v'''+version+'''</strong><br>Data build: <time id="appBuildDate" datetime="'''+build_date+'''">'''+build_date+'''</time></div></div><details class="license"><summary>Librerie, contenuti e licenze</summary><p>Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0; <a href="https://github.com/imgly/background-removal-js" target="_blank" rel="noopener">sorgente e licenza</a>. OpenMoji 17: grafica CC BY-SA 4.0, HfG Schwäbisch Gmünd e collaboratori; codice OpenMoji LGPL-3.0 dove applicabile. Le opere pubblicate su Openclipart sono indicate dal progetto come pubblico dominio/CC0 1.0. Puter.js e i servizi Puter seguono le rispettive licenze e condizioni del servizio. Fontsource, Google Fonts e ogni famiglia tipografica conservano la propria licenza. MyMemory è un servizio esterno opzionale per la traduzione delle parole chiave.</p></details>'''
+s=s[:license.start()]+license_html+s[license.end():]
 
 # A malformed inline script makes the whole single-file application unusable.
 # Validate every inline block before publishing the root and final-build copies.
@@ -97,4 +135,4 @@ assert '__BUILD_ID__' not in sw
 (pwa_build/'chicCanva-sw.js').write_text(sw,encoding='utf-8')
 assert (pwa_build/'index.html').read_bytes()==(root/'chicCanva.html').read_bytes(), 'HTML PWA non sincronizzato'
 assert "const BUILD_ID='"+build_id+"'" in sw, 'Versione service worker non sincronizzata'
-print('Build v7:',len(s),'caratteri · PWA',build_id)
+print('Build chicCanva',version,'del',build_date,':',len(s),'caratteri · PWA',build_id)

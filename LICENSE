@@ -1,0 +1,122 @@
+chicCanva licensing and third-party notices
+===========================================
+
+Original chicCanva code and documentation
+------------------------------------------
+
+Copyright (c) 2026 chicCanva contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the original chicCanva software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including without
+limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom
+the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Scope of the MIT grant
+----------------------
+
+The MIT grant above covers code and documentation created specifically for
+chicCanva. It does not relicense third-party libraries, artwork, fonts, model
+data, services, or other material identified below. Each third-party component
+remains governed by its own license and terms. A distributed chicCanva HTML
+bundle contains some of these components, including AGPL-covered code, so the
+bundle as distributed must also satisfy their applicable conditions.
+
+Third-party software and content
+--------------------------------
+
+1. Fabric.js 5.1.0
+   Purpose: canvas object model, rendering, selection, grouping, and transforms.
+   License: MIT.
+   Copyright: 2008-2015 Printio (Juriy Zaytsev, Maxim Chernyak);
+              2016-present Andrea Bogazzi, Shachar Nen, and contributors.
+   Source and license: https://github.com/fabricjs/fabric.js
+
+2. jsPDF
+   Purpose: client-side PDF generation.
+   License: MIT.
+   Copyright: 2010-2025 James Hall; 2015-2025 yWorks GmbH and contributors.
+   Source and license: https://github.com/parallax/jsPDF
+
+3. PDF.js 3.11.174
+   Purpose: local parsing and rasterization of imported PDF pages.
+   License: Apache License 2.0.
+   Copyright: Mozilla Foundation and PDF.js contributors.
+   Source: https://github.com/mozilla/pdf.js
+   Bundled license copy: development/vendor/pdfjs-LICENSE.txt
+
+4. ONNX Runtime Web
+   Purpose: local browser inference for background removal.
+   License: MIT, with additional upstream third-party notices applicable to
+            bundled dependencies.
+   Source and notices: https://github.com/microsoft/onnxruntime
+
+5. @imgly/background-removal 1.7.0
+   Purpose: local foreground segmentation/background removal.
+   License: GNU Affero General Public License version 3 (AGPL-3.0).
+   Copyright: IMG.LY GmbH and contributors.
+   Source and license: https://github.com/imgly/background-removal-js
+
+   This component is not relicensed under MIT. Its code is embedded in the
+   generated chicCanva HTML. Distribution or network use of a modified build
+   must comply with the AGPL, including applicable source-availability and
+   notice requirements. IMG.LY may offer separate licensing terms.
+
+6. OpenMoji 17 graphics and metadata
+   Purpose: emoji browsing, smart emoji conversion, and SVG assets.
+   Graphics license: Creative Commons Attribution-ShareAlike 4.0 International
+                     (CC BY-SA 4.0).
+   Upstream code license: LGPL-3.0 where upstream code is used.
+   Project: HfG Schwäbisch Gmünd, Benedikt Groß, Daniel Utz, students, and
+            OpenMoji contributors.
+   Source and license: https://github.com/hfg-gmuend/openmoji
+
+   Required attribution:
+   "All emojis designed by OpenMoji – the open-source emoji and icon project.
+   License: CC BY-SA 4.0."
+
+   chicCanva can recolor and change the stroke width of OpenMoji black/outline
+   artwork. Such output is adapted OpenMoji material and must retain attribution,
+   identify the modification where appropriate, and be shared under CC BY-SA
+   4.0 or a compatible license as required by that license.
+
+7. Font files loaded through Google Fonts or Fontsource-compatible CDNs
+   Purpose: user-selected typefaces.
+   License: each font retains its own upstream license. Many are distributed
+            under the SIL Open Font License, Apache License 2.0, or Ubuntu Font
+            License, but there is no single license for the complete catalog.
+   chicCanva's original catalog categorization does not relicense font binaries.
+
+8. Openclipart artwork
+   Purpose: user-selected external clipart.
+   Openclipart represents its published artwork as public-domain/CC0 material.
+   Individual source/provenance should be retained and checked where required.
+   Site: https://openclipart.org/
+
+Remote services
+---------------
+
+Puter (whose upstream main repository is AGPL-3.0-only), selected model providers reached through Puter, MyMemory translation,
+Google Fonts, Fontsource CDNs, jsDelivr, Openclipart, and staticimgly.com are
+remote services or distribution endpoints. They are not granted under the
+chicCanva MIT license. Their current terms, privacy policies, quotas, and content
+licenses apply when a user enables or invokes the corresponding feature.
+
+Additional detail
+-----------------
+
+See docs/SECURITY_PRIVACY_LICENSING.md for the dependency matrix, attribution
+guidance, privacy boundaries, update procedure, and deployment considerations.
+Upstream license texts and notices are authoritative if this summary differs.

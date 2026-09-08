@@ -1,0 +1,16 @@
+<div class="puter-auth-gate" id="puterAuthGate">
+  <strong>Accedi con Puter per usare l’AI</strong>
+  <p class="help" id="puterAuthGateStatus">Collega il tuo account per generare immagini e usare i download assistiti da Puter.</p>
+  <button class="btn accent" id="puterLoginBtn">Accedi con Puter per usare l’AI</button>
+</div>
+<div class="puter-account hidden" id="puterAccountBar" aria-live="polite">
+  <div><small>Account Puter connesso</small><strong id="puterAccountName">Account Puter</strong></div>
+  <div class="row"><button class="btn" id="puterSwitchAccountBtn">Cambia account</button><button class="btn" id="puterLogoutBtn">Logout</button></div>
+</div>
+<dialog id="puterLoginDialog" class="chic-dialog puter-login-dialog">
+  <h2>Accesso Puter richiesto</h2>
+  <p id="puterLoginReason">Questa funzione usa Puter e richiede un account collegato.</p>
+  <div class="row"><button class="btn accent" id="puterDialogLoginBtn">Accedi con Puter</button><button class="btn" id="puterDialogCancelBtn">Annulla</button></div>
+  <p class="help">Login, cambio account e logout da Puter sono gestibili nella sezione Generazione immagini AI della sidebar.</p>
+  <div class="status" id="puterLoginStatus"></div>
+</dialog>
