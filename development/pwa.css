@@ -7,5 +7,5 @@
 .pwa-install-steps{margin:14px 0 20px;padding:14px 16px 14px 36px;background:#f4f8f4;border:1px solid var(--line);border-radius:13px;line-height:1.55}
 .pwa-install-steps li+li{margin-top:7px}
 .pwa-offline-note{font-size:12px;color:var(--muted);line-height:1.5}
-@media(max-width:720px){#installPwaBtn:not(.hidden){display:inline-flex;font-size:11px;padding:5px 8px}.pwa-dialog-intro img{width:58px;height:58px}.pwa-dialog-intro{align-items:flex-start}}
-
+.pwa-update{position:fixed;left:50%;bottom:18px;z-index:220;transform:translateX(-50%);display:flex;align-items:center;gap:10px;width:min(540px,calc(100vw - 24px));padding:10px 12px;border:1px solid #b9d7cd;border-radius:14px;background:#fffdf9;box-shadow:0 12px 38px #173e3838;font-size:12px}.pwa-update.hidden{display:none}.pwa-update span{flex:1}.pwa-update .iconbtn{width:32px;height:32px}
+@media(max-width:720px){.topbar .brand{flex:1 1 auto;min-width:0}.topbar .actions{flex:0 0 auto;flex-wrap:nowrap;gap:5px}#installPwaBtn:not(.hidden){display:inline-grid;width:36px;height:36px;min-height:36px;padding:0;place-items:center}#installPwaBtn span{display:none}#installPwaBtn svg{width:19px;height:19px}.pwa-dialog-intro img{width:58px;height:58px}.pwa-dialog-intro{align-items:flex-start}.pwa-update{bottom:10px;flex-wrap:wrap}.pwa-update span{flex-basis:calc(100% - 42px)}}

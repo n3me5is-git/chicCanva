@@ -1,8 +1,11 @@
 from pathlib import Path
-import os,re,shutil,subprocess,tempfile
+import os,re,shutil,subprocess,hashlib
 root=Path(__file__).resolve().parent.parent;dev=root/'development'
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
 s=s.replace('<title>chicCanva — editor outline multi-page</title>','<title>chicCanva — mini editor didattico</title>',1)
+pending_start=s.index('// Workspace persistence, undo/redo and the complete emoji browser.')
+pending_end=s.index("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",pending_start)
+s=s[:pending_start]+(dev/'pending.js').read_text(encoding='utf-8').strip()+'\n'+s[pending_end:]
 def rep(a,b):
  global s
  assert a in s,a[:100]
@@ -37,12 +40,14 @@ s=s[:bg_status.end()]+'</div>'+s[bg_status.end():]
 rep('id="customCardTitle">Pagina custom','id="customCardTitle">Gestione pagina')
 rep("strokeColor:'#e43b48'","strokeColor:'#000000'")
 rep('id="strokeColor" value="#e43b48"','id="strokeColor" value="#000000"')
+rep('<input id="bgColor" type="color" value="#ffffff" title="Colore da rimuovere">','<input id="bgColor" type="color" value="#ffffff" title="Colore da rimuovere"><label class="check bg-auto-color"><input id="bgAutoColor" type="checkbox">Rileva colore automaticamente dai bordi</label>')
+rep('<input id="bgEverywhere" type="checkbox">','<input id="bgEverywhere" type="checkbox" checked>')
 rep('<button data-action="duplicate" role="menuitem">','<button data-action="copy" role="menuitem">Copia <span>Ctrl C</span></button><button data-action="paste" role="menuitem">Incolla <span>Ctrl V</span></button><button data-action="group" role="menuitem">Raggruppa <span>Ctrl G</span></button><button data-action="ungroup" role="menuitem">Dividi gruppo <span>Ctrl ⇧ G</span></button><button data-action="split" role="menuitem">Splitta testo</button><button data-action="duplicate" role="menuitem">')
 rep('<div class="preview hidden" id="previewPanel">',(dev/'workspace-special.html').read_text(encoding='utf-8')+'<div class="preview hidden" id="previewPanel">')
 rep('<button class="btn" id="closePreview">Chiudi</button>','<div class="preview-reorder"><button class="btn" id="previewReorder">Riordina</button><button class="btn" id="previewMoveLeft" title="Sposta pagina a sinistra">←</button><button class="btn" id="previewMoveRight" title="Sposta pagina a destra">→</button></div><button class="btn" id="closePreview">Chiudi</button>')
 before('customPageName','<div class="page-reorder"><button class="btn" id="pageMoveLeft" title="Sposta la pagina prima">← Prima</button><button class="btn" id="pageMoveRight" title="Sposta la pagina dopo">Dopo →</button></div>')
 rep('<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"','<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"')
-rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
+rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
 canvas_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div class="card-title">Canvas, griglia & export immagine</div>[\s\S]*?</section>',s);assert canvas_card
 canvas_markup=canvas_card.group(0)
 canvas_markup=canvas_markup.replace('Canvas, griglia & export immagine','Canvas, griglia e snap').replace('Griglia e snapping sono indipendenti. L’export regione può avere margine e trasparenza.','Imposta gli aiuti visivi del foglio; non vengono stampati.')
@@ -73,20 +78,23 @@ if node and os.environ.get('CHICCANVA_SKIP_NODE_CHECK')!='1':
  for index,match in enumerate(re.finditer(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',s,re.I)):
   script=match.group(1)
   if not script.strip():continue
-  with tempfile.NamedTemporaryFile('w',suffix=f'-chiccanva-{index}.js',encoding='utf-8',dir=dev,delete=False) as handle:
-   handle.write(script);temp_path=Path(handle.name)
-  try:
-   check=subprocess.run([node,'--check',str(temp_path)],capture_output=True,text=True)
-   if check.returncode:
-    raise RuntimeError('JavaScript inline non valido:\n'+check.stderr)
-  finally:
-   temp_path.unlink(missing_ok=True)
-else:
+  check=subprocess.run([node,'--check','-'],input=script,capture_output=True,text=True,encoding='utf-8')
+  if check.returncode:
+   raise RuntimeError(f'JavaScript inline {index} non valido:\n'+check.stderr)
+elif not node:
  print('Avviso: Node non trovato; controllo sintattico JavaScript non eseguito.')
+else:
+ print('Controllo sintattico Node omesso tramite CHICCANVA_SKIP_NODE_CHECK.')
 
 (root/'chicCanva.html').write_text(s,encoding='utf-8')
 for name in ['chicCanva.html','chicCanva_server.bat']:shutil.copy2(root/name,root/'build/chicCanva'/name)
 pwa_build=root/'build/chicCanva-pwa';pwa_build.mkdir(parents=True,exist_ok=True)
 shutil.copy2(root/'chicCanva.html',pwa_build/'index.html')
-for name in ['chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
-print('Build v7:',len(s),'caratteri')
+for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
+build_id=hashlib.sha256((root/'chicCanva.html').read_bytes()).hexdigest()[:16]
+sw=(dev/'pwa'/'chicCanva-sw.js').read_text(encoding='utf-8').replace('__BUILD_ID__',build_id)
+assert '__BUILD_ID__' not in sw
+(pwa_build/'chicCanva-sw.js').write_text(sw,encoding='utf-8')
+assert (pwa_build/'index.html').read_bytes()==(root/'chicCanva.html').read_bytes(), 'HTML PWA non sincronizzato'
+assert "const BUILD_ID='"+build_id+"'" in sw, 'Versione service worker non sincronizzata'
+print('Build v7:',len(s),'caratteri · PWA',build_id)

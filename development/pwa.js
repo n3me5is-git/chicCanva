@@ -1,5 +1,5 @@
 // PWA support is activated only on a real HTTPS domain. The local launcher and file:// stay ordinary web pages.
-let deferredPwaInstall=null,pwaRegistration=null;
+let deferredPwaInstall=null,pwaRegistration=null,pwaReloading=false;
 function pwaDomainAllowed(loc=location){
  const protocol=String(loc.protocol||'').toLowerCase(),host=String(loc.hostname||'').toLowerCase().replace(/^\[|\]$/g,'');
  if(protocol!=='https:'||!host||!host.includes('.'))return false;
@@ -34,13 +34,14 @@ function injectPwaMetadata(){
 async function setupDomainPwa(){
  const allowed=pwaDomainAllowed();document.documentElement.dataset.pwa=allowed?'domain':'off';
  if(!allowed){setPwaInstallVisible(false);return}
- injectPwaMetadata();if(pwaStandalone()){setPwaInstallVisible(false);return}
- setPwaInstallVisible(true);
- window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPwaInstall=event;setPwaInstallVisible(true)});
- window.addEventListener('appinstalled',()=>{deferredPwaInstall=null;setPwaInstallVisible(false);$('pwaInstallDialog')?.close();toast('chicCanva installata: la trovi tra le tue app')});
- if('serviceWorker'in navigator){try{pwaRegistration=await navigator.serviceWorker.register('./chicCanva-sw.js',{scope:'./'});pwaRegistration.addEventListener('updatefound',()=>{const worker=pwaRegistration.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)toast('Aggiornamento pronto: verrà usato alla prossima apertura')})})}catch(error){console.error('Registrazione PWA non riuscita',error)}}
+ injectPwaMetadata();const standalone=pwaStandalone();setPwaInstallVisible(!standalone);
+ if(!standalone)window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPwaInstall=event;setPwaInstallVisible(true)});
+ if(!standalone)window.addEventListener('appinstalled',()=>{deferredPwaInstall=null;setPwaInstallVisible(false);$('pwaInstallDialog')?.close();toast('chicCanva installata: la trovi tra le tue app')});
+ if('serviceWorker'in navigator){try{pwaRegistration=await navigator.serviceWorker.register('./chicCanva-sw.js',{scope:'./'});const offerUpdate=()=>{if(pwaRegistration.waiting&&navigator.serviceWorker.controller)$('pwaUpdateBar')?.classList.remove('hidden')};offerUpdate();pwaRegistration.addEventListener('updatefound',()=>{const worker=pwaRegistration.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed')offerUpdate()})});navigator.serviceWorker.addEventListener('controllerchange',()=>{if(pwaReloading)location.reload()})}catch(error){console.error('Registrazione PWA non riuscita',error)}}
 }
 if($('installPwaBtn'))$('installPwaBtn').onclick=()=>deferredPwaInstall?promptPwaInstall():showPwaInstructions();
 if($('pwaInstallConfirm'))$('pwaInstallConfirm').onclick=()=>{$('pwaInstallDialog').close();promptPwaInstall()};
 if($('pwaInstallCancel'))$('pwaInstallCancel').onclick=()=>$('pwaInstallDialog').close();
+if($('pwaUpdateNow'))$('pwaUpdateNow').onclick=()=>{const worker=pwaRegistration?.waiting;if(worker){pwaReloading=true;$('pwaUpdateNow').disabled=true;worker.postMessage({type:'SKIP_WAITING'})}else location.reload()};
+if($('pwaUpdateLater'))$('pwaUpdateLater').onclick=()=>$('pwaUpdateBar').classList.add('hidden');
 setupDomainPwa();
