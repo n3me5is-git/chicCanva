@@ -1,0 +1,15 @@
+<div class="tool-context-menu hidden" id="rotationMenu" role="menu" aria-label="Rotazione e riflessione">
+  <button type="button" data-transform="reset">Azzera rotazione</button><button type="button" data-transform="left">Ruota 90° a sinistra</button><button type="button" data-transform="right">Ruota 90° a destra</button><button type="button" data-transform="half">Ruota 180°</button><button type="button" data-transform="flip-h">Rifletti orizzontalmente</button><button type="button" data-transform="flip-v">Rifletti verticalmente</button>
+</div>
+<div class="tool-context-menu hidden" id="selectionModeMenu" role="menu" aria-label="Selezione a oggetto">
+  <button type="button" data-selection-tap="start">Avvia selezione a oggetto</button><button type="button" data-selection-tap="stop">Termina selezione a oggetto</button>
+</div>
+<div class="tool-context-menu object-transform-menu hidden" id="objectTransformMenu" role="menu" aria-label="Ruota e rifletti oggetto">
+  <button type="button" data-transform="reset">Azzera rotazione</button><button type="button" data-transform="left">Ruota 90° a sinistra</button><button type="button" data-transform="right">Ruota 90° a destra</button><button type="button" data-transform="half">Ruota 180°</button><button type="button" data-transform="flip-h">Rifletti orizzontalmente</button><button type="button" data-transform="flip-v">Rifletti verticalmente</button>
+</div>
+<dialog id="historyBrowserDialog" class="chic-dialog history-browser-dialog">
+  <h2 id="historyBrowserTitle">Cronologia modifiche</h2>
+  <p class="help" id="historyBrowserHelp"></p>
+  <div id="historyBrowserList" class="history-browser-list"></div>
+  <div class="row"><button type="button" class="btn" id="historyBrowserClose">Chiudi</button></div>
+</dialog>

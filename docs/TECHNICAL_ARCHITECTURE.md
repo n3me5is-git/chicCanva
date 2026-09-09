@@ -41,6 +41,7 @@ chicCanvas/
 │   ├── clipart-ui.html/.css/.js   # Openclipart explorer
 │   ├── search-translation.js      # local IT→EN dictionary and Puter/Gemma fallback
 │   ├── shapes-ui.html/.css/.js    # vector shape tools and drawing mode
+│   ├── interaction-ui.html/.css/.js # transform menus, touch selection, rotation snap
 │   ├── pwa-ui.html/.css/.js       # install/update UI and domain gating
 │   ├── export-center.html         # export widget fragment
 │   ├── workspace-special.html     # special-project UI and preview additions
@@ -163,6 +164,10 @@ Fabric objects are serialized as descriptors with geometry, object type, asset r
 
 Pages store real dimensions in millimetres. The editor converts them to display pixels, while exporters render independently at the selected DPI. View zoom never changes print dimensions.
 
+### Group metric updates
+
+Fabric computes a persistent group's bounds from its children when the group is created. Changing a text child's font later changes glyph metrics, so merely assigning `fontFamily` leaves the parent with stale dimensions and can clip or offset the row. chicCanva detaches the group's children into document coordinates, updates every text metric, rebuilds the group, and finally restores the previous visual center. The same path is used for mixed text/OpenMoji groups and groups made only from text. This keeps the composed row stable while giving Fabric a fresh bounding box.
+
 ## 6. Canvas architecture
 
 Fabric.js 5.1.0 supplies object selection, active selections, groups, transformations, text, images, clipping, and JSON-friendly object behavior. The application adds:
@@ -170,7 +175,7 @@ Fabric.js 5.1.0 supplies object selection, active selections, groups, transforma
 - page-sized background and guides excluded from project serialization;
 - selection box behavior and group-specific purple controls;
 - isolated vector drawing with temporary non-serializable previews and editable polygon anchors;
-- rotation lock, pan mode, fit zoom, grid and snapping;
+- rotation lock, pan mode, fit zoom, grid, positional snap, and configurable angular snap;
 - non-destructive image crop descriptors;
 - export-region overlay excluded from normal output;
 - serialized object position locks, exposed only in the context menu;
@@ -198,6 +203,27 @@ function canvasRasterPoint(event, element = canvas.lowerCanvasEl) {
 ```
 
 Using `canvas.getPointer()` here would return document coordinates and produces incorrect colors after zoom, pan, or Retina scaling.
+
+Settled editor zoom keeps Fabric's logical coordinate system unchanged and changes the CSS display size of both lower and upper canvases together. A dynamic Retina multiplier rebuilds the backing raster after the zoom settles, subject to a pixel budget. Pinch temporarily transforms the common canvas shell to avoid reallocating two large bitmaps on every pointer movement; at gesture end the transform is cleared, Fabric dimensions and offsets are recalculated, and all object controls return to the same document coordinates.
+
+### Colorizer v2 representation
+
+A Colorizer result has three durable parts:
+
+```text
+colorized asset
+  dataUrl                 rendered PNG shown by Fabric
+  meta.colorizer
+    baseAssetId           immutable raster used for every recomposition
+    sourceDescriptors[]   editable object/group restoration source
+    maskDataUrl           24-bit region labels encoded as lossless PNG
+    layers[]              region id + solid/gradient/texture style
+    operations[]          compact user-facing operation metadata
+```
+
+The live session decodes `maskDataUrl` to one `Uint32Array`; one integer per pixel identifies the applied region. The compositor always starts from `baseAssetId`, then paints each region from its layer style. This makes restyling and erasing deterministic: clicking an already labeled area changes its layer, while secondary click/long press clears the entire connected label. Gradient bounds are derived from the region mask and radial centers use the user's fill point. Brush stamps made during one pointer gesture share one label and create one undo step. Adjacent labels with identical styles are merged so a brush closure and subsequent fill behave as a continuous colorization.
+
+The original source is a dependency, not another decoded canvas. Asset reachability traverses `baseAssetId` and `sourceDescriptors`, including nested groups and history snapshots. Ending the mode clears the work canvas, decoded base pixels, labels, cursor and animation frame; the browser may then reclaim the large buffers while the compressed assets remain available for restore and undo.
 
 ## 7. Persistence architecture
 
@@ -282,3 +308,38 @@ The current mitigation is a modular authoring layer, assertion-based composition
 ## Viewport rendering and navigation
 
 Pinch gestures use lightweight CSS sizing for every animation frame and rebuild Fabric’s retina raster only once when the gesture ends. This avoids clearing and reallocating the backing canvas while fingers are moving. Non-fit zoom creates navigation padding equal to 75% of the visible viewport on every side, allowing the hand tool to move all page edges through the useful center area. Zoom changes preserve the current page-space center.
+# Colorizer raster pipeline
+
+```mermaid
+flowchart LR
+  S[Fabric object / group / selection] --> D[Serialize source descriptors]
+  S --> R[Bounded transparent raster]
+  D --> M[asset.meta.colorizer]
+  R --> C[colorized Fabric.Image]
+  C --> W[One temporary work canvas]
+  W --> F[Flood fill or smart brush]
+  F --> N[New flattened PNG asset]
+  N --> C
+  M --> O[Restore original or copy source]
+```
+
+The implementation lives in `development/colorizer-ui.html`, `development/colorizer.css`, and `development/colorizer.js`. `objectType: "colorized"` uses the normal image descriptor fields (`assetId`, crop rectangle, pose, flips, opacity) and is accepted by the existing image/crop tools. Its asset metadata contains `sourceDescriptors`, `basePose`, and bounded operation summaries.
+
+The page contains only the derived Fabric image. There is no hidden original object and no permanently decoded second bitmap. A session decodes the current asset once into an offscreen 2D canvas with `willReadFrequently`; brush preview points the Fabric image at that canvas, avoiding Data URL generation on every pointer move. A commit encodes once to PNG, swaps in a decoded image element, and releases the old element reference. Session shutdown clears the context and shrinks the surface.
+
+Flood fill uses a `Uint8Array` visited map and marks pixels when enqueued, preventing duplicate queue growth. Initial rasterization caps the longest dimension at 3072 pixels. This bound keeps a full RGBA `ImageData`, visited mask, and working queue within a predictable browser-memory envelope while preserving good print resolution for ordinary worksheet elements.
+
+Derived-asset collection is dependency aware. `expandDerivedAssetDependencies()` walks `meta.colorizer.sourceDescriptors` transitively after collecting page and history object IDs. Therefore pruning a project keeps source images required by restoration, including nested colorized results, and removes them only after the derived object and every history state cease to reference them.
+
+The non-destructive state is represented as follows:
+
+```js
+asset.meta.colorizer = {
+  version: 1,
+  sourceDescriptors: [/* text, image, shape or group descriptors */],
+  basePose: { x, y, width, height, angle: 0 },
+  operations: [{ tool, paint, colorA, colorB, opacity, tolerance, at }]
+};
+```
+
+The operation list is diagnostic and UI metadata; the flattened PNG is authoritative. This keeps reload deterministic and avoids replaying many masks during page load.

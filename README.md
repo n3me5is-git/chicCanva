@@ -46,13 +46,14 @@ La build pubblicabile include nome applicazione, descrizione, metadati Open Grap
 - `runtime-upgrades*`: pinch con pan simultaneo, stato account/login Puter e protezione delle azioni Puter;
 - `search-translation.js`: dizionario didattico locale e traduzione opzionale con Gemma tramite Puter;
 - `shapes*`: galleria vettoriale, modalità disegno isolata e modifica dei punti;
+- `colorizer*`: interfaccia e motore raster non distruttivo per riempimenti, gradienti, texture e pennello con contenimento ai bordi;
 - `pdf-import*` e `development/vendor/pdf*`: interfaccia e motore PDF.js incorporato per convertire PDF locali in pagine PNG;
 - `clipart*`: explorer Openclipart;
 - `pwa*`: installazione, aggiornamenti e service worker;
 - `pending.js`: persistenza, cronologia, OpenMoji e strategie mobile del remover;
 - `build-guide.py`: fonte strutturata della guida italiana.
 
-La build incorpora Fabric.js, jsPDF, PDF.js con worker, cataloghi font/OpenMoji e runtime IMG.LY/ONNX nell'HTML. I file grandi o variabili, come font scelti, SVG OpenMoji, modelli di segmentazione e servizi Puter/Openclipart, vengono richiesti quando servono. Lo stato modificabile usa descrittori di pagina e oggetto più un registro asset serializzato come Data URL.
+La build incorpora Fabric.js, jsPDF, PDF.js con worker, cataloghi font/OpenMoji e runtime IMG.LY/ONNX nell'HTML. I file grandi o variabili, come font scelti, SVG OpenMoji, modelli di segmentazione e servizi Puter/Openclipart, vengono richiesti quando servono. Lo stato modificabile usa descrittori di pagina e oggetto più un registro asset serializzato come Data URL. Il Colorizer mantiene nel canvas una sola immagine derivata e conserva la sorgente come descrittori e dipendenze degli asset, incluse nella raccolta degli asset raggiungibili.
 
 Il flusso runtime è descritto nei dettagli in [Architettura tecnica](docs/TECHNICAL_ARCHITECTURE.md) e [Funzioni e processi](docs/FEATURES_AND_PROCESSES.md).
 
@@ -71,7 +72,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.3.1**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.6.0**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -104,10 +105,12 @@ Il service worker deve rimanere nello stesso percorso dell'app per conservarne l
 
 ## Forme e disegno
 
-- Oltre venti strumenti vettoriali: rettangoli, cerchi, poligoni, stelle, cuore, luna, frecce, fumetti, linee, spezzate e mano libera raw o levigata.
+- Quaranta strumenti vettoriali divisi in palette paginata e categorie Base, Scuola, Frecce e Disegno: include libro, pergamena, casa, sole, nuvola, segnalibro, etichetta, puzzle, lampadina, frecce outline/doppie e callout.
 - La modalità disegno usa un cursore a croce e rende temporaneamente non interattivi gli oggetti esistenti, evitando spostamenti accidentali.
 - Riempimento trasparente o colorato, contorno e spessore regolabili. Tutti i selettori colore ricevono la pipetta del canvas.
-- Poligoni, stelle, fumetti e spezzate espongono vertici modificabili; tutte le forme supportano le normali operazioni di scala, stretch, rotazione, gruppo, blocco, copia ed export.
+- Poligoni, stelle, fumetti e spezzate espongono vertici modificabili; la modalità resta attiva finché viene disinserita. Poligoni e spezzate supportano nodi a click oppure segmenti a trascinamento, predefiniti su touch.
+- Mano liscia combina filtraggio pesato e semplificazione dei punti per compensare micro-vibrazioni; Mano raw conserva il gesto più fedelmente.
+- **Duplica come immagine** rasterizza una forma, un testo, un’emoji, un gruppo o una selezione in un PNG croppabile e utilizzabile come riferimento AI, conservando l’originale.
 - Le forme restano vettoriali e vengono serializzate nel progetto senza creare asset raster.
 
 ## Funzioni speciali
@@ -137,10 +140,18 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 - IMG.LY e il runtime ONNX sono incorporati nell'HTML; il browser scarica da `staticimgly.com` soltanto il modello scelto e lo conserva nella cache. Questo elimina l'import dinamico da `esm.sh` che veniva bloccato nel prototipo precedente.
 - La rimozione crea una copia e conserva sempre l'immagine originale.
 
+## Colorizer
+
+Il widget **Colorizer**, collocato sotto Immagini, rasterizza in modo non distruttivo un’immagine, testo, emoji, forma, gruppo o selezione. Per testi, forme e gruppi si sceglie una risoluzione da 1× a 4×; 2× è il valore predefinito e consigliato, mentre 1× limita memoria e dimensione del progetto. Offre riempimento con tolleranza per aree chiuse e un pennello rotondo con contenimento opzionale ai bordi. Lo stile può essere un colore uniforme, un gradiente direzionale o radiale oppure una delle texture procedurali incorporate; trasparenza, direzione, dimensione pennello e tolleranza sono regolabili e tutti i colori supportano la pipetta canvas.
+
+Le applicazioni sono conservate come regioni numerate e stili separati sopra una base immutabile. Pennello e riempimento adiacenti con lo stesso stile si fondono; un clic su una regione esistente ne sostituisce colore, gradiente o texture; clic destro o pressione prolungata la elimina. Ogni gesto del pennello produce un solo passaggio nello storico. Il risultato è una normale immagine, quindi supporta crop, trasformazioni, export e riferimento AI. **Ripristina oggetto originale** ricrea la sorgente modificabile; i comandi clipboard copiano il risultato visibile o un render dell’originale. Durante la sessione viene mantenuta una sola superficie raster temporanea, rilasciata alla chiusura. La base e gli asset sorgente restano protetti dal garbage collector finché il risultato o lo storico li referenziano. Annulla e Ripristina mantengono Colorizer attivo quando lo stato raggiunto contiene ancora lo stesso oggetto colorizzato; il menu contestuale dei due pulsanti permette di saltare direttamente a un punto dello storico.
+
 ## Canvas ed esportazione
 
 - Zoom, Fit, pulsanti `+`/`−`, manina, Ctrl + rotella e pinch a due dita con pan simultaneo.
-- Griglia e snap indipendenti, marquee selection, crop ed export di una regione in PDF, PNG o JPG.
+- Griglia e snap indipendenti; con Snap attivo anche la rotazione segue uno step configurabile, 10° per impostazione predefinita.
+- Il menu contestuale dell’icona rotazione e il sottomenu degli oggetti offrono azzeramento, ±90°, 180° e flip orizzontale/verticale.
+- La modalità **Selezione a oggetto** permette su touch di aggiungere o togliere elementi con tocchi successivi, senza Ctrl e senza spostarli.
 - Copia, incolla, duplica, elimina, ordine livelli e menu contestuale. **Fissa posizione**, disponibile nel menu destro o tramite pressione lunga su touch, blocca movimento, scala e rotazione e viene conservato nel progetto.
 - Lo strumento area di export disabilita temporaneamente l’interazione con gli oggetti, quindi il rettangolo può iniziare anche sopra una fotografia senza trascinarla.
 - Esporta PDF dalla barra apre la scelta fra pagina corrente e tutte le pagine del progetto.
@@ -149,9 +160,9 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 
 ## Sidebar, guida e mobile
 
-Ogni sezione della sidebar è richiudibile e all'avvio tutte le sezioni sono chiuse. Espandi singolarmente è attivo per impostazione predefinita e mantiene aperto solo il widget in uso. I comandi in alto aprono o chiudono tutto e disattivano questa modalità. I collegamenti Pagina, Speciali, Testo, Font, Emoji, Forme, Immagini, AI ed Export aprono la sezione corretta prima di raggiungerla.
+Ogni sezione della sidebar è richiudibile e all'avvio tutte le sezioni sono chiuse. Espandi singolarmente è attivo per impostazione predefinita e mantiene aperto solo il widget in uso. I comandi in alto aprono o chiudono tutto e disattivano questa modalità. I collegamenti Pagina, Speciali, Testo, Font, Emoji, Forme, Immagini, Colorizer, Clipart, AI ed Export aprono la sezione corretta prima di raggiungerla.
 
-La guida integrata è pensata per l'utente finale: comprende 54 sezioni, 16 percorsi pratici, 21 domande frequenti, indice laterale collassabile e le stesse icone e scorciatoie dell'interfaccia. Su schermi piccoli la sidebar diventa un pannello sovrapposto, la toolbar scorre orizzontalmente e i controlli per riordinare le pagine restano utilizzabili senza trascinamento. Su dispositivi touch, il pinch a due dita combina zoom e spostamento del canvas nello stesso gesto.
+La guida integrata è pensata per l'utente finale: comprende 57 sezioni, 18 percorsi pratici, 23 domande frequenti, indice laterale collassabile e le stesse icone e scorciatoie dell'interfaccia. Su schermi piccoli la sidebar diventa un pannello sovrapposto, la toolbar scorre orizzontalmente e i controlli per riordinare le pagine restano utilizzabili senza trascinamento. Su dispositivi touch, il pinch a due dita combina zoom e spostamento del canvas nello stesso gesto.
 
 Su viewport mobile dotati di touch, le maniglie di selezione e crop e i vertici modificabili delle forme hanno un segno leggermente più grande e un’area di presa invisibile ancora più ampia. La configurazione desktop con mouse rimane invariata.
 

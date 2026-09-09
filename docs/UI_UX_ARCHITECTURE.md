@@ -56,7 +56,11 @@ Desktop uses a resizable right sidebar and a scrollable toolbar. Fit zoom calcul
 
 Hover tooltips explain icon-only toolbar controls. Every icon-only control also has an accessible name. The delete action uses a visible vector icon rather than a font glyph, avoiding missing-glyph boxes and inconsistent emoji rendering.
 
-Context menus supplement, rather than replace, visible commands. Object menus expose copy, paste, group, ungroup, split, duplicate, layers, crop, background removal, AI reference actions, and **Fix position** where applicable. Fix position is intentionally context-only: it locks movement, scale, skew, and rotation without adding another permanent toolbar control. Project and page context menus expose rename and related lifecycle actions.
+Context menus supplement, rather than replace, visible commands. Object menus expose copy, paste, group, ungroup, split, duplicate, duplicate as image, layers, crop, background removal, AI reference actions, and **Fix position** where applicable. A lateral Rotate and flip submenu provides reset, ±90°, 180°, horizontal flip, and vertical flip. The same transformations are available by right-click or long press on the rotation toolbar icon. Fix position is intentionally context-only: it locks movement, scale, skew, and rotation without adding another permanent toolbar control. Project and page context menus expose rename and related lifecycle actions.
+
+The selection toolbar icon also owns a context menu. **Selection by object** keeps a cumulative set: each tap toggles one object while movement is temporarily locked. This gives touch users the Ctrl-click workflow without requiring a hardware keyboard. Escape or the explicit Stop action restores the exact prior movement/control flags and keeps the resulting selection.
+
+On narrow touch layouts, the preview header uses three grid rows: title and Close, thumbnail-size control, then reorder controls. This guarantees that Close remains visible. Long-press-enabled UI suppresses browser text selection and the native callout while preserving text selection inside inputs and editors.
 
 ## 5. Mobile and installed-PWA behavior
 
@@ -169,3 +173,14 @@ When changing layout or controls, verify at least:
 ## Zoom motion quality
 
 The pinch interaction prioritizes continuity: each gesture frame changes only presentation size and scroll position, then a single final raster refresh restores full display quality. The hand tool receives viewport-relative free space around a zoomed page so users can bring any edge or corner into the center instead of hitting an early horizontal scroll limit.
+# Colorizer interaction model
+
+Colorizer appears directly below **Images & Crop** and has a matching quick-navigation button between Images and Clipart. The selection status distinguishes an ordinary eligible object, a colorized result, and an active coloring session. Primary actions are ordered as Start, Finish, and Restore original so destructive-looking restoration is never confused with leaving the tool.
+
+During the mode the selected object is not movable or selectable and the canvas uses a crosshair. Fill is a single click or tap. Brush is a press-drag-release gesture with a circular cursor on pointer devices; the whole gesture is one history entry. Secondary click or a deliberate long press removes the connected colorized region under the pointer. On touch screens existing pinch navigation remains available; larger standard controls and page zoom help reach small enclosed areas. A user must finish Colorizer before resizing, rotating, cropping, switching pages, or editing source objects.
+
+Style controls progressively disclose relevant options. Solid hides the second color; gradient shows it and exposes direction; texture shows a compact six-item palette. Brush-only controls remain hidden during flood fill. The 2×/3×/4× selector appears before starting a session for text, vector and group rasterization. Every color input receives the same canvas eyedropper injected by the global color picker setup.
+
+Feedback is local and plain-language: the header says what is selected, the lower status describes active behavior, and buttons disable when their action is not valid. Copy result and Copy original use the system image clipboard and surface browser permission errors through the normal toast channel.
+
+Undo and Redo preserve the active Colorizer tool when the destination snapshot still contains the same colorized object. Right-click or long press on either history button opens a scrollable operation browser; choosing an entry performs the equivalent number of undo/redo steps and then restores the valid editing mode. This supports experimentation without forcing the teacher to reopen the sidebar tool after every correction.

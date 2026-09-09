@@ -28,6 +28,7 @@ Active modular sources:
 - `development/final-upgrades*` — unified export, ZIP writer, page/region image export to the system clipboard, clipboard/URL/Puter integration, AI additions;
 - `development/runtime-upgrades*` — two-finger canvas navigation and Puter authentication/account gates;
 - `development/search-translation.js` — compact Italian search dictionary and optional Gemma/Puter translation;
+- `development/colorizer*` — non-destructive raster coloring UI and engine: flood fill, gradients, procedural textures, smart brush, source restoration and clipboard output;
 - `development/shapes*` — vector shape sidebar, isolated drawing mode, point editing and shape serialization;
 - `development/memory-*` — autosave deduplication, project asset GC, image diagnostics/resampling, object position locks, export-region interaction guard, touch long press, and disposable background-removal workers;
 - `development/pdf-import*` and `development/vendor/pdf*` — local PDF page parsing/rasterization, embedded PDF.js display layer and worker;
@@ -74,6 +75,9 @@ Root, local-build, and PWA HTML must be byte-identical. The PWA cache ID is deri
 - OpenMoji has full browse/search/categories, color/black style, ink, and stroke width.
 - Shapes are vector Fabric objects. Drawing mode disables target finding and interaction with existing objects until commit/cancel; polygonal objects expose editable anchors.
 - Image operations preserve the original. Crop is non-destructive, previews excluded source areas translucently, and reset restores source geometry without changing its scale or proportions; other transforms create copies.
+- Colorizer accepts any renderable object, group or multi-selection. Version 2 replaces the visible source with a `colorized` image while retaining source descriptors and an immutable `baseAssetId` in `asset.meta.colorizer`. A PNG label mask identifies colored regions and `layers` stores their paint styles. Fill can restyle an existing region, adjacent brush/fill regions with identical styles merge, and erasing removes a complete connected label. Those nested asset dependencies must remain reachable during pruning. Each committed operation creates a derived PNG and serializes mask/layers for exact undo/redo; the work canvas, `ImageData`, label array and decoded images are released when the mode ends.
+- Font/style changes inside persistent groups must rebuild the group bounds and restore its visual center. Test both mixed text/OpenMoji groups and groups made only from text; stale Fabric group bounds reproduce the left-clipping regression reported by the user.
+- Pinch uses a temporary CSS transform only while two pointers are moving. At gesture end `layoutCanvasViewport` updates Fabric's backing raster using the dynamic retina scale and recalculates offsets and controls. Do not leave CSS-only zoom as the settled editor state because selections, crop, export regions and pointer mapping drift.
 - PDF import is fully local: one/all source pages become PNG assets, each fitted without distortion onto an A4 portrait/landscape page. Destination can be a new project or append to the active one; quality is 1×–3×.
 - Chroma-key automatic color detects the dominant perimeter color. Internal matching areas are removed by default.
 - Every color input receives a canvas eyedropper. The picker samples the lower raster canvas using client-to-backing-buffer coordinates; do not replace it with Fabric document coordinates.
@@ -114,8 +118,12 @@ Root, local-build, and PWA HTML must be byte-identical. The PWA cache ID is deri
 
 ## Last validated state
 
-The current release line is 1.3.1. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
+The current release line is 1.6.0. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
 
 - Puter fetch checkboxes remain disabled and unchecked until the AI section reports an active Puter session. Login links navigate to that section; they must never open nested dialogs.
 
 - Pinch uses CSS-only canvas sizing per animation frame and performs one Fabric raster refresh on gesture end. Non-fit zoom provides viewport-relative overscroll space for unrestricted hand panning.
+
+- Shapes are categorized and paginated. Point editing persists until explicitly stopped; polygon/polyline nodes support click mode on desktop and drag-segment mode by default on touch. Smooth freehand uses weighted filtering plus Ramer-Douglas-Peucker simplification.
+- Snap also quantizes rotation with a project-persisted 10° default. Rotation/flip menus are available from the toolbar and object context menu. Selection-by-object provides cumulative touch selection, and any renderable selection can be duplicated as a raster image.
+- The interaction additions live in `development/interaction-ui.html`, `interaction-upgrades.css`, and `interaction-upgrades.js`; keep their build order after `shapes.js`.

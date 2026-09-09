@@ -28,6 +28,7 @@ The most important rule is to avoid hand-editing `chicCanva.html`. It is generat
 | Clipart | `development/clipart.js`, `clipart-ui.html`, `clipart.css` |
 | Search translation | `development/search-translation.js` |
 | Vector shapes and drawing | `development/shapes.js`, `shapes-ui.html`, `shapes.css` |
+| Context transforms and touch selection | `development/interaction-upgrades.js`, `interaction-ui.html`, `interaction-upgrades.css` |
 | PWA | `development/pwa.js`, `pwa-ui.html`, `pwa.css`, `development/pwa/*` |
 | End-user guide | `development/build-guide.py` |
 | Main composition | `development/build-workspace.py` |
@@ -221,3 +222,10 @@ Document manual results with browser/device/version when they matter to a releas
 - [ ] Browser suite ends with all checks complete.
 - [ ] `git diff --check` reports no whitespace errors.
 - [ ] User attachment folders and historical files were not modified accidentally.
+# Changing Colorizer
+
+Colorizer changes must preserve the single-file build and the non-destructive asset contract. Edit the three `development/colorizer*` sources and keep their insertion in `build-workspace.py` after Shapes/interaction modules. When adding controls, use stable IDs in static `colorizer-ui.html` so `tests/check-chic-build.py` can detect missing DOM references.
+
+Add browser coverage for region boundaries, smart-brush containment, label-mask serialization, layer replacement and merging, source restoration, groups, dependency pruning, undo while the mode is active, and session cleanup. Avoid encoding during pointer move: preview must continue using the temporary canvas element and one gesture must create one history boundary. Keep raster bounds explicit and release temporary canvases, decoded images, `ImageData`, typed label arrays and animation frames when the operation or mode ends. The immutable base asset and nested source descriptors are dependency roots; never prune either while a current page or retained history entry references the colorized result.
+
+After documentation changes run the standard pipeline. `build-workspace.py` regenerates both the embedded guide and `docs/user-guide.html`, then synchronizes root, server, and PWA HTML. Verify byte identity and the PWA service-worker hash with `tests/check-chic-build.py`.

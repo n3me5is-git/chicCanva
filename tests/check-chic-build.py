@@ -39,7 +39,7 @@ vendor=root/'development/vendor'
 assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
 assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
 assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
-assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.3.1' and 'id="appVersion">v1.3.1' in s
+assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.6.0' and 'id="appVersion">v1.6.0' in s
 assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
 assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
@@ -55,6 +55,10 @@ assert 'runBackgroundWorker' in s and 'modello rimosso dalla RAM' in s
 assert 'canvas.skipTargetFind=true' in s and 'showLongPressObjectMenu' in s and 'locked=true' in s
 assert {'shapesCard','shapeTools','shapeEditPoints','shapeFinish'}.issubset(ids)
 assert 'beginShapeMode' in s and 'objectType===\'shape\'' in s and 'Mantieni dimensione costante' in s
+assert {'shapeTabs','shapePrevPage','shapeNextPage','shapeDragNodes','shapeDuplicateImage','snapRotationStep','rotationMenu','selectionModeMenu','objectTransformMenu'}.issubset(ids)
+assert len(re.findall(r'data-shape="[^"]+"',body))>=40 and 'smoothTrace' in s and 'duplicateSelectionAsImage' in s and 'startSelectionTapMode' in s
+assert {'colorizerCard','startColorizerBtn','restoreColorizerOriginalBtn','colorizerPaintType','colorizerSmartEdges','copyColorizedBtn','copyColorizerOriginalBtn'}.issubset(ids)
+assert 'colorizerFloodFill' in s and 'colorizerBrushStamp' in s and 'expandDerivedAssetDependencies' in s and "objectType:'colorized'" in s
 docs=root/'docs'
 expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
 assert expected_docs.issubset({p.name for p in docs.iterdir()})

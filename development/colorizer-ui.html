@@ -1,0 +1,46 @@
+<section class="card" id="colorizerCard" data-section="colorizer">
+  <div class="card-h"><div><div class="card-title">Colorizer</div><div class="card-sub">Colora digitalmente aree chiuse e dettagli.</div></div></div>
+  <div class="card-b">
+    <div class="status colorizer-selection-status" id="colorizerSelectionStatus">Seleziona un oggetto o un gruppo.</div>
+    <div class="row colorizer-main-actions">
+      <button class="btn accent grow" id="startColorizerBtn">Avvia Colorizer</button>
+      <button class="btn grow" id="stopColorizerBtn" disabled>Termina</button>
+    </div>
+    <label class="colorizer-raster-scale">Qualità conversione per testi, forme e gruppi
+      <select id="colorizerRasterScale"><option value="1">1× · leggera</option><option value="2" selected>2× · consigliata</option><option value="3">3× · alta</option><option value="4">4× · molto alta</option></select>
+    </label>
+    <button class="btn colorizer-restore" id="restoreColorizerOriginalBtn" disabled>Ripristina oggetto originale</button>
+    <div class="seg colorizer-tools" id="colorizerTools" aria-label="Strumento Colorizer">
+      <button class="active" data-colorizer-tool="fill">Riempimento</button><button data-colorizer-tool="brush">Pennello intelligente</button>
+    </div>
+    <label class="small">Tipo di colore</label>
+    <select id="colorizerPaintType">
+      <option value="solid">Colore uniforme</option><option value="linear">Gradiente direzionale</option><option value="radial">Gradiente radiale</option><option value="texture">Texture</option>
+    </select>
+    <div class="colorizer-color-row">
+      <label><span>Colore</span><span class="colorizer-color-control"><input id="colorizerColorA" type="color" value="#f4c542" title="Colore Colorizer"></span></label>
+      <label id="colorizerColorBRow"><span>Secondo colore</span><span class="colorizer-color-control"><input id="colorizerColorB" type="color" value="#f08a9d" title="Secondo colore Colorizer"></span></label>
+    </div>
+    <div id="colorizerGradientOptions" class="colorizer-option-block">
+      <label class="range-label"><span>Direzione gradiente</span><strong id="colorizerAngleValue">0°</strong><input id="colorizerAngle" type="range" min="0" max="360" value="0"></label>
+    </div>
+    <div id="colorizerTextureOptions" class="colorizer-option-block">
+      <label class="small">Texture</label>
+      <div class="colorizer-textures" id="colorizerTextures">
+        <button class="active" data-colorizer-texture="stripes">Righe</button><button data-colorizer-texture="dots">Pois</button><button data-colorizer-texture="checker">Quadretti</button><button data-colorizer-texture="grid">Griglia</button><button data-colorizer-texture="waves">Onde</button><button data-colorizer-texture="confetti">Coriandoli</button>
+      </div>
+    </div>
+    <label class="range-label"><span>Trasparenza</span><strong id="colorizerOpacityValue">0%</strong><input id="colorizerOpacity" type="range" min="5" max="100" value="100"></label>
+    <label class="range-label"><span>Tolleranza area / bordi</span><strong id="colorizerToleranceValue">32</strong><input id="colorizerTolerance" type="range" min="0" max="120" value="32"></label>
+    <div id="colorizerBrushOptions" class="colorizer-option-block">
+      <label class="range-label"><span>Dimensione pennello</span><strong id="colorizerBrushSizeValue">32 px</strong><input id="colorizerBrushSize" type="range" min="4" max="180" value="32"></label>
+      <label class="check"><input id="colorizerSmartEdges" type="checkbox" checked>Non oltrepassare i bordi</label>
+      <p class="help">Il pennello intelligente resta nell’area di colore simile e può chiudere piccole aperture prima del riempimento.</p>
+    </div>
+    <div class="colorizer-copy-box">
+      <button class="btn" id="copyColorizedBtn" disabled>Copia risultato</button><button class="btn" id="copyColorizerOriginalBtn" disabled>Copia originale</button>
+    </div>
+    <p class="help">Ogni gesto del pennello è una sola modifica. Clic destro, oppure pressione prolungata, rimuove l’intera colorizzazione collegata sotto il punto.</p>
+    <div class="status" id="colorizerStatus">Scegli un oggetto e avvia la modalità.</div>
+  </div>
+</section>
