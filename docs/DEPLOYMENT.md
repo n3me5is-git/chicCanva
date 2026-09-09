@@ -113,7 +113,7 @@ The single-file app uses inline scripts/styles, Blob workers, Data URLs, dynamic
 - `script-src`: application inline code and `https://js.puter.com`;
 - worker-src: blob: for embedded PDF.js and mobile background removal;
 - `img-src`: `data:`, `blob:`, OpenMoji/Openclipart and user-selected public origins;
-- `connect-src`: Puter endpoints, font providers, Openclipart, MyMemory, `staticimgly.com`, and optional arbitrary direct image URLs;
+- `connect-src`: Puter endpoints, font providers, Openclipart, `staticimgly.com`, and optional arbitrary direct image URLs;
 - `font-src`: Google Fonts/Fontsource CDNs and cached data;
 - `style-src`: inline application styles and dynamically created font styles.
 
@@ -126,7 +126,7 @@ Because users can request an arbitrary public image URL, a fixed `connect-src` a
 | Font binary loading | Google Fonts / Fontsource CDN | requested family/style and ordinary request metadata |
 | OpenMoji insertion | jsDelivr OpenMoji package | emoji asset path |
 | Clipart search | Openclipart | English keyword, page/category |
-| Keyword translation | MyMemory | user-entered phrase and language pair |
+| Keyword translation | Local dictionary; Puter/Gemma for unknown text when signed in | only an unknown user-entered phrase is sent to Puter |
 | Puter image generation | Puter and selected model provider through Puter | prompt, options, optional reference image |
 | Puter-assisted image download | Puter network service | requested public URL |
 | AI background removal | `staticimgly.com` for initial model/runtime files | model file requests; selected image remains local |
@@ -141,7 +141,7 @@ After the PWA shell is cached, the editor can relaunch offline. Offline does not
 - an uncached font family;
 - an uncached OpenMoji SVG;
 - Openclipart search;
-- MyMemory translation;
+- Puter/Gemma translation of words not covered by the local dictionary;
 - Puter generation/download;
 - a background-removal model never downloaded before.
 

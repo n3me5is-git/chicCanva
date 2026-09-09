@@ -16,7 +16,7 @@ assert '/__chiccanva_image_proxy' in bat and '/__chiccanva_openclipart_search' i
 assert 'api.fontsource.org' not in s
 assert "puter.auth.getMonthlyUsage()" in s and 'allowanceInfo' in s and 'puterUsageBar' in ids
 assert 'openclipart.org/search/' in s and 'parseOpenclipartResults' in s and 'clipartCard' in ids
-assert 'api.mymemory.translated.net/get' in s and 'CLIPART_IT_EN' in s and 'translateClipartLocally' in s and 'clipartTranslate' in ids
+assert 'api.mymemory.translated.net/get' not in s and 'SEARCH_IT_EN' in s and 'translateClipartLocally' in s and 'google/gemma-4-31b-it' in s and 'clipartTranslate' in ids
 assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
 pwa=root/'build/chicCanva-pwa'
 expected={'index.html','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png'}
@@ -39,7 +39,8 @@ vendor=root/'development/vendor'
 assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
 assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
 assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
-assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.1.3' and 'id="appVersion">v1.1.3' in s
+assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.3.1' and 'id="appVersion">v1.3.1' in s
+assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
 assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
 assert 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-512.png"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
@@ -48,6 +49,12 @@ assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-
 assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s
 assert 'exportImageToClipboard' in s and 'writeImageBlobToClipboard' in s
 assert 'layoutCanvasViewport' in s and "fitStageZoom({light:true,preserve:false})" in s and "$('resetCropActiveBtn').onclick=resetActiveCrop" in s
+assert {'imageInspector','changeResolutionBtn','resolutionDialog','memoryFootprint','objectLockAction'}.issubset(ids)
+assert 'pruneUnreachableAssets' in s and 'projectSnapshotForWorkspace' in s and 'activeUsesRoot:true' in s
+assert 'runBackgroundWorker' in s and 'modello rimosso dalla RAM' in s
+assert 'canvas.skipTargetFind=true' in s and 'showLongPressObjectMenu' in s and 'locked=true' in s
+assert {'shapesCard','shapeTools','shapeEditPoints','shapeFinish'}.issubset(ids)
+assert 'beginShapeMode' in s and 'objectType===\'shape\'' in s and 'Mantieni dimensione costante' in s
 docs=root/'docs'
 expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
 assert expected_docs.issubset({p.name for p in docs.iterdir()})

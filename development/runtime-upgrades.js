@@ -1,5 +1,14 @@
 // Touch viewport gestures, Puter account controls, and gated Puter actions.
 let puterAuthBusy=false;
+function canvasTouchUiActive(){return innerWidth<=1024&&((typeof matchMedia==='function'&&matchMedia('(pointer: coarse)').matches)||navigator.maxTouchPoints>0)}
+function touchControlProfile(active=canvasTouchUiActive()){return active?{cornerSize:18,touchCornerSize:40,borderScaleFactor:1.6,padding:3}:{cornerSize:13,touchCornerSize:24,borderScaleFactor:1,padding:0}}
+function applyTouchControlProfile(object){if(!object||!canvasTouchUiActive())return object;const profile=touchControlProfile(true);object.set({cornerSize:profile.cornerSize,touchCornerSize:profile.touchCornerSize,padding:Math.max(Number(object.padding)||0,profile.padding),transparentCorners:false,cornerStyle:'circle',borderScaleFactor:Math.max(Number(object.borderScaleFactor)||1,profile.borderScaleFactor)});return object}
+function setupTouchCanvasControls(){
+ if(!canvasTouchUiActive())return;
+ Object.assign(fabric.Object.prototype,touchControlProfile(true),{transparentCorners:false,cornerStyle:'circle'});
+ canvas.selectionLineWidth=2;canvas.selectionDashArray=[7,4];canvas.getObjects().forEach(applyTouchControlProfile);
+ canvas.on('object:added',event=>applyTouchControlProfile(event.target));
+}
 function puterSignedIn(){try{return !!window.puter?.auth?.isSignedIn?.()}catch(error){return false}}
 function puterFetchControls(){return[$('imageUrlUsePuter'),$('clipartUsePuter')].filter(Boolean)}
 function syncPuterFetchControls(signed=puterSignedIn()){
@@ -83,4 +92,4 @@ function bindPinchZoom(){
  const finish=event=>{if(event.pointerType!=='touch')return;touches.delete(event.pointerId);if(pinch&&touches.size<2){if(raf){cancelAnimationFrame(raf);apply()}pinch=null}if(blocked&&touches.size===0){blocked=false;wrap.classList.remove('pinching');canvas.skipTargetFind=previousInteraction?.skip??panMode;canvas.selection=previousInteraction?.selection??(!panMode&&state.selectionMode);previousInteraction=null;fitStageZoom({forceRaster:true})}if(blocked){event.preventDefault();event.stopPropagation()}};
  wrap.addEventListener('pointerup',finish,true);wrap.addEventListener('pointercancel',finish,true);wrap.style.touchAction='none'
 }
-const runtimeBaseInit=init;init=async function(){await runtimeBaseInit();bindPuterAuth();bindPinchZoom()};
+const runtimeBaseInit=init;init=async function(){await runtimeBaseInit();setupTouchCanvasControls();bindPuterAuth();bindPinchZoom()};

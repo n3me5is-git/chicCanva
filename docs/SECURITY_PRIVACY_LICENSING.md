@@ -10,18 +10,20 @@ flowchart LR
     LOCAL[Local document, assets, IndexedDB]
     BAT[Optional localhost PowerShell server]
     CDN[Font/OpenMoji/model CDNs]
-    SEARCH[Openclipart/MyMemory]
+    SEARCH[Openclipart]
+    TRANS[Puter/Gemma translation]
     PUTER[Puter AI/network]
     USER <--> LOCAL
     USER <--> BAT
     USER --> CDN
     USER --> SEARCH
+    USER --> TRANS
     USER --> PUTER
     BAT --> SEARCH
     BAT --> CDN
 ```
 
-The selected image is sent to Puter only when the user explicitly initiates a generative request with that image as a reference. AI background removal is local; only model/runtime files are downloaded. Imported PDF bytes and rasterized pages remain in the browser. Direct URL fetch tells the target host the user's IP and ordinary browser request metadata. Translation sends the typed keyword to MyMemory.
+The selected image is sent to Puter only when the user explicitly initiates a generative request with that image as a reference. AI background removal is local; only model/runtime files are downloaded. Imported PDF bytes and rasterized pages remain in the browser. Direct URL fetch tells the target host the user's IP and ordinary browser request metadata. Known translation terms remain local; when automatic translation is enabled, an unknown phrase is sent to Puter/Gemma only for a signed-in user.
 
 ## 2. Local data
 
@@ -75,7 +77,7 @@ The repository root `LICENSE` licenses original chicCanva code under MIT and rec
 | Downloaded font binaries | User-selected fonts | Per-font license, commonly SIL OFL, Apache 2.0, or Ubuntu Font License; not relicensed by chicCanva |
 | Openclipart artwork | User-selected external clipart | Openclipart represents its artwork as public-domain/CC0; retain source information and verify an individual item if provenance matters |
 | Puter JavaScript service/API | Optional generation/network/account usage | Loaded remotely; the upstream Puter repository is AGPL-3.0-only, while hosted-service use is also governed by Puter's current terms and selected provider/service terms |
-| MyMemory translation | Optional keyword translation | Remote service governed by provider terms |
+| Gemma 4 31B through Puter | Optional translation for search text not covered locally | User-pays Puter service and selected model/provider terms |
 
 ### AGPL release implication
 
@@ -108,7 +110,7 @@ For each vendored update:
 
 ## 7. Privacy-oriented deployment recommendations
 
-- Publish a short privacy notice identifying optional Puter, MyMemory, Openclipart, font, OpenMoji, and model requests.
+- Publish a short privacy notice identifying optional Puter/Gemma, Openclipart, font, OpenMoji, and model requests.
 - Explain that project autosave stays in the browser origin.
 - Avoid processing identifiable student photographs through generative services without the appropriate authorization.
 - Prefer local background removal when the task does not require generation.

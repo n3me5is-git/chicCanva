@@ -21,10 +21,13 @@ The most important rule is to avoid hand-editing `chicCanva.html`. It is generat
 | Toolbar/sidebar/general interaction | `development/enhancements.js`, `enhancements.css` |
 | Image transforms/chroma/eyedropper | `development/image-effects.js`, `image-effects.html`, `image-effects.css` |
 | Unified export/URL/clipboard/Puter additions | `development/final-upgrades.js`, `final-upgrades.css`, HTML fragments |
+| Memory, image diagnostics, locks, interaction guards | `development/memory-optimizations.js`, `.css`, `memory-ui.html` |
 | Touch viewport and Puter session UI | `development/runtime-upgrades.js`, `runtime-upgrades.css`, `puter-auth.html` |
 | PDF import and embedded renderer | `development/pdf-import.js`, `pdf-import.html`, `pdf-import.css`, `development/vendor/pdf*` |
 | App release number | `development/version.json` |
 | Clipart | `development/clipart.js`, `clipart-ui.html`, `clipart.css` |
+| Search translation | `development/search-translation.js` |
+| Vector shapes and drawing | `development/shapes.js`, `shapes-ui.html`, `shapes.css` |
 | PWA | `development/pwa.js`, `pwa-ui.html`, `pwa.css`, `development/pwa/*` |
 | End-user guide | `development/build-guide.py` |
 | Main composition | `development/build-workspace.py` |
@@ -186,7 +189,7 @@ For every material feature, document:
 
 ### Browser regression tests
 
-`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave, export ZIP signature, clipboard ingestion, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, AI options, sidebar behavior, and guide quality.
+`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave generations and active-project deduplication, asset collection, export-region interaction isolation, object locks, image diagnostics, export ZIP signature, clipboard ingestion, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, AI options, sidebar behavior, and guide quality.
 
 Prefer meaningful behavior tests. For example, the eyedropper regression uses a fixture whose CSS dimensions differ from its backing buffer, proving the coordinate transform rather than merely checking that a button exists.
 

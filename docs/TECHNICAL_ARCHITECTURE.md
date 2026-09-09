@@ -9,7 +9,7 @@ The single-file rule applies to the application. Two delivery wrappers add files
 - the local Windows distribution adds a PowerShell-only `.bat` webserver;
 - the hosted distribution adds a manifest, service worker, and two PWA icons.
 
-Online services and large media/model files remain remote. Puter, Google Fonts/Fontsource font binaries, OpenMoji SVG assets, Openclipart search results, MyMemory translation, and IMG.LY model data require network access when first used.
+Online services and large media/model files remain remote. Puter, Google Fonts/Fontsource font binaries, OpenMoji SVG assets, Openclipart search results, optional Gemma translation, and IMG.LY model data require network access when first used. Known search terms use the embedded dictionary without a request.
 
 ## 2. Repository layout
 
@@ -31,6 +31,7 @@ chicCanvas/
 │   ├── image-effects.html/.css/.js# local image effects, chroma key, eyedropper
 │   ├── final-upgrades.css/.js     # unified export, image URL/clipboard, Puter additions
 │   ├── runtime-upgrades.css/.js   # pinch navigation and Puter auth/account gates
+│   ├── memory-ui.html/.css/.js    # memory, image diagnostics, locks, GC, worker lifecycle
 │   ├── puter-auth.html            # account gate and reusable login dialog
 │   ├── version.json               # public application version
 │   ├── pdf-import.html/.css/.js   # PDF selection, rendering, and project insertion
@@ -38,6 +39,8 @@ chicCanvas/
 │   ├── vendor/pdf.worker.min.js   # embedded worker, converted to a Blob URL
 │   ├── vendor/pdfjs-LICENSE.txt   # Apache-2.0 license copy
 │   ├── clipart-ui.html/.css/.js   # Openclipart explorer
+│   ├── search-translation.js      # local IT→EN dictionary and Puter/Gemma fallback
+│   ├── shapes-ui.html/.css/.js    # vector shape tools and drawing mode
 │   ├── pwa-ui.html/.css/.js       # install/update UI and domain gating
 │   ├── export-center.html         # export widget fragment
 │   ├── workspace-special.html     # special-project UI and preview additions
@@ -104,7 +107,8 @@ flowchart LR
     NET --> PUTER[Puter AI and network]
     NET --> FONTS[Google Fonts / Fontsource CDN]
     NET --> MOJI[OpenMoji CDN]
-    NET --> CLIP[Openclipart + MyMemory]
+    NET --> CLIP[Openclipart]
+    NET --> TRANS[Optional Puter / Gemma translation]
     APP --> BG[IMG.LY + ONNX local inference]
     BG --> MODELS[staticimgly model cache]
 ```
@@ -118,7 +122,8 @@ The DOM is deliberately stable and ID-driven. `$()` resolves controls by ID. Fea
 5. `final-upgrades.js`;
 6. `clipart.js`;
 7. `pwa.js`;
-8. final `init()` call.
+8. persistence/runtime override modules, including `pending.js` and `memory-optimizations.js`;
+9. final `init()` call.
 
 Many modules preserve an earlier implementation before replacing it:
 
@@ -154,7 +159,7 @@ Workspace
   activeProjectId
 ```
 
-Fabric objects are serialized as descriptors with geometry, object type, asset references, crop data, group children, and style. Images point into `state.assets`; assets use Data URLs so an exported project no longer depends on the original local file. This is convenient and portable but increases JSON and autosave size.
+Fabric objects are serialized as descriptors with geometry, object type, asset references, crop data, group children, vector shape points/paths, and style. Images point into `state.assets`; assets use Data URLs so an exported project no longer depends on the original local file. Shapes remain geometry-only descriptors and do not add raster assets. This is convenient and portable, although embedded images increase JSON and autosave size.
 
 Pages store real dimensions in millimetres. The editor converts them to display pixels, while exporters render independently at the selected DPI. View zoom never changes print dimensions.
 
@@ -164,10 +169,14 @@ Fabric.js 5.1.0 supplies object selection, active selections, groups, transforma
 
 - page-sized background and guides excluded from project serialization;
 - selection box behavior and group-specific purple controls;
+- isolated vector drawing with temporary non-serializable previews and editable polygon anchors;
 - rotation lock, pan mode, fit zoom, grid and snapping;
 - non-destructive image crop descriptors;
 - export-region overlay excluded from normal output;
+- serialized object position locks, exposed only in the context menu;
 - page save/restore around every project or page switch.
+
+Export-region drawing is a temporary exclusive interaction mode. On entry, chicCanva records each object’s `selectable` and `evented` flags, disables target finding and discards the active selection. On exit it restores the exact previous flags. This lets a region drag begin over an image without moving it and avoids permanently unlocking an object that was already fixed.
 
 There are three coordinate spaces that must not be confused:
 
@@ -192,7 +201,9 @@ Using `canvas.getPointer()` here would return document coordinates and produces 
 
 ## 7. Persistence architecture
 
-Preferences and small synchronization markers use `localStorage`. Workspace autosave uses IndexedDB as the durable store, with stable `workspace-current` and `workspace-previous` records. A dirty marker is written immediately; the serialized workspace is committed after a short debounce. Small payloads also receive a synchronous localStorage fallback during page leave.
+Preferences and small synchronization markers use `localStorage`. Workspace autosave uses IndexedDB as the durable store, with stable `workspace-current` and `workspace-previous` records. A dirty marker is written immediately; the serialized workspace is committed after a 1.2-second debounce. Small payloads also receive a synchronous localStorage fallback during page leave.
+
+The current and previous IndexedDB entries are small pointers to deliberate recovery generations stored on disk. Rotating a save moves the pointer rather than reading the preceding multi-megabyte JSON into JavaScript. Inside each generation the active project is represented only by the root payload; its workspace entry contains `payloadRef: "root"` rather than another full asset-bearing copy. Project switches clone descriptor shells while retaining immutable Data URL string references, preventing transient copies proportional to every image. The serialized string is not retained after a successful commit. Legacy full records remain readable and are migrated on the next successful save.
 
 ```mermaid
 sequenceDiagram
@@ -202,13 +213,17 @@ sequenceDiagram
     participant I as IndexedDB
     U->>A: modify project/page/object
     A->>L: set dirty marker immediately
-    A->>A: debounce autosave (250 ms)
+    A->>A: debounce autosave (1.2 s)
     A->>I: move current to previous
     A->>I: write workspace-current
     A->>L: update pointer/status metadata
     A->>L: clear dirty marker
     Note over A,I: on startup, current is checked even if the pointer is missing
 ```
+
+Asset liveness is computed from current pages and retained undo/redo entries. Garbage collection follows history truncation, redo-branch replacement, page/object deletion, and explicit project close. The independent last AI reference and internal clipboard remain roots because users expect them to survive page edits. This removes unreachable Data URLs without weakening undo or cross-project paste.
+
+The sidebar load indicator combines three intentionally different estimates: encoded asset bytes across open projects, decoded bitmap bytes for unique images on the active page (`width × height × 4`, including group children), and origin storage usage/quota from `navigator.storage.estimate()`. It is diagnostic rather than a promise of exact process RAM because the browser may share decoded resources or hold internal GPU copies.
 
 The first meaningful pointer or keyboard interaction asks `navigator.storage.persist()` for persistent origin storage when supported. Browsers may still refuse, and private browsing can discard data. Exported JSON is therefore the archival format; autosave is recovery assistance.
 

@@ -22,7 +22,7 @@ flowchart TB
     TOOL[Canvas toolbar: pan, zoom, pages, selection, edit, layers]
     TABS[Project tabs and page navigator]
     WORK[Canvas workspace and active physical page]
-    SIDE[Task sidebar: page, text, fonts, emoji, images, clipart, AI, export]
+    SIDE[Task sidebar: page, text, fonts, emoji, vector shapes, images, clipart, AI, export]
     TOP --> TOOL
     TOOL --> TABS
     TABS --> WORK
@@ -40,6 +40,7 @@ Quick-jump buttons represent the main tasks:
 - Text
 - Fonts
 - Emoji
+- Shapes and drawing
 - Images
 - Clipart
 - AI
@@ -55,7 +56,7 @@ Desktop uses a resizable right sidebar and a scrollable toolbar. Fit zoom calcul
 
 Hover tooltips explain icon-only toolbar controls. Every icon-only control also has an accessible name. The delete action uses a visible vector icon rather than a font glyph, avoiding missing-glyph boxes and inconsistent emoji rendering.
 
-Context menus supplement, rather than replace, visible commands. Object menus expose copy, paste, group, ungroup, split, duplicate, layers, crop, background removal, and AI reference actions where applicable. Project and page context menus expose rename and related lifecycle actions.
+Context menus supplement, rather than replace, visible commands. Object menus expose copy, paste, group, ungroup, split, duplicate, layers, crop, background removal, AI reference actions, and **Fix position** where applicable. Fix position is intentionally context-only: it locks movement, scale, skew, and rotation without adding another permanent toolbar control. Project and page context menus expose rename and related lifecycle actions.
 
 ## 5. Mobile and installed-PWA behavior
 
@@ -68,6 +69,7 @@ On small/coarse-pointer screens:
 - using the eyedropper closes the sidebar so the user can touch the canvas;
 - AI background removal is constrained to the small model and a disposable worker;
 - physical page preview preserves portrait/landscape orientation at a comparable long-edge scale.
+- a stationary 1.4-second press on an object opens its context menu; moving more than a small threshold or scrolling cancels the gesture.
 
 The installed PWA uses the same origin storage as its browser counterpart for the same URL. Startup recovery reads IndexedDB even when a small localStorage pointer is absent. The application requests persistent origin storage after the first meaningful interaction because some mobile browsers require a user gesture.
 
@@ -80,10 +82,13 @@ The toolbar makes modes explicit:
 - rotation enabled;
 - crop;
 - export-region drawing;
+- vector shape, polyline/polygon, and freehand drawing;
 - grid visibility;
 - snapping.
 
-Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop begins at the current visible image boundary, cannot exceed the original source, and changes one image's visible window; export selection defines output bounds only. Image output exposes **Copy to clipboard** only for a single page or region, where the result is one unambiguous image rather than a multi-page ZIP.
+Shape drawing follows the same isolation rule as export-region drawing: existing objects temporarily become non-selectable and non-evented, and target finding is disabled. A crosshair and an active tool tile make the state visible. Escape and the sidebar cancel command restore the exact previous interaction flags. Polygon point editing is a separate state applied only after a completed object is selected.
+
+Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop begins at the current visible image boundary, cannot exceed the original source, and changes one image's visible window; export selection defines output bounds only. Export-region mode suppresses object hit testing until it ends, so starting the rectangle over a photo cannot move the photo. Image output exposes **Copy to clipboard** only for a single page or region, where the result is one unambiguous image rather than a multi-page ZIP.
 
 Keyboard support includes common editing conventions (`Ctrl/Cmd+C`, `V`, `D`, `Z`, `Y`, `S`) plus feature shortcuts (`F`, `H`, `G`, `R`, `F1`). Shortcuts are ignored while typing in form fields.
 
@@ -99,6 +104,7 @@ Native browser dialogs are avoided for core workflows because they are visually 
 - Clipart preview;
 - autosave recovery;
 - settings and memory clearing.
+- image resolution replacement, including projected pixel and bitmap-memory values.
 
 A dialog should state the affected project/page, the consequence, and the reversible or recovery path. The primary action should describe the operation, while cancel remains visually secondary.
 
@@ -130,6 +136,7 @@ In the chroma-key panel, the color/pipette and automatic detection are mutually 
 - Do not convey group state or errors using color alone; pair visual distinction with status text.
 - Keep focus within native `<dialog>` behavior and return focus after closing where practical.
 - Respect touch target size, especially for page arrows, toolbar icons, and close actions.
+- On narrow touch viewports, Fabric selection handles use an 18 px visible control and a 40 px touch hit area. Crop handles use a 20 px marker with a 44 px hit area, and editable vector vertices use the same 20/44 px pairing. Borders are slightly thicker, while mouse/desktop metrics remain unchanged.
 - Preserve keyboard alternatives for drag-only interactions.
 - Keep the guide usable without hover.
 
@@ -153,6 +160,9 @@ When changing layout or controls, verify at least:
 - modals name the target and cancel safely;
 - eyedropper samples correctly at 50%, 100%, 200%, Fit, and after pan;
 - a long project/page name does not break tabs or navigation;
+- export-region drawing started over an object never changes that object;
+- context-menu locking survives save/restore and a long press does not fire after a drag;
+- image diagnostics update through groups and resolution replacement preserves physical geometry;
 - online-only widgets are disabled with the approved message in direct-file mode.
 
 

@@ -1,0 +1,37 @@
+<section class="card" id="shapesCard">
+  <div class="card-h"><div><div class="card-title">Forme e disegno</div><div class="card-sub">Disegna forme, linee, poligoni e tratti liberi direttamente sul foglio.</div></div></div>
+  <div class="card-b">
+    <div class="shape-tool-grid" id="shapeTools" role="toolbar" aria-label="Strumenti forme">
+      <button type="button" data-shape="rect" title="Rettangolo"><span>▭</span>Rettangolo</button>
+      <button type="button" data-shape="square" title="Quadrato"><span>□</span>Quadrato</button>
+      <button type="button" data-shape="roundrect" title="Rettangolo arrotondato"><span>▢</span>Arrotondato</button>
+      <button type="button" data-shape="ellipse" title="Ovale"><span>⬭</span>Ovale</button>
+      <button type="button" data-shape="circle" title="Cerchio"><span>○</span>Cerchio</button>
+      <button type="button" data-shape="triangle" title="Triangolo"><span>△</span>Triangolo</button>
+      <button type="button" data-shape="diamond" title="Rombo"><span>◇</span>Rombo</button>
+      <button type="button" data-shape="pentagon" title="Pentagono"><span>⬠</span>Pentagono</button>
+      <button type="button" data-shape="hexagon" title="Esagono"><span>⬡</span>Esagono</button>
+      <button type="button" data-shape="star" title="Stella"><span>☆</span>Stella</button>
+      <button type="button" data-shape="star8" title="Stella a otto punte"><span>✧</span>Stella 8</button>
+      <button type="button" data-shape="heart" title="Cuore"><span>♡</span>Cuore</button>
+      <button type="button" data-shape="moon" title="Luna crescente"><span>☾</span>Luna</button>
+      <button type="button" data-shape="arrow" title="Freccia piena"><span>➜</span>Freccia</button>
+      <button type="button" data-shape="callout" title="Fumetto call-out"><span>▱</span>Fumetto</button>
+      <button type="button" data-shape="thought" title="Fumetto pensiero"><span>◌</span>Pensiero</button>
+      <button type="button" data-shape="line" title="Segmento"><span>╱</span>Segmento</button>
+      <button type="button" data-shape="arrowline" title="Linea con freccia"><span>↗</span>Linea freccia</button>
+      <button type="button" data-shape="polyline" title="Spezzata"><span>⌁</span>Spezzata</button>
+      <button type="button" data-shape="polygon" title="Poligono libero"><span>⬙</span>Poligono</button>
+      <button type="button" data-shape="free-smooth" title="Disegno a mano libera levigato"><span>〰</span>Mano liscia</button>
+      <button type="button" data-shape="free-raw" title="Disegno a mano libera fedele"><span>⌇</span>Mano raw</button>
+    </div>
+    <p class="help">Scegli uno strumento e disegna sul foglio. Durante il disegno gli oggetti esistenti non possono essere selezionati o spostati.</p>
+    <div class="shape-style-box">
+      <div class="grid2"><label>Riempimento<input id="shapeFill" type="color" value="#ffffff" title="Colore riempimento forma"></label><label>Contorno<input id="shapeStroke" type="color" value="#000000" title="Colore contorno forma"></label></div>
+      <label class="check"><input id="shapeNoFill" type="checkbox">Riempimento trasparente</label>
+      <label>Spessore contorno <strong id="shapeStrokeValue">3 px</strong><input id="shapeStrokeWidth" type="range" min="0" max="24" step="0.5" value="3"></label>
+    </div>
+    <div class="row shape-edit-actions"><button class="btn" id="shapeEditPoints">Modifica punti</button><button class="btn" id="shapeFinish">Termina tracciato</button><button class="btn" id="shapeCancel">Annulla disegno</button></div>
+    <div class="status" id="shapeStatus" role="status">Scegli una forma o uno strumento di disegno.</div>
+  </div>
+</section>

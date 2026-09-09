@@ -1,0 +1,25 @@
+<section class="image-inspector" id="imageInspector" aria-live="polite">
+  <div class="image-inspector-title">Informazioni immagine selezionata</div>
+  <div id="imageInspectorEmpty" class="help">Seleziona un’immagine nel canvas per vedere risoluzione, memoria stimata e DPI di stampa.</div>
+  <dl id="imageInspectorData" class="image-inspector-data hidden">
+    <div><dt>Pixel originali</dt><dd id="imagePixelSize">—</dd></div>
+    <div><dt>Contenuto visibile</dt><dd id="imageCropSize">—</dd></div>
+    <div><dt>Dimensione nel progetto</dt><dd id="imageEncodedSize">—</dd></div>
+    <div><dt>RAM bitmap stimata</dt><dd id="imageRamSize">—</dd></div>
+    <div><dt>Dimensione sulla pagina</dt><dd id="imagePrintSize">—</dd></div>
+    <div><dt>Risoluzione di stampa</dt><dd id="imagePrintDpi">—</dd></div>
+  </dl>
+  <button class="btn hidden" id="changeResolutionBtn">Cambia risoluzione</button>
+</section>
+
+<dialog id="resolutionDialog" class="chic-dialog resolution-dialog">
+  <h2>Cambia risoluzione</h2>
+  <p id="resolutionInfo" class="help"></p>
+  <label>Fattore di scala
+    <input id="resolutionScale" type="range" min="0" max="5" step="1" value="2" list="resolutionScaleTicks">
+  </label>
+  <datalist id="resolutionScaleTicks"><option value="0" label="¼×"></option><option value="1" label="⅓×"></option><option value="2" label="½×"></option><option value="3" label="2×"></option><option value="4" label="3×"></option><option value="5" label="4×"></option></datalist>
+  <div class="resolution-choice"><strong id="resolutionScaleLabel">½×</strong><span id="resolutionPreview">—</span></div>
+  <p class="help">La dimensione sulla pagina non cambia. L’upscaling tradizionale aumenta i pixel ma non crea nuovi dettagli.</p>
+  <div class="dialog-actions"><button class="btn" id="resolutionCancel">Annulla</button><button class="btn accent" id="resolutionConfirm">Sostituisci immagine</button></div>
+</dialog>

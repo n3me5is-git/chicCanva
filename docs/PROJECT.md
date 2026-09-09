@@ -25,9 +25,9 @@ These constraints define the product and should be treated as requirements:
 ## Main use cases
 
 1. Produce a word or phrase in thick outlined letters to color by hand.
-2. Generate one letter or meaningful group per page for banners and classroom displays.
+2. Generate one letter or meaningful group per page for banners and classroom displays, optionally keeping character size constant across every page.
 3. Build mixed-format, multi-page educational projects.
-4. Combine text, emoji, photos, clipart, and generated illustrations.
+4. Combine text, editable vector shapes, freehand drawing, emoji, photos, clipart, and generated illustrations.
 5. Create coloring material from a photo or illustration.
 6. Export a print-ready PDF, individual images, a page ZIP, or a selected region.
 7. Save and reopen the editable project, with optional undo history.
@@ -41,11 +41,13 @@ These constraints define the product and should be treated as requirements:
 - Complete font catalog and style wizard
 - Grapheme-aware splitting and symbol joining
 - OpenMoji browser and smart emoji conversion
+- Vector shapes, lines, editable polygon points, and raw/smoothed freehand drawing
 - Images, clipboard, URLs, crop, grayscale, and edge outline
+- Selected-image pixel/RAM/DPI diagnostics and explicit high-quality resampling
 - Local PDF-to-PNG import into A4 project pages
 - Chroma-key and local AI background removal
 - Puter image generation with reference images and style presets
-- Openclipart search and optional keyword translation
+- Openclipart and OpenMoji search with local Italian vocabulary and optional Puter/Gemma translation for unknown text
 - Undo/redo, autosave, recovery, and portable JSON
 - PDF, PNG, JPG, region, and ZIP export
 - Responsive UI, PWA install/update, and local PowerShell server
@@ -83,6 +85,12 @@ Grayscale, Sobel outline, chroma key, crop, PDF, image export, ZIP assembly, and
 ### Small mobile segmentation model
 
 Phones are more likely to freeze from ONNX model/session memory than from cached model bytes. Mobile therefore keeps the downloaded small model in browser cache but creates and terminates a worker for each removal job.
+
+Desktop jobs now use the same disposable-worker lifecycle while retaining the user's model/device choice. This trades a small amount of per-operation startup time for predictable release of ONNX sessions and tensors. Cached model files remain on disk and are cleared by the existing memory command.
+
+### Portable assets with bounded live state
+
+Data URLs remain the portable asset format, so the shipped HTML and project JSON architecture does not change. Runtime optimizations avoid a duplicate active-project payload, retain string references during project switching, debounce saves, and collect assets after they become unreachable from both current pages and undo history. The AI reference and internal clipboard remain explicit roots. Users can inspect bitmap cost and replace an oversized selected image without changing its physical placement.
 
 ### Generated artifacts committed with source
 

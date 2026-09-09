@@ -20,7 +20,7 @@ sequenceDiagram
 
 New pages are inserted immediately after the active page and inherit its physical dimensions. A page can be renamed from the sidebar, navigator, preview, double click, or context menu. Reordering changes the array order and therefore PDF/ZIP order. Deleting a page is guarded by an application modal and is reversible while its history snapshot remains available.
 
-The special “one letter/group per page” workflow is a macro over the custom page model. It can create a new project, append pages, or replace the current page list after confirmation. Explicit groups use `^`; automatic groups use grapheme segmentation, symbol joining, smart apostrophes, and optional OpenMoji conversion.
+The special “one letter/group per page” workflow is a macro over the custom page model. It can create a new project, append pages, or replace the current page list after confirmation. Explicit groups use `^`; automatic groups use grapheme segmentation, symbol joining, smart apostrophes, and optional OpenMoji conversion. Its `constant` banner fit first measures every group at the natural font scale, chooses the smallest page-safe scale required by the largest result, and then centers every page object with that same scale.
 
 ## 2. Text and outline rendering
 
@@ -79,7 +79,7 @@ When smart emoji is enabled, text and emoji are separate children in a group. Ap
 
 ### OpenMoji asset construction
 
-The full OpenMoji metadata catalog supports global search, relevant ordering, and category browsing. Italian-to-English keyword translation is opt-in and reuses the Clipart search policy: timed MyMemory lookup, compact internal didactic dictionary, then the original term. The translated query participates only in filtering and is reset whenever translation is disabled. An emoji becomes an SVG-backed image asset:
+The full OpenMoji metadata catalog supports global search, relevant ordering, and category browsing. Italian-to-English keyword translation is opt-in and reuses the Clipart search policy. A compact local dictionary resolves known emoji, animal, child, school, educational, shape, color, emotion, food, transport, nature, and activity terms word by word. If a term remains unknown and Puter is signed in, `puter.ai.chat()` calls `google/gemma-4-31b-it` with a short icon-search translation prompt. Without a session or after an error, the local partial translation and original unknown words remain usable. The translated query participates only in filtering and is reset whenever translation is disabled. An emoji becomes an SVG-backed image asset:
 
 ```js
 emojiAssetFor = async function (grapheme, style = state.emojiStyle) {
@@ -102,7 +102,15 @@ emojiAssetFor = async function (grapheme, style = state.emojiStyle) {
 
 Black/outline SVGs can be recolored and their stroke widths adjusted. A derived asset records style, ink, stroke, source, and license. This is a modification of OpenMoji material; preserve attribution and CC BY-SA metadata in exports and distributions.
 
-## 4. Images and non-destructive editing
+## 4. Vector shapes and drawing
+
+Shapes are native Fabric vector objects rather than raster assets. The shape descriptor records class, kind, geometric data, paint, transform, opacity, and position lock. Rectangles and ellipses retain dimension parameters; polygons and polylines retain point arrays; hearts, moons, thought bubbles, arrows, and freehand curves retain path commands.
+
+Drawing mode is isolated from ordinary object editing. On entry, chicCanva snapshots every existing object's `selectable` and `evented` flags, clears the active selection, disables target finding, and shows a crosshair. A temporary object is marked `excludeProject`, so autosave and history cannot capture a half-drawn shape. Commit assigns a project ID, restores interaction, and saves one vector object; cancel removes the temporary geometry and restores the exact prior flags.
+
+Polygonal shapes expose Fabric controls bound to their point array. Dragging an anchor maps viewport coordinates through the inverse object transform and updates one vertex while keeping the object center stable. Rectangles, ellipses, paths, and curves use ordinary side/corner controls for stretch and scale. Raw freehand paths preserve sampled points; smooth paths use Catmull-Rom-derived cubic Bézier controls for a stable classroom-drawing result.
+
+## 5. Images and non-destructive editing
 
 Uploaded, pasted, downloaded, generated, and derived images enter the same asset registry. Data URLs make projects portable. `originalDataUrl` retains the source for crop reset and non-destructive workflows.
 
@@ -144,7 +152,13 @@ Crop stores a viewing rectangle relative to the original image. The editor start
 
 Grayscale creates a second raster. The softness control adjusts contrast/threshold behavior from line-like to tonal output. Algorithmic outline uses a Sobel-style edge detector and produces dark edges on a white background. These processes are local, deterministic, and do not consume AI credits.
 
-## 5. Uniform-background removal
+### Image diagnostics and pixel resampling
+
+Selecting an image exposes its original and visible crop pixel dimensions, encoded Data URL bytes, approximate decoded RGBA memory, current size in millimetres, and effective print DPI. The values distinguish file/storage cost from runtime bitmap cost: a compressed 5 MB JPEG can decode to hundreds of megabytes.
+
+The resolution command replaces one selected object after explicit confirmation. Factors are ¼×, ⅓×, ½×, 2×, 3×, and 4×. `createImageBitmap()` requests high-quality resampling and a temporary canvas encodes the result as PNG. Crop coordinates and source dimensions are multiplied by the factor while Fabric scale is divided by it, preserving page position and physical size. Temporary bitmap/canvas resources are closed or reduced immediately. Upscaling improves pixel count for compatibility but does not reconstruct detail.
+
+## 6. Uniform-background removal
 
 The chroma-key path is intended for line art, clipart, and generated images with a flat background. It can use a manually chosen color or automatically detect the dominant perimeter color. Automatic detection downsamples to at most 256 pixels on the longest side, samples a two-pixel perimeter, quantizes RGB into buckets, and averages the dominant bucket.
 
@@ -161,7 +175,7 @@ Tolerance uses the largest per-channel difference from the target. By default, a
 
 The eyedropper reads the already rendered lower canvas. It deliberately maps browser client coordinates to the backing-store dimensions rather than using Fabric document coordinates. This preserves correct sampling with Fit, arbitrary zoom, pan, CSS scaling, and Retina canvases.
 
-## 6. AI background removal
+## 7. AI background removal
 
 The AI path embeds `@imgly/background-removal` 1.7.0 and ONNX Runtime Web JavaScript. Model files are fetched from `staticimgly.com` and retained by browser cache storage.
 
@@ -169,7 +183,7 @@ Desktop behavior:
 
 - small, medium, and large models are selectable;
 - CPU, WebGPU-preferred, and explicit GPU-with-CPU-fallback modes are available;
-- the imported module/session remains reusable in memory to accelerate later jobs.
+- every job uses a disposable Blob Worker; the selected model files remain reusable from Cache Storage, while the ONNX session and tensors are released when the worker terminates.
 
 Mobile behavior:
 
@@ -202,7 +216,7 @@ sequenceDiagram
 
 The operation always creates a derived copy and records the source asset, selected model, and actual device/fallback. It never intentionally uploads the source image.
 
-## 7. Puter image generation
+## 8. Puter image generation
 
 Puter is loaded only in HTTP(S) mode. AI controls are hidden until `puter.auth.isSignedIn()` reports an authenticated session. The explicit login button calls `puter.auth.signIn()` from its click handler; account switching calls `signIn({request_auth:true})`; logout calls `signOut()`. The user then chooses provider, model, quality, aspect ratio, style, prompt, and optional reference. Presets append prompt text; they do not replace the user's description. The chroma-key option adds an instruction requiring a completely uniform, texture-free background whose color is visually distant from the subject.
 
@@ -228,9 +242,9 @@ Reference images may come from file, URL, clipboard, or the selected canvas imag
 
 If requested, generation is followed by a second local background-removal job. The generated original remains in the project; the removed-background version is another asset. Usage feedback calls `puter.auth.getMonthlyUsage()` only when an authenticated session exposes it. The displayed values are Puter's response for this app, not a billing guarantee.
 
-## 8. Openclipart explorer
+## 9. Openclipart explorer
 
-The explorer scrapes public Openclipart search pages because there is no embedded full catalog or required API key. Users are encouraged to search in English. Automatic translation calls MyMemory with a timeout and falls back to a compact built-in didactic dictionary; if both fail, the original keyword is preserved.
+The explorer scrapes public Openclipart search pages because there is no embedded full catalog or required API key. Users are encouraged to search in English. Automatic translation uses the compact built-in dictionary first. Fully known phrases never leave the browser. Unknown text can use Gemma 4 31B through Puter when the user is already signed in; otherwise known words are translated locally and unknown words are preserved.
 
 Search is asynchronous and serial-numbered. Starting a new search invalidates earlier results, preventing a slow previous request from replacing newer thumbnails. The UI disables the button, exposes `aria-busy`, shows a spinner immediately, and keeps per-thumbnail loading/failure states.
 
@@ -242,15 +256,17 @@ The preview modal offers:
 
 Openclipart artwork is external content. Its title/source URL should remain available for provenance. Do not assume search result HTML is stable; parser tests should be updated if the public markup changes.
 
-## 9. History, autosave, and JSON
+## 10. History, autosave, and JSON
 
 History records meaningful snapshots rather than raw pointer events. Transform operations commit at an appropriate action boundary. `withHistory()` wraps mutating async commands so a successful action becomes undoable without producing intermediate half-states.
 
 JSON export can include or omit history. Asset collection walks the current document and optional history snapshots, then keeps only referenced assets. Import validates structure, page/object limits, history consistency, and asset shape before adoption. Imported JSON opens in a new project tab.
 
-Autosave stores the whole open workspace, unlike a project JSON which represents one exported project. Explicitly closing a project removes it from the next workspace autosave. Clearing memory removes projects, autosave records, preferences, and cached background-removal models.
+Autosave stores the whole open workspace, unlike a project JSON which represents one exported project. The root payload is the active project and its workspace entry points back to that root, so the same image Data URLs are not serialized twice. Project switching avoids deep-cloning those strings, and autosave drops its serialized string after IndexedDB commits. Explicitly closing a project forces a new revision and removes it from the stable autosave before the close operation completes. Clearing memory removes projects, autosave records, preferences, and cached background-removal models.
 
-## 10. Export processes
+Asset garbage collection walks all current pages and retained history. It runs after history truncation, replacing a redo branch, deletion, and project close. The last independent AI reference and internal cross-project clipboard are preserved as additional roots. An image deleted from both current state and all undo entries can therefore release its Data URL instead of remaining in `state.assets` indefinitely.
+
+## 11. Export processes
 
 ### PDF
 
@@ -262,9 +278,9 @@ The unified export center chooses scope, format, DPI, quality, background, and o
 
 ### Export region
 
-The export-region tool switches the sidebar to “selection in page,” defaults to transparent PNG, and lets the user draw an independent rectangle. The overlay is never serialized as page content and never appears in normal output.
+The export-region tool switches the sidebar to “selection in page,” defaults to transparent PNG, and lets the user draw an independent rectangle. While active it disables Fabric target finding and temporarily makes page objects non-interactive, so dragging can begin over existing content. Their previous interaction flags are restored on exit. The overlay is never serialized as page content and never appears in normal output.
 
-## 11. Error and cancellation principles
+## 12. Error and cancellation principles
 
 - User-initiated network operations show busy state before their first `await`.
 - An operation must restore buttons and transient canvas classes in `finally`.
