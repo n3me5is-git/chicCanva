@@ -40,7 +40,10 @@
     <div class="colorizer-copy-box">
       <button class="btn" id="copyColorizedBtn" disabled>Copia risultato</button><button class="btn" id="copyColorizerOriginalBtn" disabled>Copia originale</button>
     </div>
-    <p class="help">Ogni gesto del pennello è una sola modifica. Clic destro, oppure pressione prolungata, rimuove l’intera colorizzazione collegata sotto il punto.</p>
+    <p class="help">Ogni gesto del pennello è una sola modifica. Clic destro, oppure pressione prolungata, apre il comando per rimuovere l’intera colorizzazione collegata sotto il punto.</p>
     <div class="status" id="colorizerStatus">Scegli un oggetto e avvia la modalità.</div>
   </div>
 </section>
+<div class="tool-context-menu hidden" id="colorizerContextMenu" role="menu" aria-label="Azioni Colorizer">
+  <button type="button" data-colorizer-action="erase">Elimina questo Colorize</button>
+</div>

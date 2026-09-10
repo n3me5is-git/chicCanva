@@ -476,9 +476,17 @@ function translateClipartLocally(keyword){
  return{translated:translated||String(keyword).trim(),changed,complete:unknown.length===0,unknown}
 }
 function normalizedPuterText(response){
- let text=response?.message?.content??response?.text??response;
- if(Array.isArray(text))text=text.map(item=>item?.text||'').join(' ');
- return String(text||'').trim().split(/\r?\n/)[0].replace(/^(?:translation|english)\s*:\s*/i,'').replace(/^['"“”]+|['"“”]+$/g,'').trim()
+ let text=response?.message?.content??response?.text??response?.result??response;
+ if(Array.isArray(text))text=text.map(item=>typeof item==='string'?item:(item?.text??item?.content??'')).join('\n');
+ text=String(text||'')
+  .replace(/<(?:thought|thinking|reasoning|analysis)\b[^>]*>[\s\S]*?<\/(?:thought|thinking|reasoning|analysis)>/gi,'\n')
+  .replace(/<(?:thought|thinking|reasoning|analysis)\b[^>]*>[\s\S]*$/gi,'\n')
+  .replace(/```(?:text)?|```/gi,'\n')
+  .replace(/<\/?(?:final|answer|output)>/gi,'\n');
+ const lines=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean),candidate=(lines.at(-1)||'')
+  .replace(/^(?:final answer|answer|output|translation|english)\s*:\s*/i,'')
+  .replace(/^[-*]\s*/,'').replace(/^['"“”`]+|['"“”`]+$/g,'').trim();
+ return candidate
 }
 async function translateSearchKeyword(keyword){
  const local=translateClipartLocally(keyword);
@@ -486,7 +494,7 @@ async function translateSearchKeyword(keyword){
  if(location.protocol==='file:'||typeof puterSignedIn!=='function'||!puterSignedIn())return{translated:local.translated,note:local.changed?'traduzione locale parziale: “'+local.translated+'”':'termine originale · accedi a Puter per la traduzione AI',source:'fallback'};
  try{
   await ensurePuter();
-  const prompt=JSON.stringify(String(keyword).slice(0,160))+' -> translate IT>EN [context: clipart/icon search] -> out: translated text only.';
+  const prompt=JSON.stringify(String(keyword).slice(0,160))+' -> translate IT>EN [clipart/icon search]; if already EN output input text only; output translated text only.';
   const response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,temperature:0,max_tokens:40,normalize:true}),15000),translated=normalizedPuterText(response);
   if(!translated||translated.length>240)throw new Error('Risposta di traduzione non valida');
   schedulePuterUsageRefresh?.();

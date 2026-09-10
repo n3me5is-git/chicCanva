@@ -39,7 +39,8 @@ vendor=root/'development/vendor'
 assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
 assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
 assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
-assert json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']=='1.6.0' and 'id="appVersion">v1.6.0' in s
+expected_version=json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']
+assert f'id="appVersion">v{expected_version}' in s
 assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
 assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
