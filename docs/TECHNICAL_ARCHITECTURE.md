@@ -9,7 +9,7 @@ The single-file rule applies to the application. Two delivery wrappers add files
 - the local Windows distribution adds a PowerShell-only `.bat` webserver;
 - the hosted distribution adds a manifest, service worker, and two PWA icons.
 
-Online services and large media/model files remain remote. Puter, Google Fonts/Fontsource font binaries, OpenMoji SVG assets, Openclipart search results, optional Gemma translation, and IMG.LY model data require network access when first used. Known search terms use the embedded dictionary without a request.
+Online services and large media/model files remain remote. Puter, Google Fonts/Fontsource font binaries, OpenMoji SVG assets, Openclipart search results, default-enabled Gemma translation fallback, and IMG.LY model data require network access when first used. Known search terms use the embedded dictionary without a request.
 
 ## 2. Repository layout
 
@@ -30,6 +30,7 @@ chicCanvas/
 │   ├── enhancements.css/.js       # toolbar, sidebar, interaction improvements
 │   ├── image-effects.html/.css/.js# local image effects, chroma key, eyedropper
 │   ├── final-upgrades.css/.js     # unified export, image URL/clipboard, Puter additions
+│   ├── ai-generation.css/.js      # curated Puter image profiles, estimate, references
 │   ├── runtime-upgrades.css/.js   # pinch navigation and Puter auth/account gates
 │   ├── memory-ui.html/.css/.js    # memory, image diagnostics, locks, GC, worker lifecycle
 │   ├── puter-auth.html            # account gate and reusable login dialog
@@ -308,6 +309,28 @@ The current mitigation is a modular authoring layer, assertion-based composition
 ## Viewport rendering and navigation
 
 Pinch gestures use lightweight CSS sizing for every animation frame and rebuild Fabric’s retina raster only once when the gesture ends. This avoids clearing and reallocating the backing canvas while fingers are moving. Non-fit zoom creates navigation padding equal to 75% of the visible viewport on every side, allowing the hand tool to move all page edges through the useful center area. Zoom changes preserve the current page-space center.
+# Search translation response normalization
+
+Emoji and Clipart searches first tokenize the Italian phrase and replace known terms from the embedded dictionary. If unknown tokens remain and Puter is already authenticated, chicCanva sends the compact prompt below to `google/gemma-4-31b-it`:
+
+```js
+const prompt = JSON.stringify(keyword) +
+  ' -> translate IT to EN, output only translated text, if input EN, output the same as input. If synonyms, choose the best. Context: emoji, clipart keyword search for drawing and creative projects / educational';;
+```
+
+The request uses `normalize:true`. Current Puter therefore places the answer in `message.content` and provider reasoning in `message.reasoning`. `normalizedPuterText()` deliberately reads content first; it also removes complete and unterminated `<thought>`, `<thinking>`, `<reasoning>` and `<analysis>` blocks, strips common answer wrappers, and accepts the last non-empty line as a compatibility fallback. Keep this parser whenever the model or Puter response adapter changes; otherwise search can accidentally receive the reasoning trace instead of the English keyword.
+
+# Puter image request contracts and estimates
+
+`development/ai-generation.js` keeps the user-facing catalog separate from Puter's request payload. Each profile stores the exact model ID, optional provider pin, supported qualities, base published price, reference capability and safety flag. `aiRequestOptions()` maps those profiles to Puter's documented provider contracts:
+
+- OpenAI Image uses `provider: 'openai-image-generation'`, `quality`, and `ratio: {w,h}`;
+- xAI uses `provider: 'xai'`, the selected Grok model, `quality: '1k'`, and `ratio: {w,h}`;
+- Together uses `aspect_ratio` and, only for explicitly named profiles, `disable_safety_checker: true`;
+- image references use the cross-provider `input_images` array plus `input_image_mime_type`.
+
+The reference scale control renders a temporary PNG with `imageSmoothingQuality='high'`, frees its temporary canvas after encoding, and never rewrites the project asset. The displayed cost is an estimate from the published per-image base price and selected quality. There is no documented `txt2img()` preflight quote endpoint, so the app labels the amount with `~`; account usage after generation is authoritative.
+
 # Colorizer raster pipeline
 
 ```mermaid

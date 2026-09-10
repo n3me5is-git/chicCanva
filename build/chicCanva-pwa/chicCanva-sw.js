@@ -1,4 +1,4 @@
-const BUILD_ID='79a304c1ac19266e';
+const BUILD_ID='0988c9912189fcd1';
 const SHELL_CACHE='chiccanva-shell-'+BUILD_ID;
 const REMOTE_CACHE='chiccanva-remote-v8';
 const SHELL=['./','./index.html','./chicCanva.webmanifest','./chiccanva-192.png','./chiccanva-512.png'];

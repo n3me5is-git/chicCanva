@@ -60,6 +60,7 @@ assert {'shapeTabs','shapePrevPage','shapeNextPage','shapeDragNodes','shapeDupli
 assert len(re.findall(r'data-shape="[^"]+"',body))>=40 and 'smoothTrace' in s and 'duplicateSelectionAsImage' in s and 'startSelectionTapMode' in s
 assert {'colorizerCard','startColorizerBtn','restoreColorizerOriginalBtn','colorizerPaintType','colorizerSmartEdges','copyColorizedBtn','copyColorizerOriginalBtn'}.issubset(ids)
 assert 'colorizerFloodFill' in s and 'colorizerBrushStamp' in s and 'expandDerivedAssetDependencies' in s and "objectType:'colorized'" in s
+assert '#colorizerCard .card-b{display:grid' not in s, 'Colorizer must not override the shared collapsed-section display rule'
 docs=root/'docs'
 expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
 assert expected_docs.issubset({p.name for p in docs.iterdir()})

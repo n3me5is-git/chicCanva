@@ -1,0 +1,9 @@
+.ai-reference-scale{margin:8px 0 10px;padding:10px 12px;border:1px solid #d7e4de;border-radius:12px;background:#f8fbfa}
+.ai-reference-scale .range-label,.ai-cost-estimate{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ai-reference-scale input[type=range]{width:100%;margin:8px 0 2px}
+.ai-reference-scale .range-ends{display:flex;justify-content:space-between;color:#6a7c76;font-size:10px}
+.ai-reference-scale .help{margin:7px 0 0}
+.ai-cost-estimate{margin:12px 0 8px;padding:11px 12px;border:1px solid #c7ddd5;border-radius:12px;background:linear-gradient(135deg,#f4fbf8,#eef7f4);font-size:12px;line-height:1.45}
+.ai-cost-estimate strong{white-space:nowrap}.ai-cost-estimate span{text-align:right;color:#345f56}
+.ai-cost-estimate .estimate-detail{display:block;color:#657b74;font-size:10px;margin-top:3px}
+@media(max-width:720px){.ai-cost-estimate{display:block}.ai-cost-estimate span{display:block;text-align:left;margin-top:4px}.ai-reference-scale{padding:10px}}

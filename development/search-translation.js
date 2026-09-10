@@ -470,36 +470,47 @@ anno\tyear
 `.trim().split('\n').map(line=>{const [it,en='']=line.split('\t');return[it,en]})));
 
 function normalizeSearchWord(value){return String(value).toLocaleLowerCase('it-IT').normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+const SEARCH_TRANSLATION_CACHE_KEY='chicCanva.search-translations.v1',SEARCH_TRANSLATION_CACHE_LIMIT=500;
+function readSearchTranslationCache(){try{const parsed=JSON.parse(localStorage.getItem(SEARCH_TRANSLATION_CACHE_KEY)||'{}');return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{}}catch(error){return{}}}
+function cachedSearchTranslation(keyword){const item=readSearchTranslationCache()[normalizeSearchWord(String(keyword).trim())];return item&&typeof item.translated==='string'&&item.translated.trim()?item.translated.trim():''}
+function rememberSearchTranslation(keyword,translated){try{const key=normalizeSearchWord(String(keyword).trim()),value=String(translated).trim();if(!key||!value)return;const cache=readSearchTranslationCache();cache[key]={translated:value,saved:Date.now()};const entries=Object.entries(cache).sort((a,b)=>(b[1]?.saved||0)-(a[1]?.saved||0)).slice(0,SEARCH_TRANSLATION_CACHE_LIMIT);localStorage.setItem(SEARCH_TRANSLATION_CACHE_KEY,JSON.stringify(Object.fromEntries(entries)))}catch(error){console.warn('Cache traduzioni non disponibile',error)}}
+function clearSearchTranslationCache(){try{localStorage.removeItem(SEARCH_TRANSLATION_CACHE_KEY)}catch(error){}}
 function translateClipartLocally(keyword){
  const parts=String(keyword).match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu)||[],unknown=[];let changed=false;
  const translated=parts.map(part=>{if(!/[\p{L}\p{N}]/u.test(part))return part;const key=normalizeSearchWord(part);if(Object.prototype.hasOwnProperty.call(SEARCH_IT_EN,key)){changed=true;return SEARCH_IT_EN[key]}if(/^\d+$/.test(key))return part;unknown.push(part);return part}).join('').replace(/\s+([,;])/g,'$1').replace(/\s+/g,' ').trim();
  return{translated:translated||String(keyword).trim(),changed,complete:unknown.length===0,unknown}
 }
 function normalizedPuterText(response){
- let text=response?.message?.content??response?.text??response?.result??response;
- if(Array.isArray(text))text=text.map(item=>typeof item==='string'?item:(item?.text??item?.content??'')).join('\n');
- text=String(text||'')
+ const flatten=value=>{if(Array.isArray(value))return value.map(flatten).filter(Boolean).join('\n');if(value&&typeof value==='object'){const nested=value.text??value.output_text??value.content??value.value??'';return nested===value?'':flatten(nested)}return value};
+ let text=flatten(response?.message?.content??response?.message??response?.text??response?.result??response);
+ text=String(text||'').replace(/<\/(?:thought|thinking|reasoning|analysis)>/gi,'$&\n')
   .replace(/<(?:thought|thinking|reasoning|analysis)\b[^>]*>[\s\S]*?<\/(?:thought|thinking|reasoning|analysis)>/gi,'\n')
-  .replace(/<(?:thought|thinking|reasoning|analysis)\b[^>]*>[\s\S]*$/gi,'\n')
+  .replace(/<(?:thought|thinking|reasoning|analysis)\b[^>]*>/gi,'\n')
   .replace(/```(?:text)?|```/gi,'\n')
   .replace(/<\/?(?:final|answer|output)>/gi,'\n');
- const lines=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean),candidate=(lines.at(-1)||'')
-  .replace(/^(?:final answer|answer|output|translation|english)\s*:\s*/i,'')
+ const lines=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean),marked=[...lines].reverse().find(line=>/^(?:target|final answer|final|answer|output|translation|english)\s*:/i.test(line)),candidate=(marked||lines.at(-1)||'')
+  .replace(/^(?:target|final answer|final|answer|output|translation|english)\s*:\s*/i,'')
   .replace(/^[-*]\s*/,'').replace(/^['"“”`]+|['"“”`]+$/g,'').trim();
- return candidate
+ return /<\/?(?:thought|thinking|reasoning|analysis)\b/i.test(candidate)||candidate==='[object Object]'?'':candidate
 }
 async function translateSearchKeyword(keyword){
  const local=translateClipartLocally(keyword);
  if(local.complete)return{translated:local.translated,note:'dizionario locale: “'+local.translated+'”',source:'local'};
+ const cached=cachedSearchTranslation(keyword);if(cached)return{translated:cached,note:'traduzione AI memorizzata: “'+cached+'”',source:'cache'};
  if(location.protocol==='file:'||typeof puterSignedIn!=='function'||!puterSignedIn())return{translated:local.translated,note:local.changed?'traduzione locale parziale: “'+local.translated+'”':'termine originale · accedi a Puter per la traduzione AI',source:'fallback'};
  try{
   await ensurePuter();
-  const prompt=JSON.stringify(String(keyword).slice(0,160))+' -> translate IT>EN [clipart/icon search]; if already EN output input text only; output translated text only.';
-  const response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,temperature:0,max_tokens:40,normalize:true}),15000),translated=normalizedPuterText(response);
+  const prompt=JSON.stringify(String(keyword).slice(0,160))+' -> translate IT to EN, output only translated text, if input EN, output the same as input. If synonyms, choose the best. Context: emoji, clipart keyword search for drawing and creative projects / educational';
+  // The OpenRouter route accepts reasoning.effort for Gemma even though Puter's
+  // generic option table documents it for fewer model families.  A live probe
+  // showed that `none` returns the translation directly and avoids long thought
+  // blocks.  The tag parser remains as a defensive fallback.
+  const response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,provider:'openrouter',normalize:true,reasoning:{effort:'none'}}),60000),translated=normalizedPuterText(response);
   if(!translated||translated.length>240)throw new Error('Risposta di traduzione non valida');
+  rememberSearchTranslation(keyword,translated);
   schedulePuterUsageRefresh?.();
   return{translated,note:'traduzione AI Puter: “'+translated+'”',source:'puter'}
- }catch(error){return{translated:local.translated,note:local.changed?'Puter non disponibile · traduzione locale parziale: “'+local.translated+'”':'Traduzione AI non disponibile · termine originale',source:'fallback'}}
+ }catch(error){console.warn('Traduzione Gemma non disponibile',error);return{translated:local.translated,note:local.changed?'Puter non disponibile · traduzione locale parziale: “'+local.translated+'”':'Traduzione AI non disponibile · termine originale',source:'fallback'}}
 }
 async function translateClipartKeyword(keyword){
  clipartTranslationNote='';if(!$('clipartTranslate').checked||!keyword)return keyword;

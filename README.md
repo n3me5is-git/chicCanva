@@ -44,7 +44,7 @@ La build pubblicabile include nome applicazione, descrizione, metadati Open Grap
 - `image-effects*`: B/N, outline, chroma key e pipetta;
 - `final-upgrades*`: export unificato, immagini da URL/appunti e integrazioni Puter;
 - `runtime-upgrades*`: pinch con pan simultaneo, stato account/login Puter e protezione delle azioni Puter;
-- `search-translation.js`: dizionario didattico locale e traduzione opzionale con Gemma tramite Puter;
+- `search-translation.js`: dizionario didattico locale, cache persistente delle traduzioni e fallback Gemma tramite Puter;
 - `shapes*`: galleria vettoriale, modalità disegno isolata e modifica dei punti;
 - `colorizer*`: interfaccia e motore raster non distruttivo per riempimenti, gradienti, texture e pennello con contenimento ai bordi;
 - `pdf-import*` e `development/vendor/pdf*`: interfaccia e motore PDF.js incorporato per convertire PDF locali in pagine PNG;
@@ -72,7 +72,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.6.1**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.8.1**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -96,20 +96,20 @@ Il service worker deve rimanere nello stesso percorso dell'app per conservarne l
 - Un solo widget Aggiungi testo, con MAIUSCOLO, adattamento e inserimento come frase o come oggetti separati.
 - Simboli associabili alla lettera precedente o successiva e apostrofo intelligente.
 - Smart emoticon crea testo e OpenMoji separati dentro un gruppo divisibile.
-- Raggruppa, dividi gruppo e splitta testo; i gruppi hanno selezione viola e supportano spostamento, scala e rotazione.
+- Raggruppa, dividi gruppo e splitta testo; i gruppi e le selezioni multiple supportano trascinamento in blocco con mouse o touch, scala e rotazione.
 - Catalogo incorporato di 2.100 font con ricerca e categorie: cicciottelli, rotondi, squadrati, artistici, serif, sans serif, scrittura, monospazio e outline nativi.
 - Anteprima separata del font corrente e della proposta del wizard. Il campione è `Outline`.
 - Modalità Outline disattivabile per usare testo pieno. Colore iniziale di testo, bordi ed emoji outlined: nero.
 - Catalogo completo OpenMoji con Più rilevanti, Tutte e categorie, ricerca globale, colore e spessore dei contorni outlined.
-- Traduzione opzionale per Emoji e Clipart: dizionario locale prioritario sotto 500 KB e Gemma 4 31B tramite Puter soltanto per parole o frasi sconosciute quando l’account è collegato.
+- Traduzione automatica per Emoji e Clipart, attiva per impostazione predefinita: dizionario locale prioritario sotto 500 KB e Gemma 4 31B tramite Puter soltanto per parole o frasi sconosciute quando l’account è collegato. Il parser elimina blocchi di ragionamento `<thought>`, `<analysis>`, `<reasoning>` e simili, quindi usa soltanto l’ultima risposta testuale del modello.
 
 ## Forme e disegno
 
-- Quaranta strumenti vettoriali divisi in palette paginata e categorie Base, Scuola, Frecce e Disegno: include libro, pergamena, casa, sole, nuvola, segnalibro, etichetta, puzzle, lampadina, frecce outline/doppie e callout.
+- Oltre sessanta strumenti vettoriali divisi in palette paginata e categorie Base, Scuola, Frecce e Disegno: include libro, pergamena, casa, sole, nuvola, segnalibro, etichetta, puzzle, lampadina, frecce outline/doppie e callout.
 - La modalità disegno usa un cursore a croce e rende temporaneamente non interattivi gli oggetti esistenti, evitando spostamenti accidentali.
-- Riempimento trasparente o colorato, contorno e spessore regolabili. Tutti i selettori colore ricevono la pipetta del canvas.
-- Poligoni, stelle, fumetti e spezzate espongono vertici modificabili; la modalità resta attiva finché viene disinserita. Poligoni e spezzate supportano nodi a click oppure segmenti a trascinamento, predefiniti su touch.
-- Mano liscia combina filtraggio pesato e semplificazione dei punti per compensare micro-vibrazioni; Mano raw conserva il gesto più fedelmente.
+- Riempimento trasparente o colorato, contorno iniziale nero da 3 px e spessore regolabile. Tutti i selettori colore ricevono la pipetta del canvas.
+- Poligoni, stelle, fumetti e spezzate espongono vertici modificabili; la modalità resta attiva finché viene disinserita. La palette include oltre venti sagome didattiche aggiuntive e usa anteprime vettoriali coerenti con la forma inserita. Poligoni e spezzate supportano nodi a click oppure segmenti a trascinamento, predefiniti su touch.
+- Mano liscia combina filtraggio pesato e semplificazione dei punti per compensare micro-vibrazioni; la levigatura va da 1 a 14 e resta preimpostata a 6. Mano raw conserva il gesto più fedelmente.
 - **Duplica come immagine** rasterizza una forma, un testo, un’emoji, un gruppo o una selezione in un PNG croppabile e utilizzabile come riferimento AI, conservando l’originale.
 - Le forme restano vettoriali e vengono serializzate nel progetto senza creare asset raster.
 
@@ -128,11 +128,13 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 - Le immagini copiate da browser o altre applicazioni possono essere incollate dal widget Immagini, dal widget Riferimento AI, dalla toolbar Incolla speciale o con Ctrl+V quando il browser consente l’accesso agli appunti.
 - Duplica e converti in B/N con regolazione continua da resa netta “al tratto” a scala di grigi soft.
 - Duplica e rendi outline con estrazione Sobel locale dei contorni e sensibilità regolabile; non usa servizi o modelli AI.
-- Prepara disegno da colorare con AI usa la selezione come riferimento, apre il widget Puter e preimposta GPT Image 2, qualità low, stile Pagina da colorare e prompt. La richiesta parte soltanto quando l’utente preme Genera.
-- Generazione Puter con provider, modello, qualità, formato, dieci preset di stile e immagine di riferimento opzionale da file, URL o canvas.
+- Prepara disegno da colorare con AI usa la selezione come riferimento, apre il widget Puter e preimposta GPT Image 2.5 Flare, qualità Low, stile Pagina da colorare e prompt. La richiesta parte soltanto quando l’utente preme Genera.
+- Generazione Puter con un catalogo curato: GPT Image 2 e GPT Image 2.5 Flare; Grok Imagine Standard/Quality; Juggernaut Lightning Flux; HiDream I1 Fast/Standard/No-safety; Seedream 5 Lite; Qwen Image originale Standard/No-safety. Flare Low è il valore iniziale. Le varianti No-safety usano il provider Together e il relativo flag documentato.
+- Sopra il pulsante di generazione compare una stima `~` ricavata dai prezzi per immagine pubblicati da Puter, dalla qualità e dalla lunghezza del prompt complessivo. Puter non espone una quotazione preventiva completa dell’input immagine, quindi riferimento e token sono indicati separatamente e la cifra non è una garanzia di addebito.
+- Il riferimento opzionale da file, URL o canvas può essere inviato a 1×, 0,75×, 0,5× o 0,25×. La riduzione temporanea usa ricampionamento di alta qualità e non modifica l’originale; 1× resta il valore iniziale per conservare testo e dettagli.
 - Il widget AI nasconde i controlli finché l’utente non accede a Puter. Mostra account connesso, cambio account e logout; tutte le opzioni di fetch Puter richiamano lo stesso modale di accesso se la sessione manca.
 - Quando l’utente è già collegato, il widget AI legge `puter.auth.getMonthlyUsage()` e mostra credito mensile usato e disponibile per chicCanva. I valori sono quelli restituiti da Puter, limitati alle chiamate dell’app, e vengono aggiornati dopo generazioni e download Puter.
-- Il widget **Clipart** cerca nelle pagine pubbliche di Openclipart senza API key né catalogo incorporato. Offre keyword, categorie didattiche, paginazione, traduzione italiano→inglese opzionale tramite dizionario locale e Gemma Puter, anteprima grande, download reale e inserimento esplicito tramite Puter. Se il browser blocca la ricerca, il launcher aggiornato usa un endpoint locale limitato a Openclipart.
+- Il widget **Clipart** cerca nelle pagine pubbliche di Openclipart senza API key né catalogo incorporato. Offre keyword, categorie didattiche, paginazione, traduzione italiano→inglese attiva all’avvio tramite dizionario locale e Gemma Puter, anteprima grande, download reale e inserimento esplicito tramite Puter. Se il browser blocca la ricerca, il launcher aggiornato usa un endpoint locale limitato a Openclipart.
 - La generazione AI può richiedere uno sfondo uniforme da chroma key: chicCanva aggiunge al prompt istruzioni per scegliere un colore distante da quelli del soggetto e per evitare texture, ombre e sfumature.
 - La checkbox post elaborazione può conservare il risultato AI e crearne automaticamente un duplicato con sfondo rimosso.
 - Rimozione sfondo uniforme locale per disegni e lineart, con rilevamento automatico del colore dominante sul bordo e rimozione predefinita anche delle aree interne. Una pipetta accanto a ogni selettore colore permette di campionare direttamente da qualunque oggetto visibile nel canvas.
@@ -142,15 +144,15 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 
 ## Colorizer
 
-Il widget **Colorizer**, collocato sotto Immagini, rasterizza in modo non distruttivo un’immagine, testo, emoji, forma, gruppo o selezione. Per testi, forme e gruppi si sceglie una risoluzione da 1× a 4×; 2× è il valore predefinito e consigliato, mentre 1× limita memoria e dimensione del progetto. Offre riempimento con tolleranza per aree chiuse e un pennello rotondo con contenimento opzionale ai bordi. Lo stile può essere un colore uniforme, un gradiente direzionale o radiale oppure una delle texture procedurali incorporate; trasparenza, direzione, dimensione pennello e tolleranza sono regolabili e tutti i colori supportano la pipetta canvas.
+Il widget **Colorizer**, collocato sotto Immagini, rasterizza in modo non distruttivo un’immagine, testo, emoji, forma, gruppo o selezione. Per testi, forme e gruppi si sceglie una risoluzione da 1× a 4×; 2× è il valore predefinito e consigliato, mentre 1× limita memoria e dimensione del progetto. Offre riempimento con tolleranza per aree chiuse e un pennello rotondo con contenimento opzionale ai bordi. Lo stile può essere un colore uniforme, un gradiente direzionale o radiale oppure una delle sedici texture procedurali incorporate: righe, pois, quadretti, griglia, onde, coriandoli, tratteggio, mattoncini, zig zag, rombi, quaderno, nido d’ape, codette, stelline, scaglie e tessuto. Trasparenza, direzione, dimensione pennello e tolleranza sono regolabili e tutti i colori supportano la pipetta canvas.
 
-Le applicazioni sono conservate come regioni numerate e stili separati sopra una base immutabile. Pennello e riempimento con lo stesso stile si fondono solo quando le regioni si toccano; compartimenti distinti restano indipendenti. Il pennello intelligente rimane nella componente connessa del punto iniziale anche se il puntatore oltrepassa un contorno, mentre disattivando la protezione dipinge in continuità anche sopra le linee. Un clic su una regione esistente ne sostituisce colore, gradiente o texture; clic destro o pressione prolungata apre il comando per eliminarla. Ogni gesto del pennello produce un solo passaggio nello storico e aggiorna durante il trascinamento soltanto il rettangolo di pixel modificato. Il risultato è una normale immagine, quindi supporta crop, trasformazioni, export e riferimento AI. **Ripristina oggetto originale** ricrea la sorgente modificabile; i comandi clipboard copiano il risultato visibile o un render dell’originale. La base e il descrittore sorgente sono salvati anche come metadati di recupero dell’oggetto, e gli asset attivi o in commit restano protetti dalla pulizia. Annulla e Ripristina mantengono Colorizer attivo quando lo stato raggiunto contiene ancora lo stesso oggetto colorizzato; il menu contestuale dei due pulsanti permette di saltare direttamente a un punto dello storico.
+Le applicazioni sono conservate come regioni numerate e stili separati sopra una base immutabile. Il riempimento estende la maschera soltanto verso i pixel di antialias contigui e fino al contorno scuro; il colore viene composto dietro i pixel semitrasparenti e il bordo originale viene ridisegnato sopra, eliminando il filetto bianco senza attraversare il contorno. Pennello e riempimento con lo stesso stile si fondono solo quando le regioni si toccano; compartimenti distinti restano indipendenti. Il pennello intelligente rimane nella componente connessa del punto iniziale anche se il puntatore oltrepassa un contorno, mentre disattivando la protezione dipinge in continuità anche sopra le linee. Un clic su una regione esistente ne sostituisce colore, gradiente o texture; clic destro o pressione prolungata apre il comando per eliminarla. Ogni gesto del pennello produce un solo passaggio nello storico e aggiorna durante il trascinamento soltanto il rettangolo di pixel modificato. Il risultato è una normale immagine, quindi supporta crop, trasformazioni, export e riferimento AI. **Ripristina oggetto originale** ricrea la sorgente modificabile; i comandi clipboard copiano il risultato visibile o un render dell’originale. La base e il descrittore sorgente sono salvati anche come metadati di recupero dell’oggetto, e gli asset attivi o in commit restano protetti dalla pulizia. Annulla e Ripristina mantengono Colorizer attivo quando lo stato raggiunto contiene ancora lo stesso oggetto colorizzato; il menu contestuale dei due pulsanti permette di saltare direttamente a un punto dello storico.
 
 ## Canvas ed esportazione
 
 - Zoom, Fit, pulsanti `+`/`−`, manina, Ctrl + rotella e pinch a due dita con pan simultaneo.
 - Griglia e snap indipendenti; con Snap attivo anche la rotazione segue uno step configurabile, 10° per impostazione predefinita.
-- Il menu contestuale dell’icona rotazione e il sottomenu degli oggetti offrono azzeramento, ±90°, 180° e flip orizzontale/verticale.
+- Il menu contestuale dell’icona rotazione e il sottomenu degli oggetti offrono azzeramento, ±90°, 180°, riflessione sinistra-destra e riflessione alto-basso.
 - La modalità **Selezione a oggetto** permette su touch di aggiungere o togliere elementi con tocchi successivi, senza Ctrl e senza spostarli.
 - Copia, incolla, duplica, elimina, ordine livelli e menu contestuale. **Fissa posizione**, disponibile nel menu destro o tramite pressione lunga su touch, blocca movimento, scala e rotazione e viene conservato nel progetto.
 - Lo strumento area di export disabilita temporaneamente l’interazione con gli oggetti, quindi il rettangolo può iniziare anche sopra una fotografia senza trascinarla.
