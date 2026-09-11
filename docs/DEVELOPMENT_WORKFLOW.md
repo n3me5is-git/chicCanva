@@ -88,7 +88,7 @@ The query string is intentionally changed to avoid browser/service-worker cache 
 10. write the root HTML;
 11. copy the local HTML/BAT build;
 12. copy the PWA HTML/manifest/icons;
-13. derive the PWA service-worker cache ID from the HTML SHA-256;
+13. externalize CSS and JavaScript only in the PWA build and derive its service-worker cache ID from the complete hosted bundle;
 14. assert byte equality between the three HTML copies.
 
 Every string replacement uses an assertion. If an anchor changes, update the composer deliberately instead of making the assertion permissive. Silent missed replacements create partially upgraded builds.
@@ -158,7 +158,7 @@ Use timeouts with a named `AbortController`. Treat timeout aborts as an ordinary
 
 ## 9. PWA changes
 
-The PWA `index.html` must stay byte-identical to root `chicCanva.html`. Do not add PWA-only scripts directly to `index.html`; the runtime domain gate decides whether to expose install and service-worker behavior.
+The PWA must be produced only by `build-workspace.py` from the generated monolithic application. Do not hand-edit its index or extracted assets. Root and local server copies stay byte-identical; the hosted build externalizes the existing payloads without changing their order or behavior.
 
 When changing the service worker:
 
@@ -190,7 +190,7 @@ For every material feature, document:
 
 ### Browser regression tests
 
-`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave generations and active-project deduplication, asset collection, export-region interaction isolation, object locks, image diagnostics, export ZIP signature, clipboard ingestion, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, AI options, sidebar behavior, and guide quality.
+`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave generations and active-project deduplication, asset collection, export-region interaction isolation, object locks, image diagnostics, export ZIP signature, clipboard ingestion and object-to-image clipboard controls, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, provider-specific AI quality/resolution, OpenAI output limits, Puter dashboard-Credit estimates, Prompt Library persistence/clipboard controls, sidebar behavior, and guide quality.
 
 Prefer meaningful behavior tests. For example, the eyedropper regression uses a fixture whose CSS dimensions differ from its backing buffer, proving the coordinate transform rather than merely checking that a button exists.
 
@@ -204,6 +204,7 @@ Some platform behavior cannot be fully simulated:
 - actual large-model WebGPU inference;
 - remote services under ad blockers and restrictive networks;
 - native clipboard permissions across browsers;
+- real Puter pre/post-call usage deltas and their relationship to the displayed estimate;
 - print-dialog margins and physical printer scaling.
 
 Document manual results with browser/device/version when they matter to a release.

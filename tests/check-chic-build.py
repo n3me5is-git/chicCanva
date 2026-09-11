@@ -2,6 +2,11 @@ from pathlib import Path
 import re,json,struct,hashlib
 root=Path(__file__).resolve().parent.parent
 s=(root/'chicCanva.html').read_text(encoding='utf-8')
+assert 'black-forest-labs/FLUX.1-schnell' not in s, 'vecchio fallback Flux presente nella build'
+for expected_model in ('byteplus/seedream-5-0-lite-260128','google/gemini-3.1-flash-lite-image'):
+ assert expected_model in s, f'modello Puter mancante: {expected_model}'
+for hidden_model in ('rundiffusion/juggernaut-lightning-flux','hidream-ai/hidream-i1-fast','hidream-ai/hidream-i1-dev','qwen/qwen-image'):
+ assert hidden_model not in s, f'modello Puter non funzionante ancora visibile: {hidden_model}'
 scripts=re.findall(r'<script>([\s\S]*?)</script>',s)
 body=s[s.index('\n<body>'):s.rindex('<script>')]
 ids=re.findall(r'\bid="([^"]+)"',body)
@@ -19,10 +24,14 @@ assert 'openclipart.org/search/' in s and 'parseOpenclipartResults' in s and 'cl
 assert 'api.mymemory.translated.net/get' not in s and 'SEARCH_IT_EN' in s and 'translateClipartLocally' in s and 'google/gemma-4-31b-it' in s and 'clipartTranslate' in ids
 assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
 pwa=root/'build/chicCanva-pwa'
-expected={'index.html','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png'}
+expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','robots.txt'}
 assert {p.name for p in pwa.iterdir()}==expected
-assert (pwa/'index.html').read_bytes()==(root/'chicCanva.html').read_bytes()
-build_id=hashlib.sha256((root/'chicCanva.html').read_bytes()).hexdigest()[:16]
+pwa_html=(pwa/'index.html').read_text(encoding='utf-8')
+assert len(pwa_html.encode('utf-8'))<500000 and '<style' not in pwa_html
+assert all(f'src="{name}" defer' in pwa_html for name in ['fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js'])
+assert 'href="chiccanva.css"' in pwa_html
+build_material=pwa_html.encode('utf-8')+b''.join((pwa/name).read_bytes() for name in ['chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js'])
+build_id=hashlib.sha256(build_material).hexdigest()[:16]
 sw=(pwa/'chicCanva-sw.js').read_text(encoding='utf-8')
 assert '__BUILD_ID__' not in sw and "const BUILD_ID='"+build_id+"'" in sw
 assert 'shellNavigation(request)' in sw and 'event.waitUntil(refreshNavigation(request))' in sw
@@ -32,8 +41,11 @@ assert {'192x192','512x512'}=={icon['sizes'] for icon in manifest['icons']}
 for size in (192,512):
  data=(pwa/f'chiccanva-{size}.png').read_bytes();assert data[:8]==b'\x89PNG\r\n\x1a\n'
  width,height=struct.unpack('>II',data[16:24]);assert (width,height)==(size,size)
+share=(pwa/'chiccanva-share.png').read_bytes();assert share[:8]==b'\x89PNG\r\n\x1a\n'
+assert struct.unpack('>II',share[16:24])==(1200,630)
+assert 'User-agent: TelegramBot' in (pwa/'robots.txt').read_text(encoding='utf-8')
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
-assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate'}.issubset(ids)
+assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate','aiGeneratedFallback','aiGeneratedDialog','aiGeneratedRetryBtn','aiGeneratedDownloadBtn'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
 vendor=root/'development/vendor'
 assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
@@ -44,7 +56,7 @@ assert f'id="appVersion">v{expected_version}' in s
 assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
 assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
-assert 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-512.png"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
+assert 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-share.png?v=' in s and 'property="og:image:width" content="1200"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
 assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class="license">' in s
 assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-puter-login-link' in s
 assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s

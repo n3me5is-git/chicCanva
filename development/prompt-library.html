@@ -1,0 +1,39 @@
+<dialog id="promptLibraryDialog" class="chic-dialog prompt-library-dialog">
+  <div class="prompt-library-head">
+    <div><h2>Prompt Library</h2><p class="help">Prompt riutilizzabili salvati nello storage del browser.</p></div>
+    <button class="iconbtn" id="closePromptLibraryBtn" type="button" aria-label="Chiudi Prompt Library">×</button>
+  </div>
+  <section id="promptLibraryListView">
+    <div class="prompt-library-filters">
+      <input class="field" id="promptLibrarySearch" type="search" placeholder="Cerca per titolo, tag, descrizione o prompt…">
+      <details class="prompt-tag-filter" id="promptLibraryTagFilter"><summary>Filtra per tag <span id="promptLibraryTagCount"></span></summary><div id="promptLibraryTagChoices" class="prompt-tag-choices"></div><button class="btn" id="promptLibraryTagReset" type="button">Azzera filtri</button></details>
+    </div>
+    <div class="prompt-library-actions row">
+      <button class="btn accent" id="newPromptLibraryBtn" type="button">＋ Nuovo prompt</button>
+      <button class="btn" id="exportPromptLibraryBtn" type="button">Esporta JSON</button>
+      <button class="btn" id="importPromptLibraryBtn" type="button">Importa JSON</button>
+      <input id="importPromptLibraryFile" type="file" accept="application/json,.json" hidden>
+    </div>
+    <div id="promptLibraryItems" class="prompt-library-items"></div>
+    <p id="promptLibraryEmpty" class="status">La libreria è vuota.</p>
+  </section>
+  <section id="promptLibraryEditorView" class="hidden">
+    <button class="btn prompt-library-back" id="promptLibraryBackBtn" type="button">← Torna alla lista</button>
+    <label>Titolo<input class="field" id="promptEntryTitle" maxlength="120" placeholder="Es. Cartellino animale"></label>
+    <label>Tag<div class="prompt-tag-editor" id="promptTagEditor"><div id="promptEntryTagChips" class="prompt-entry-tag-chips"></div><input id="promptEntryTagInput" maxlength="60" placeholder="Scrivi e premi virgola o Invio"><input id="promptEntryTags" type="hidden"></div></label>
+    <label>Breve descrizione<textarea class="field" id="promptEntryDescription" rows="2" maxlength="600" placeholder="Quando e perché usare questo prompt"></textarea></label>
+    <label>Prompt<textarea class="field" id="promptEntryText" rows="8" placeholder="Istruzioni complete per il generatore…"></textarea></label>
+    <label>Stile associato<select id="promptEntryStyle"></select></label>
+    <label class="check"><input id="promptEntryIncludeReference" type="checkbox">Salva anche l’immagine di riferimento corrente</label>
+    <div id="promptEntryReference" class="prompt-entry-reference hidden"><img id="promptEntryReferenceImg" alt="Riferimento salvato"><span id="promptEntryReferenceName"></span></div>
+    <p class="help">Le immagini associate possono occupare molto spazio nello storage del browser. Il progetto sul canvas non viene modificato.</p>
+    <div class="row prompt-library-editor-actions">
+      <button class="btn accent grow" id="savePromptEntryBtn" type="button">Salva prompt</button>
+      <button class="btn hidden" id="usePromptEntryBtn" type="button">Usa questo prompt</button>
+      <button class="btn hidden" id="copyPromptEntryBtn" type="button">Copia prompt</button>
+      <button class="btn hidden" id="copyPromptImageBtn" type="button">Copia immagine</button>
+      <button class="btn danger hidden" id="deletePromptEntryBtn" type="button">Elimina</button>
+    </div>
+    <div class="status" id="promptLibraryStatus"></div>
+  </section>
+</dialog>

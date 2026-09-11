@@ -26,12 +26,13 @@ Il BAT apre `http://localhost:8000/`. Non richiede Python, Node, npm o installaz
 
 La cartella `build/chicCanva-pwa/` è pronta da pubblicare insieme su un dominio HTTPS:
 
-- `index.html`: la stessa app completa e autosufficiente.
+- `index.html`: shell leggera con metadati sociali e interfaccia HTML.
+- `chiccanva.css`, `fabric.js`, `jspdf.js`, `chiccanva-pdf.js`, `chiccanva-app.js`: gli stessi contenuti della build monolitica, separati soltanto per hosting e cache PWA.
 - `chicCanva.webmanifest`: nome, colori, avvio standalone e icone.
 - `chicCanva-sw.js`: cache della struttura dell'app e delle risorse grafiche/font già richieste.
-- `chiccanva-192.png` e `chiccanva-512.png`: icone installabili con Chicca.
+- `chiccanva-192.png` e `chiccanva-512.png`: icone installabili con Chicca; `chiccanva-share.png` è la scheda 1200×630 per le anteprime sociali.
 
-Carica il contenuto della cartella mantenendo i cinque file nello stesso percorso. Il pulsante **Installa** compare soltanto su un vero dominio HTTPS. L'app non collega il manifest e non registra il service worker da `file://`, localhost, indirizzi IP, domini `.local` o reti private; il launcher locale continua quindi a comportarsi come prima.
+Carica l'intero contenuto della cartella mantenendo tutti i file nello stesso percorso. Il pulsante **Installa** compare soltanto su un vero dominio HTTPS. L'app non collega il manifest e non registra il service worker da `file://`, localhost, indirizzi IP, domini `.local` o reti private; il launcher locale continua quindi a comportarsi come prima.
 
 La build pubblicabile include nome applicazione, descrizione, metadati Open Graph/Twitter con URL HTTPS assoluti, favicon incorporata e icona PWA da 512 px per le anteprime quando il link viene condiviso. Il dominio predefinito è `https://chiccanva.testthis.one/`; per un altro dominio esegui la build impostando `CHICCANVA_PUBLIC_URL` sul suo URL pubblico HTTPS. Il piè di pagina della sidebar collega il repository ufficiale. Su Chrome, Edge e Android il pulsante compatto apre il prompt nativo. Su iPhone/iPad mostra la procedura Safari **Condividi → Aggiungi alla schermata Home**. La struttura dell'app funziona offline dopo il primo caricamento; funzioni online come Puter, font non ancora scaricati e modelli AI continuano a richiedere rete. Ogni build usa una cache con versione propria e, quando è disponibile un aggiornamento, mostra un comando esplicito per applicarlo senza lasciare la PWA bloccata su una copia precedente.
 
@@ -72,13 +73,13 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app, controlla con Node ogni blocco JavaScript inline quando Node è disponibile, aggiorna entrambe le distribuzioni e inserisce nel service worker un ID derivato dallo SHA-256 dell'HTML. Le tre copie dell'HTML devono risultare identiche byte per byte. La release corrente è **1.8.1**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali, poi il service worker riceve un ID derivato dall'intero insieme. La release corrente è **1.9.3**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
 ## Hosting
 
-Per il deploy copia insieme i cinque file di `build/chicCanva-pwa/`. Servi `index.html` come HTML, il manifest come `application/manifest+json` e il service worker come JavaScript. È consigliato forzare la rivalidazione di `chicCanva-sw.js`; una copia vecchia trattenuta dal CDN può ritardare l'aggiornamento della PWA.
+Per il deploy copia l'intero contenuto di `build/chicCanva-pwa/`. Servi `index.html` come HTML, il manifest come `application/manifest+json` e il service worker come JavaScript. È consigliato forzare la rivalidazione di `chicCanva-sw.js`; una copia vecchia trattenuta dal CDN può ritardare l'aggiornamento della PWA.
 
 Il service worker deve rimanere nello stesso percorso dell'app per conservarne lo scope. Una Content Security Policy rigida deve consentire script/stili inline o usare hash generati, Blob Worker, Data/Blob image, Puter, provider font, OpenMoji, Openclipart e `staticimgly.com`. Le istruzioni operative complete sono in [Deploy](docs/DEPLOYMENT.md).
 
@@ -129,11 +130,12 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 - Duplica e converti in B/N con regolazione continua da resa netta “al tratto” a scala di grigi soft.
 - Duplica e rendi outline con estrazione Sobel locale dei contorni e sensibilità regolabile; non usa servizi o modelli AI.
 - Prepara disegno da colorare con AI usa la selezione come riferimento, apre il widget Puter e preimposta GPT Image 2.5 Flare, qualità Low, stile Pagina da colorare e prompt. La richiesta parte soltanto quando l’utente preme Genera.
-- Generazione Puter con un catalogo curato: GPT Image 2 e GPT Image 2.5 Flare; Grok Imagine Standard/Quality; Juggernaut Lightning Flux; HiDream I1 Fast/Standard/No-safety; Seedream 5 Lite; Qwen Image originale Standard/No-safety. Flare Low è il valore iniziale. Le varianti No-safety usano il provider Together e il relativo flag documentato.
-- Sopra il pulsante di generazione compare una stima `~` ricavata dai prezzi per immagine pubblicati da Puter, dalla qualità e dalla lunghezza del prompt complessivo. Puter non espone una quotazione preventiva completa dell’input immagine, quindi riferimento e token sono indicati separatamente e la cifra non è una garanzia di addebito.
+- Generazione Puter con un catalogo curato: GPT Image 2 e GPT Image 2.5 Flare; Grok Imagine Standard/Quality; Seedream 5 Lite; Gemini 3.1 Flash Lite Image. Flare Low è il valore iniziale. Per OpenAI qualità, proporzioni e risoluzione sono indipendenti: il menu del lato corto è sempre visibile con valori da Minima valida a circa 2K. Una modalità distinta accetta larghezza e altezza esatte, disabilita ratio e preset e valida multipli di 16, rapporto, lati e pixel complessivi. xAI mantiene i livelli 1K/2K documentati. Grok e i modelli “Altri” vengono inviati con il nome canonico Puter senza forzare un provider differente. I profili che Puter instradava verso un endpoint FLUX non disponibile sono nascosti finché il servizio non li rende nuovamente utilizzabili.
+- Sopra il pulsante di generazione compare una stima `~` nei Credits usati dalla dashboard Puter e nel relativo controvalore indicativo, ricavata dai prezzi pubblicati, dalla qualità, dalla lunghezza del prompt, dalla risoluzione e dall’eventuale immagine di riferimento. La stima OpenAI è calibrata anche sui consumi restituiti da Puter; il dato effettivo resta quello dell’account dopo la richiesta.
+- La **Prompt Library** salva in IndexedDB titolo, tag, descrizione, prompt, preset e, solo su richiesta, il riferimento associato. I tag vengono inseriti come chip rimovibili; ricerca e filtri multipli includono i tag, mentre la lista resta scorrevole. Sono disponibili copia negli appunti di testo e immagine, import/export JSON e inserimento append del testo copiato nel prompt corrente.
 - Il riferimento opzionale da file, URL o canvas può essere inviato a 1×, 0,75×, 0,5× o 0,25×. La riduzione temporanea usa ricampionamento di alta qualità e non modifica l’originale; 1× resta il valore iniziale per conservare testo e dettagli.
 - Il widget AI nasconde i controlli finché l’utente non accede a Puter. Mostra account connesso, cambio account e logout; tutte le opzioni di fetch Puter richiamano lo stesso modale di accesso se la sessione manca.
-- Quando l’utente è già collegato, il widget AI legge `puter.auth.getMonthlyUsage()` e mostra credito mensile usato e disponibile per chicCanva. I valori sono quelli restituiti da Puter, limitati alle chiamate dell’app, e vengono aggiornati dopo generazioni e download Puter.
+- Quando l’utente è già collegato, il widget AI legge `puter.auth.getMonthlyUsage()` e mostra percentuale, Credits usati, disponibili e Plafond nella stessa scala numerica della dashboard. Il widget include il collegamento ufficiale per ricaricare credito Puter.
 - Il widget **Clipart** cerca nelle pagine pubbliche di Openclipart senza API key né catalogo incorporato. Offre keyword, categorie didattiche, paginazione, traduzione italiano→inglese attiva all’avvio tramite dizionario locale e Gemma Puter, anteprima grande, download reale e inserimento esplicito tramite Puter. Se il browser blocca la ricerca, il launcher aggiornato usa un endpoint locale limitato a Openclipart.
 - La generazione AI può richiedere uno sfondo uniforme da chroma key: chicCanva aggiunge al prompt istruzioni per scegliere un colore distante da quelli del soggetto e per evitare texture, ombre e sfumature.
 - La checkbox post elaborazione può conservare il risultato AI e crearne automaticamente un duplicato con sfondo rimosso.

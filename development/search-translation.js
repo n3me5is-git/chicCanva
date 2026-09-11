@@ -501,15 +501,23 @@ async function translateSearchKeyword(keyword){
  try{
   await ensurePuter();
   const prompt=JSON.stringify(String(keyword).slice(0,160))+' -> translate IT to EN, output only translated text, if input EN, output the same as input. If synonyms, choose the best. Context: emoji, clipart keyword search for drawing and creative projects / educational';
-  // The OpenRouter route accepts reasoning.effort for Gemma even though Puter's
-  // generic option table documents it for fewer model families.  A live probe
-  // showed that `none` returns the translation directly and avoids long thought
-  // blocks.  The tag parser remains as a defensive fallback.
-  const response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,provider:'openrouter',normalize:true,reasoning:{effort:'none'}}),60000),translated=normalizedPuterText(response);
+  // Gemma accepts OpenRouter's nested reasoning option through Puter. Prefer
+  // low reasoning for ambiguous educational search terms. If that route is not
+  // available, retry through Puter's default routing without reasoning options.
+  let response,route='openrouter';
+  try{response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,provider:'openrouter',normalize:true,reasoning:{effort:'low'}}),60000)}
+  catch(primaryError){
+   console.warn('Traduzione Gemma OpenRouter non disponibile; provo il routing Puter predefinito',primaryError);
+   route='default';response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,normalize:true}),60000)
+  }
+  let translated=normalizedPuterText(response);
+  if((!translated||translated.length>240)&&route==='openrouter'){
+   route='default';response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,normalize:true}),60000);translated=normalizedPuterText(response)
+  }
   if(!translated||translated.length>240)throw new Error('Risposta di traduzione non valida');
   rememberSearchTranslation(keyword,translated);
   schedulePuterUsageRefresh?.();
-  return{translated,note:'traduzione AI Puter: “'+translated+'”',source:'puter'}
+  return{translated,note:'traduzione AI Puter: “'+translated+'”',source:'puter',route}
  }catch(error){console.warn('Traduzione Gemma non disponibile',error);return{translated:local.translated,note:local.changed?'Puter non disponibile · traduzione locale parziale: “'+local.translated+'”':'Traduzione AI non disponibile · termine originale',source:'fallback'}}
 }
 async function translateClipartKeyword(keyword){

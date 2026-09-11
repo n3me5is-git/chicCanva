@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Puter Account / Credits / Billing Inspector</title>
+<script src="https://js.puter.com/v2/"></script>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#121a2d;--panel2:#0f1728;--text:#eaf0ff;--muted:#91a0bd;--line:#263552;--good:#53d18b;--warn:#f2c14e;--bad:#ff6b7a;--accent:#72a7ff;--chip:#1b2944}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#09101e,#0b1020 32%,#080d18);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text)}
+main{max-width:1500px;margin:auto;padding:24px}.hero{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}.hero h1{font-size:clamp(25px,4vw,40px);margin:0 0 7px}.hero p{max-width:920px;margin:0;color:var(--muted);line-height:1.55}.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;color:#c9d5ec;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;gap:9px;padding:14px;background:rgba(18,26,45,.82);border:1px solid var(--line);border-radius:14px;position:sticky;top:8px;z-index:10;backdrop-filter:blur(10px)}button,.btn{border:1px solid #35517d;background:#17305a;color:white;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer}button:hover{filter:brightness(1.12)}button.secondary{background:#121d31;border-color:var(--line);color:#d7e1f5}button.danger{background:#4b1e28;border-color:#793240}.switch{display:flex;align-items:center;gap:8px;padding:0 8px;color:var(--muted);font-size:13px}.switch input{accent-color:var(--accent)}
+.statusline{margin:12px 0 18px;color:var(--muted);font-size:13px;min-height:20px}.statusline b{color:var(--text)}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(180px,1fr));gap:12px;margin-bottom:14px}.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:14px;min-height:112px}.card .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.card .v{font-size:23px;font-weight:800;margin-top:9px;word-break:break-word}.card .s{font-size:12px;color:var(--muted);margin-top:7px}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{background:rgba(18,26,45,.9);border:1px solid var(--line);border-radius:14px;overflow:hidden}.panel.full{grid-column:1/-1}.panel h2{font-size:15px;margin:0;padding:13px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}.panel .body{padding:13px 15px}.note{font-size:12px;color:var(--muted);line-height:1.55}.badge{font-size:10px;padding:4px 7px;border:1px solid var(--line);border-radius:999px;background:var(--chip);color:#b9c8e2}table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:left;padding:8px 9px;border-bottom:1px solid rgba(38,53,82,.7);vertical-align:top}th{color:#b6c4dd;font-weight:700;background:#0e1627;position:sticky;top:0}td code{font-size:11px}.tablewrap{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:10px}pre{white-space:pre-wrap;word-break:break-word;background:#08101d;border:1px solid var(--line);border-radius:10px;padding:12px;max-height:500px;overflow:auto;font-size:11px;line-height:1.45;color:#d4def0}.rawtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}.rawtabs button{font-size:11px;padding:6px 9px;background:#101b2f}.rawtabs button.active{background:#234779}.kv{display:grid;grid-template-columns:minmax(170px,.38fr) 1fr;gap:6px 12px;font-size:12px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){word-break:break-word}.finding{padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#0d1728;margin:7px 0;font-size:12px;line-height:1.45}.finding strong{display:block;margin-bottom:3px}.small{font-size:11px;color:var(--muted)}.footer{margin:20px 0;color:var(--muted);font-size:11px;line-height:1.6}.spinner{display:inline-block;width:12px;height:12px;border:2px solid #4e668b;border-top-color:white;border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}@media(max-width:650px){main{padding:12px}.cards{grid-template-columns:1fr}.hero{flex-direction:column}.toolbar{position:static}.kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <div>
+      <h1>Puter Account / Credits / Billing Inspector</h1>
+      <p>Tester locale per vedere cosa espone realmente PuterJS sul profilo collegato: subscription flag, allowance, remaining, consumo per API/app, metering raw, endpoint HTTP, API runtime non documentate e delta prima/dopo. Non mostra né esporta il token di autenticazione.</p>
+    </div>
+    <span class="pill">PuterJS CDN v2 · live runtime</span>
+  </div>
+
+  <div class="toolbar">
+    <button id="signin">Accedi / cambia account</button>
+    <button id="probe">▶ Probe completo</button>
+    <button id="refresh" class="secondary">Aggiorna usage</button>
+    <button id="snapshot" class="secondary">Salva snapshot</button>
+    <button id="compare" class="secondary">Confronta snapshot</button>
+    <button id="copy" class="secondary">Copia JSON redatto</button>
+    <button id="download" class="secondary">Esporta JSON</button>
+    <button id="clear" class="danger">Reset risultati</button>
+    <label class="switch"><input id="direct" type="checkbox" checked> probe HTTP raw</label>
+    <label class="switch"><input id="global" type="checkbox" checked> tenta globalUsage</label>
+  </div>
+  <div class="statusline" id="status">Pronto. Premi <b>Probe completo</b>. Tutto resta nel browser salvo le normali chiamate read-only a Puter.</div>
+
+  <section class="cards">
+    <div class="card"><div class="k">Account</div><div class="v" id="cUser">—</div><div class="s" id="cUserS">non interrogato</div></div>
+    <div class="card"><div class="k">Subscription flag</div><div class="v" id="cSub">—</div><div class="s" id="cSubS">campo user.subscribed</div></div>
+    <div class="card"><div class="k">Allowance mensile</div><div class="v" id="cAllow">—</div><div class="s" id="cAllowS">—</div></div>
+    <div class="card"><div class="k">Remaining</div><div class="v" id="cRemain">—</div><div class="s" id="cRemainS">—</div></div>
+    <div class="card"><div class="k">Consumati</div><div class="v" id="cSpent">—</div><div class="s" id="cSpentS">allowance − remaining</div></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Interpretazione account <span class="badge">heuristic + raw</span></h2>
+      <div class="body" id="findings"><div class="note">Dopo il probe evidenzierò i segnali che distinguono subscription, free allowance e possibili crediti/funding.</div></div>
+    </section>
+
+    <section class="panel">
+      <h2>Runtime / auth surface <span class="badge">discovery</span></h2>
+      <div class="body"><div id="runtimeSummary" class="kv"></div><div class="note" style="margin-top:10px">La scansione cerca nomi come usage, billing, credit, subscription, plan, quota, meter, funding, payment e allowance senza invocare metodi sconosciuti.</div></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Usage per API <span class="badge">getMonthlyUsage()</span></h2>
+      <div class="body"><div class="tablewrap"><table><thead><tr><th>API</th><th>Cost raw</th><th>Cost interpretato</th><th>Count</th><th>Units</th></tr></thead><tbody id="usageRows"><tr><td colspan="5" class="small">Nessun dato.</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Usage per app + dettagli <span class="badge">getDetailedAppUsage()</span></h2>
+      <div class="body"><div class="tablewrap"><table><thead><tr><th>App ID</th><th>Calls</th><th>Total raw</th><th>Total interpretato</th><th>Detailed probe</th></tr></thead><tbody id="appRows"><tr><td colspan="5" class="small">Nessun dato.</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="panel">
+      <h2>Campi billing-like trovati <span class="badge">recursive scan</span></h2>
+      <div class="body"><div class="tablewrap"><table><thead><tr><th>Path</th><th>Valore</th></tr></thead><tbody id="interestingRows"><tr><td colspan="2" class="small">Nessun dato.</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="panel">
+      <h2>Network / endpoint log <span class="badge">XHR observer</span></h2>
+      <div class="body"><div class="tablewrap"><table><thead><tr><th>Metodo</th><th>Endpoint</th><th>Status</th><th>Tipo</th></tr></thead><tbody id="networkRows"><tr><td colspan="4" class="small">Il logger parte con questa pagina. Authorization non viene registrato.</td></tr></tbody></table></div></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Raw inspector <span class="badge">redatto</span></h2>
+      <div class="body"><div class="rawtabs" id="rawTabs"></div><pre id="raw">Nessun risultato.</pre></div>
+    </section>
+
+    <section class="panel full">
+      <h2>Delta snapshot <span class="badge">zero-spend comparator</span></h2>
+      <div class="body"><div id="delta" class="note">Salva uno snapshot, esegui manualmente una o più chiamate in un altro tester, poi premi “Confronta snapshot”. Il comparator non genera traffico AI a pagamento.</div></div>
+    </section>
+  </div>
+
+  <div class="footer">
+    Note: le API pubbliche di metering possono essere scoped all'app chiamante; quindi questo file mostra sia il risultato ufficiale sia i dati raw osservabili. <code>getGlobalUsage()</code> è presente nel sorgente corrente ma marcato interno/amministrativo e normalmente deve fallire per un account ordinario. I campi monetari documentati sono in microcents quando <code>allowanceInfo.unit</code> è assente; il sorgente corrente ammette anche <code>unit: "credits"</code>, caso in cui il tester lascia i valori in credits senza inventare una conversione USD.
+  </div>
+</main>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const state = { results:{}, network:[], detailed:{}, currentRawKey:null, startedAt:new Date().toISOString() };
+const SENSITIVE = /(auth.?token|authorization|cookie|password|secret|session|bearer)/i;
+const INTERESTING = /(usage|billing|credit|subscr|plan|quota|meter|fund|payment|allowance|balance|paid|free_storage|storage|upgrade)/i;
+
+function setStatus(msg, busy=false){ $('#status').innerHTML = (busy?'<span class="spinner"></span> ':'') + msg; }
+function esc(v){ return String(v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function cleanErr(e){
+  if (!e) return {message:'Unknown error'};
+  if (typeof e === 'string') return {message:e};
+  const out={};
+  for (const k of ['name','message','code','status','statusText','error','msg','reason']) if(e[k]!==undefined) out[k]=redact(e[k]);
+  if (!Object.keys(out).length) { try{return redact(JSON.parse(JSON.stringify(e)));}catch{return {message:String(e)}} }
+  return out;
+}
+function redact(value, seen=new WeakSet()){
+  if (value == null || typeof value !== 'object') return value;
+  if (seen.has(value)) return '[Circular]'; seen.add(value);
+  if (Array.isArray(value)) return value.map(v=>redact(v,seen));
+  const o={};
+  for (const [k,v] of Object.entries(value)) o[k] = SENSITIVE.test(k) ? '[REDACTED]' : redact(v,seen);
+  return o;
+}
+function pretty(v){ try{return JSON.stringify(redact(v),null,2)}catch{return String(v)} }
+function moneyMode(){ return state.results.monthly?.allowanceInfo?.unit || 'microcents'; }
+function moneyDisplay(n){
+  if (n == null || Number.isNaN(Number(n))) return '—';
+  const num=Number(n), mode=moneyMode();
+  if(mode==='credits') return `${num.toLocaleString(undefined,{maximumFractionDigits:6})} credits`;
+  return `$${(num/100000000).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:8})}`;
+}
+function rawNum(n){ return n==null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:8}); }
+function addResult(key,val){ state.results[key]=redact(val); renderRawTabs(); }
+
+// Passive XHR observer. Never stores Authorization/request bodies.
+(function installXhrObserver(){
+  if(window.__puterInspectorXhrPatched) return; window.__puterInspectorXhrPatched=true;
+  const X=XMLHttpRequest.prototype, origOpen=X.open, origSend=X.send;
+  X.open=function(method,url,...rest){ this.__pi={method:String(method),url:String(url),t0:performance.now()}; return origOpen.call(this,method,url,...rest); };
+  X.send=function(body){
+    if(this.__pi){
+      this.addEventListener('loadend',()=>{
+        try{
+          const u=this.__pi.url;
+          if(/puter/i.test(u) || u.startsWith(puter?.APIOrigin||'__never__')){
+            let type=''; try{type=this.getResponseHeader('content-type')||''}catch{}
+            const row={method:this.__pi.method,url:u,status:this.status,type,duration_ms:Math.round(performance.now()-this.__pi.t0)};
+            state.network.push(row); if(state.network.length>100)state.network.shift(); renderNetwork();
+          }
+        }catch{}
+      });
+    }
+    return origSend.call(this,body);
+  };
+})();
+
+async function ensureSignedIn(){
+  if(puter.auth.isSignedIn()) return true;
+  await puter.auth.signIn({request_auth:true});
+  return puter.auth.isSignedIn();
+}
+
+function getSurface(obj,label,maxDepth=3){
+  const rows=[], seen=new WeakSet();
+  function walk(cur,path,depth){
+    if(!cur || (typeof cur!=='object'&&typeof cur!=='function') || seen.has(cur) || depth>maxDepth) return;
+    seen.add(cur);
+    let p=cur, level=0;
+    while(p && level<3){
+      for(const name of Object.getOwnPropertyNames(p)){
+        if(['constructor','prototype','__proto__'].includes(name)) continue;
+        const full=path?`${path}.${name}`:name;
+        let d; try{d=Object.getOwnPropertyDescriptor(p,name)}catch{continue}
+        const typ=d?.value===undefined?(d?.get?'getter':'unknown'):typeof d.value;
+        if(INTERESTING.test(full) || path===label+'.auth') rows.push({path:full,type:typ,callable:typ==='function'});
+        if(depth<maxDepth && d && 'value' in d && d.value && (typeof d.value==='object'||typeof d.value==='function') && !SENSITIVE.test(name)) walk(d.value,full,depth+1);
+      }
+      p=Object.getPrototypeOf(p); level++;
+    }
+  }
+  walk(obj,label,0); return rows.filter((r,i,a)=>a.findIndex(x=>x.path===r.path)===i).sort((a,b)=>a.path.localeCompare(b.path));
+}
+
+function findInteresting(obj,root='result',max=300){
+  const rows=[], seen=new WeakSet();
+  function walk(v,path,depth){
+    if(rows.length>=max || depth>8 || v==null) return;
+    if(typeof v!=='object') return;
+    if(seen.has(v)) return; seen.add(v);
+    for(const [k,val] of Object.entries(v)){
+      const p=`${path}.${k}`;
+      if(INTERESTING.test(k) && !SENSITIVE.test(k) && typeof val!=='object') rows.push({path:p,value:val});
+      if(typeof val==='object' && val!==null) walk(val,p,depth+1);
+    }
+  }
+  walk(obj,root,0); return rows;
+}
+
+async function directGet(path){
+  if(!puter.authToken) throw new Error('No auth token in runtime');
+  const origin=puter.APIOrigin || puter.defaultAPIOrigin || 'https://api.puter.com';
+  const r=await fetch(origin+path,{method:'GET',credentials:'include',headers:{Authorization:`Bearer ${puter.authToken}`}});
+  const text=await r.text(); let body=text; try{body=JSON.parse(text)}catch{}
+  const headers={}; for(const [k,v] of r.headers.entries()) headers[k]=v;
+  return {ok:r.ok,status:r.status,statusText:r.statusText,url:r.url,headers,body:redact(body)};
+}
+
+async function safeCall(name,fn){
+  try{ const v=await fn(); addResult(name,{ok:true,value:v}); return v; }
+  catch(e){ addResult(name,{ok:false,error:cleanErr(e)}); return undefined; }
+}
+
+async function probeCore(){
+  const user=await safeCall('auth.getUser',()=>Promise.resolve().then(()=>puter.auth.getUser()));
+  const who=typeof puter.auth.whoami==='function' ? await safeCall('auth.whoami',()=>puter.auth.whoami()) : undefined;
+  const monthly=typeof puter.auth.getMonthlyUsage==='function' ? await safeCall('auth.getMonthlyUsage',()=>puter.auth.getMonthlyUsage()) : undefined;
+  if(user) state.results.user=redact(user);
+  if(who) state.results.whoami=redact(who);
+  if(monthly){ state.results.monthly=redact(monthly); await probeDetailed(monthly); }
+
+  if($('#global').checked && typeof puter.auth.getGlobalUsage==='function')
+    await safeCall('auth.getGlobalUsage (expected admin-only)',()=>puter.auth.getGlobalUsage());
+
+  if($('#direct').checked){
+    await safeCall('HTTP GET /whoami',()=>directGet('/whoami'));
+    await safeCall('HTTP GET /metering/usage',()=>directGet('/metering/usage'));
+    const ids=collectAppIds(monthly).slice(0,20);
+    for(const id of ids) await safeCall(`HTTP GET /metering/usage/${id}`,()=>directGet(`/metering/usage/${encodeURIComponent(id)}`));
+    if($('#global').checked) await safeCall('HTTP GET /metering/globalUsage (expected denied)',()=>directGet('/metering/globalUsage'));
+  }
+}
+
+function collectAppIds(monthly){
+  const s=new Set();
+  if(puter.appID!=null && puter.appID!=='') s.add(String(puter.appID));
+  for(const k of Object.keys(monthly?.appTotals||{})) s.add(String(k));
+  return [...s];
+}
+async function probeDetailed(monthly){
+  if(typeof puter.auth.getDetailedAppUsage!=='function') return;
+  const ids=collectAppIds(monthly).slice(0,30);
+  for(const id of ids){
+    try{ state.detailed[id]=redact(await puter.auth.getDetailedAppUsage(id)); }
+    catch(e){ state.detailed[id]={__error:cleanErr(e)}; }
+  }
+  addResult('auth.getDetailedAppUsage[*]',state.detailed);
+}
+
+function buildRuntime(){
+  const surface=getSurface(puter,'puter',3);
+  const meta={
+    env:puter.env, appID:puter.appID, APIOrigin:puter.APIOrigin, defaultAPIOrigin:puter.defaultAPIOrigin,
+    isSignedIn:!!puter.auth?.isSignedIn?.(), authMethods:[], interestingSurface:surface
+  };
+  try{
+    const names=new Set(); let p=puter.auth, depth=0;
+    while(p&&depth++<4){ for(const n of Object.getOwnPropertyNames(p)){ try{if(typeof p[n]==='function')names.add(n)}catch{} } p=Object.getPrototypeOf(p); }
+    meta.authMethods=[...names].filter(n=>n!=='constructor').sort();
+  }catch{}
+  addResult('runtime',meta); return meta;
+}
+
+function renderCards(){
+  const u=state.results.user || state.results.whoami || state.results['auth.getUser']?.value || {};
+  const m=state.results.monthly || state.results['auth.getMonthlyUsage']?.value || {};
+  const ai=m?.allowanceInfo||{}; const allow=Number(ai.monthUsageAllowance), rem=Number(ai.remaining); const spent=(Number.isFinite(allow)&&Number.isFinite(rem))?allow-rem:null;
+  $('#cUser').textContent=u.username||'—'; $('#cUserS').textContent=u.uuid?`uuid ${u.uuid}`:'nessun uuid';
+  const sub=u.subscribed;
+  $('#cSub').textContent=sub===true?'SÌ':sub===false?'NO':'UNKNOWN'; $('#cSub').className='v '+(sub===true?'good':sub===false?'warn':'');
+  $('#cSubS').textContent=sub===undefined?'campo non restituito':'user.subscribed';
+  $('#cAllow').textContent=Number.isFinite(allow)?rawNum(allow):'—'; $('#cAllowS').textContent=Number.isFinite(allow)?moneyDisplay(allow):'non disponibile';
+  $('#cRemain').textContent=Number.isFinite(rem)?rawNum(rem):'—'; $('#cRemainS').textContent=Number.isFinite(rem)?moneyDisplay(rem):'non disponibile';
+  $('#cSpent').textContent=spent!=null?rawNum(spent):'—'; $('#cSpentS').textContent=spent!=null?moneyDisplay(spent):'allowance − remaining';
+}
+function renderUsage(){
+  const m=state.results.monthly || state.results['auth.getMonthlyUsage']?.value || {}; const entries=Object.entries(m?.usage||{});
+  $('#usageRows').innerHTML=entries.length?entries.sort((a,b)=>(b[1]?.cost||0)-(a[1]?.cost||0)).map(([k,v])=>`<tr><td><code>${esc(k)}</code></td><td>${esc(rawNum(v?.cost))}</td><td>${esc(moneyDisplay(v?.cost))}</td><td>${esc(rawNum(v?.count))}</td><td>${esc(rawNum(v?.units))}</td></tr>`).join(''):'<tr><td colspan="5" class="small">Nessun dato usage.</td></tr>';
+}
+function renderApps(){
+  const m=state.results.monthly || state.results['auth.getMonthlyUsage']?.value || {}; const ids=collectAppIds(m);
+  $('#appRows').innerHTML=ids.length?ids.map(id=>{const v=m?.appTotals?.[id]||{}, d=state.detailed[id]; const ds=d?.__error?`❌ ${d.__error.message||d.__error.status||'error'}`:d?'✅ ricevuto':'—'; return `<tr><td><code>${esc(id)}</code>${String(puter.appID)===String(id)?' <span class="badge">current</span>':''}</td><td>${esc(rawNum(v.count))}</td><td>${esc(rawNum(v.total))}</td><td>${esc(moneyDisplay(v.total))}</td><td>${esc(ds)}</td></tr>`}).join(''):'<tr><td colspan="5" class="small">Nessuna app rilevata.</td></tr>';
+}
+function renderInteresting(){
+  const rows=[]; for(const [k,v] of Object.entries(state.results)) rows.push(...findInteresting(v,k));
+  rows.sort((a,b)=>a.path.localeCompare(b.path));
+  $('#interestingRows').innerHTML=rows.length?rows.slice(0,300).map(r=>`<tr><td><code>${esc(r.path)}</code></td><td>${esc(typeof r.value==='string'?r.value:JSON.stringify(r.value))}</td></tr>`).join(''):'<tr><td colspan="2" class="small">Nessun campo billing-like trovato.</td></tr>';
+}
+function renderNetwork(){
+  $('#networkRows').innerHTML=state.network.length?[...state.network].reverse().map(r=>`<tr><td>${esc(r.method)}</td><td><code>${esc(r.url.replace(/^https?:\/\/[^/]+/,''))}</code></td><td>${esc(r.status)}</td><td>${esc(r.type||'—')}</td></tr>`).join(''):'<tr><td colspan="4" class="small">Nessuna richiesta osservata.</td></tr>';
+}
+function renderRuntime(){
+  const r=state.results.runtime||{}; const pairs=[['env',r.env],['appID',r.appID],['APIOrigin',r.APIOrigin],['signed in',r.isSignedIn],['auth methods',(r.authMethods||[]).join(', ')],['billing-like runtime members',(r.interestingSurface||[]).length]];
+  $('#runtimeSummary').innerHTML=pairs.map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b??'—')}</div>`).join('');
+}
+function renderFindings(){
+  const u=state.results.user||state.results.whoami||state.results['auth.getUser']?.value||{}; const m=state.results.monthly||state.results['auth.getMonthlyUsage']?.value||{}; const ai=m?.allowanceInfo||{};
+  const f=[];
+  if(u.subscribed===true) f.push(['good','Subscription rilevata','Il backend ha restituito user.subscribed = true. Questo è il segnale pubblico più diretto di un abbonamento Puter attivo, ma non include nome piano, prezzo o rinnovo.']);
+  else if(u.subscribed===false) f.push(['warn','Nessuna subscription secondo /whoami','user.subscribed = false. Un allowance/remaining positivo può comunque esistere come quota gratuita o credito, quindi non equivale a “saldo zero”.']);
+  else f.push(['warn','Subscription non determinabile','Il campo subscribed non è stato restituito nel contesto corrente. Prova il file come sito web autenticato e controlla sia getUser sia /whoami raw.']);
+  if(ai.monthUsageAllowance!==undefined) f.push(['good','Allowance disponibile',`monthUsageAllowance = ${rawNum(ai.monthUsageAllowance)}, remaining = ${rawNum(ai.remaining)}; unit = ${ai.unit||'microcents (documentazione)'}.`]);
+  else f.push(['bad','Allowance non restituito','getMonthlyUsage non ha prodotto allowanceInfo oppure la chiamata è fallita.']);
+  const keys=[]; for(const [k,v] of Object.entries(state.results)) for(const x of findInteresting(v,k)) if(/credit|balance|fund|payment|plan|subscription|top.?up/i.test(x.path) && !/subscribed$/i.test(x.path)) keys.push(x);
+  if(keys.length) f.push(['good','Campi extra potenzialmente utili',`Trovati ${keys.length} campi oltre a subscribed/allowance. Controlla la tabella “Campi billing-like trovati”: potrebbero distinguere credito, funding o piano nel tuo deployment/account.`]);
+  else f.push(['warn','Nessuna API pubblica esplicita “pay-as-you-go balance” rilevata','Nel surface corrente non emerge un metodo documentato che restituisca saldo top-up, metodo di pagamento, invoice o nome piano. L’inspector segnala comunque qualsiasi campo raw con nomi credit/balance/funding/payment/plan se Puter dovesse aggiungerlo.']);
+  const gu=state.results['auth.getGlobalUsage (expected admin-only)']||state.results['HTTP GET /metering/globalUsage (expected denied)'];
+  if(gu) f.push([gu.ok?'warn':'good','globalUsage probe',gu.ok?'La route ha risposto: comportamento inatteso per un account ordinario; verifica il raw.':'La route è stata negata/fallita come previsto dal sorgente corrente, che la marca amministrativa.']);
+  $('#findings').innerHTML=f.map(([c,t,d])=>`<div class="finding"><strong class="${c}">${esc(t)}</strong>${esc(d)}</div>`).join('');
+}
+function renderRawTabs(){
+  const keys=Object.keys(state.results); if(!keys.length){$('#rawTabs').innerHTML='';$('#raw').textContent='Nessun risultato.';return}
+  if(!state.currentRawKey||!state.results[state.currentRawKey]) state.currentRawKey=keys[0];
+  $('#rawTabs').innerHTML=keys.map(k=>`<button class="${k===state.currentRawKey?'active':''}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
+  $('#rawTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.currentRawKey=b.dataset.k;renderRawTabs()});
+  $('#raw').textContent=pretty(state.results[state.currentRawKey]);
+}
+function renderAll(){ renderCards();renderUsage();renderApps();renderInteresting();renderNetwork();renderRuntime();renderFindings();renderRawTabs(); }
+
+async function runProbe(){
+  setStatus('Autenticazione e probe in corso…',true);
+  try{
+    await ensureSignedIn();
+    buildRuntime();
+    await probeCore();
+    renderAll(); setStatus(`Probe completato alle <b>${new Date().toLocaleTimeString()}</b>. Controlla soprattutto subscribed, allowanceInfo, campi billing-like e raw HTTP.`);
+  }catch(e){ addResult('probe fatal error',cleanErr(e));renderAll();setStatus(`<span class="bad">Probe interrotto:</span> ${esc(cleanErr(e).message||String(e))}`); }
+}
+async function refreshUsage(){
+  setStatus('Aggiorno solo usage…',true);
+  try{await ensureSignedIn();const m=await puter.auth.getMonthlyUsage();state.results.monthly=redact(m);addResult('auth.getMonthlyUsage',{ok:true,value:m});await probeDetailed(m);renderAll();setStatus('Usage aggiornato.');}catch(e){addResult('refresh error',cleanErr(e));renderAll();setStatus('Errore refresh usage.');}
+}
+function snapshotObj(){
+  const m=state.results.monthly||state.results['auth.getMonthlyUsage']?.value; if(!m)return null;
+  return {ts:new Date().toISOString(),unit:m.allowanceInfo?.unit||'microcents',allowanceInfo:redact(m.allowanceInfo||{}),usage:redact(m.usage||{}),appTotals:redact(m.appTotals||{})};
+}
+function saveSnapshot(){const s=snapshotObj();if(!s){setStatus('Prima esegui almeno un probe usage.');return}localStorage.setItem('puterBillingInspectorSnapshot',JSON.stringify(s));setStatus(`Snapshot salvato alle <b>${new Date(s.ts).toLocaleTimeString()}</b>.`);}
+async function compareSnapshot(){
+  const old=JSON.parse(localStorage.getItem('puterBillingInspectorSnapshot')||'null'); if(!old){$('#delta').innerHTML='<span class="warn">Nessuno snapshot salvato.</span>';return}
+  await refreshUsage(); const now=snapshotObj(); if(!now)return;
+  const keys=new Set([...Object.keys(old.usage||{}),...Object.keys(now.usage||{})]); const rows=[];
+  for(const k of keys){const a=old.usage?.[k]||{},b=now.usage?.[k]||{};const dc=(Number(b.cost)||0)-(Number(a.cost)||0),dn=(Number(b.count)||0)-(Number(a.count)||0),du=(Number(b.units)||0)-(Number(a.units)||0);if(dc||dn||du)rows.push({k,dc,dn,du});}
+  const dr=(Number(now.allowanceInfo?.remaining)||0)-(Number(old.allowanceInfo?.remaining)||0);
+  $('#delta').innerHTML=`<div class="finding"><strong>Snapshot ${esc(old.ts)} → ${esc(now.ts)}</strong>Δ remaining: <b>${esc(rawNum(dr))}</b> (${esc(moneyDisplay(dr))})</div>`+(rows.length?`<div class="tablewrap"><table><thead><tr><th>API</th><th>Δ cost</th><th>Δ count</th><th>Δ units</th></tr></thead><tbody>${rows.map(r=>`<tr><td><code>${esc(r.k)}</code></td><td>${esc(rawNum(r.dc))} · ${esc(moneyDisplay(r.dc))}</td><td>${esc(rawNum(r.dn))}</td><td>${esc(rawNum(r.du))}</td></tr>`).join('')}</tbody></table></div>`:'<div class="note">Nessuna differenza rilevata nelle API usage.</div>');
+}
+function exportPayload(){return redact({generatedAt:new Date().toISOString(),sdk:{env:puter.env,appID:puter.appID,APIOrigin:puter.APIOrigin},results:state.results,detailed:state.detailed,network:state.network});}
+async function copyJson(){await navigator.clipboard.writeText(JSON.stringify(exportPayload(),null,2));setStatus('JSON redatto copiato negli appunti.');}
+function downloadJson(){const b=new Blob([JSON.stringify(exportPayload(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`puter-account-inspector-${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function clearAll(){state.results={};state.detailed={};state.network=[];state.currentRawKey=null;renderAll();$('#delta').textContent='Risultati resettati. Lo snapshot salvato resta in localStorage finché non viene sovrascritto.';setStatus('Risultati resettati.');}
+
+$('#signin').onclick=async()=>{try{await puter.auth.signIn({request_auth:true});setStatus('Account autenticato/cambiato. Ora esegui il probe.');}catch(e){setStatus(`Login: ${esc(cleanErr(e).message||'annullato')}`)}};
+$('#probe').onclick=runProbe; $('#refresh').onclick=refreshUsage; $('#snapshot').onclick=saveSnapshot; $('#compare').onclick=compareSnapshot; $('#copy').onclick=copyJson; $('#download').onclick=downloadJson; $('#clear').onclick=clearAll;
+
+buildRuntime(); renderAll();
+})();
+</script>
+</body>
+</html>

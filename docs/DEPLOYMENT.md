@@ -55,7 +55,9 @@ chiccanva-192.png
 chiccanva-512.png
 ```
 
-The HTML includes an embedded favicon plus Open Graph and Twitter Card metadata. Crawlers such as Telegram receive an absolute HTTPS `og:url`, canonical URL, and image URL in the initial HTML response without running JavaScript. The default public origin is `https://chiccanva.testthis.one/`. For another host or subpath, set `CHICCANVA_PUBLIC_URL` to the complete public HTTPS base URL before running `python development/build-workspace.py`. Keep `chiccanva-512.png` publicly reachable beside `index.html`; the generated absolute URL points to it. The service worker scope remains its containing directory.
+The lightweight PWA index includes Open Graph and Twitter Card metadata before any application script. Crawlers such as Telegram receive an absolute HTTPS `og:url`, canonical URL, and 1200×630 PNG URL without running JavaScript. The default public origin is `https://chiccanva.testthis.one/`. For another host or subpath, set `CHICCANVA_PUBLIC_URL` to the complete public HTTPS base URL before running `python development/build-workspace.py`. Keep `chiccanva-share.png` publicly reachable beside `index.html`; the generated absolute URL points to it. The service worker scope remains its containing directory.
+
+Enable gzip or Brotli for HTML, CSS and JavaScript. The hosted index is kept below 500 KB and loads the larger application payloads from same-origin files; this helps crawlers read metadata promptly and lets browsers cache each part independently. Telegram can retain a failed preview by URL, so after uploading a corrected build test once with a harmless query string such as `?share=2`.
 
 Recommended server behavior:
 
@@ -66,7 +68,7 @@ Recommended server behavior:
 | `chicCanva.webmanifest` | `application/manifest+json` | short/moderate cache |
 | PNG icons | `image/png` | long immutable cache if filenames stay stable only with purge strategy |
 
-The service worker's internal shell cache is content-versioned from the HTML SHA-256. Serving an old `chicCanva-sw.js` behind a CDN can still delay updates, so the SW response should be revalidated.
+The service worker's internal shell cache is content-versioned from the PWA index and all local CSS/JavaScript payloads. Serving an old `chicCanva-sw.js` behind a CDN can still delay updates, so the SW response should be revalidated.
 
 ## 5. PWA eligibility and update flow
 
@@ -165,7 +167,7 @@ To roll back, redeploy a complete earlier five-file PWA set. Its service-worker 
 - [ ] Public HTTPS URL resolves.
 - [ ] All PWA files return HTTP 200 with correct MIME types.
 - [ ] Manifest `start_url` and icon paths resolve within scope.
-- [ ] The public page source exposes absolute chicCanva Open Graph/Twitter/canonical URLs and `chiccanva-512.png` is reachable by link-preview crawlers without authentication or bot filtering.
+- [ ] The public page source exposes absolute chicCanva Open Graph/Twitter/canonical URLs and `chiccanva-share.png` is reachable by link-preview crawlers without authentication or bot filtering.
 - [ ] Service worker is revalidated and contains no `__BUILD_ID__` placeholder.
 - [ ] Install UI is hidden on localhost/file and available on the public domain where supported.
 - [ ] Reload while offline reaches the editor after one successful online load.

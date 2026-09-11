@@ -26,6 +26,7 @@ Active modular sources:
 - `development/enhancements*` — toolbar/sidebar interaction and UI refinements;
 - `development/image-effects*` — grayscale, Sobel outline, chroma key, automatic target color, canvas eyedropper;
 - `development/final-upgrades*` — unified export, ZIP writer, page/region image export to the system clipboard, clipboard/URL/Puter integration, AI additions;
+- `development/prompt-library*` — IndexedDB prompt catalog with tags, styles, optional references and JSON interchange;
 - `development/runtime-upgrades*` — two-finger canvas navigation and Puter authentication/account gates;
 - `development/search-translation.js` — compact Italian search dictionary and default-enabled Gemma/Puter fallback; normalized responses keep reasoning separate and tag stripping handles native fallbacks;
 - `development/colorizer*` — non-destructive raster coloring UI and engine: flood fill, gradients, procedural textures, smart brush, source restoration and clipboard output;
@@ -59,8 +60,10 @@ Then run `tests/v7-test.html` through HTTP with a fresh query string and require
 - `build/chicCanva-pwa/chicCanva-sw.js`
 - `build/chicCanva-pwa/chiccanva-192.png`
 - `build/chicCanva-pwa/chiccanva-512.png`
+- `build/chicCanva-pwa/chiccanva-share.png`
+- `build/chicCanva-pwa/chiccanva.css`, `fabric.js`, `jspdf.js`, `chiccanva-pdf.js`, `chiccanva-app.js`
 
-Root, local-build, and PWA HTML must be byte-identical. The PWA cache ID is derived from the HTML SHA-256.
+Root and local-server HTML must be byte-identical and monolithic. The PWA is generated from that exact application but externalizes CSS and the four inline JavaScript payloads so its initial index stays small for startup and social crawlers. The PWA cache ID is derived from the index and every local CSS/JS payload.
 
 ## Important current behaviors
 
@@ -82,15 +85,15 @@ Root, local-build, and PWA HTML must be byte-identical. The PWA cache ID is deri
 - Chroma-key automatic color detects the dominant perimeter color. Internal matching areas are removed by default.
 - Every color input receives a canvas eyedropper. The picker samples the lower raster canvas using client-to-backing-buffer coordinates; do not replace it with Fabric document coordinates.
 - IMG.LY background removal is local. Every run uses a disposable worker so ONNX sessions and tensors leave RAM at completion while model files remain in Cache Storage. Desktop keeps selectable models/devices; mobile forces `isnet_quint8` and downscales excessive input.
-- Puter AI uses the curated profiles in `development/ai-generation.js`: GPT Image 2/2.5 Flare, Grok Imagine, Juggernaut Lightning Flux, HiDream I1, Seedream 5 Lite, and original Qwen Image. It exposes documented provider-specific options, a published-price estimate, optional 1×/.75×/.5×/.25× reference preparation, styles, chroma-key prompt injection, usage feedback, and optional local post-removal. AI controls stay hidden until explicit Puter sign-in; the account bar supports `request_auth` account switching and logout. Generation always requires an explicit click.
+- Puter AI uses the curated profiles in `development/ai-generation.js`: GPT Image 2/2.5 Flare, Grok Imagine, Seedream 5 Lite, and Gemini 3.1 Flash Lite Image. Grok and the “Other” profiles are passed with their canonical namespaced Puter IDs and no forced provider fallback. Juggernaut Lightning, HiDream I1, and original Qwen Image are intentionally absent from the visible catalog because a 2026-09-11 live smoke test showed Puter rerouting those canonical IDs to an unavailable internal FLUX.1-schnell endpoint. The build strips the obsolete Together/Flux fallback and tests reject both its reintroduction and exposing those failing profiles. OpenAI supports a short-edge preset or exact width/height mode; both reject values outside multiples of 16, 1:3–3:1, 3840 px per edge, or 655,360–8,294,400 total pixels. Remote generated URLs are recovered in order from an origin-clean returned image, direct fetch, the bounded localhost proxy, and `puter.net.fetch()`. If every conversion path fails, the generated result remains visible in a persistent preview with retry, download, open, and fullscreen actions instead of being discarded. The same smoke session passed for Seedream 5 Lite and Grok Imagine Standard. The estimate uses the same Credits scale shown by the Puter dashboard and includes output, prompt, and scaled reference input. Prompt Library supports text/image clipboard copy and the AI prompt has an append-from-clipboard command. AI controls stay hidden until explicit Puter sign-in; the account bar supports account switching and logout. Generation always requires an explicit click.
 - Canvas navigation supports Fit, numeric zoom, Ctrl+wheel, hand pan, and a two-touch pinch that zooms around the gesture midpoint while panning. Narrow touch viewports use larger visible Fabric controls plus a 40–44 px invisible hit area for selections, crop edges, and editable shape vertices; desktop pointer controls retain their original metrics.
-- Clipart searches public Openclipart pages and expects English keywords. Translation first resolves known terms through a compact internal didactic dictionary, then a persistent browser cache, and finally `google/gemma-4-31b-it` through Puter's OpenRouter provider when signed in. The Gemma call uses `reasoning: {effort: 'none'}` after a live probe confirmed that this provider route returns a clean translation much faster than the default long-thinking path. The cache retains at most 500 successful AI translations and the app memory reset clears it. Emoji uses the same policy; with translation active it searches only on Enter or the explicit magnifier and keeps a busy state from translation through result rendering.
+- Clipart searches public Openclipart pages and expects English keywords. Translation first resolves known terms through a compact internal didactic dictionary, then a persistent browser cache, and finally `google/gemma-4-31b-it` through Puter's OpenRouter provider when signed in. The preferred call uses `reasoning: {effort: 'low'}`; failure or an invalid response triggers one retry through Puter's default route without reasoning parameters. The defensive parser removes thought tags. The cache retains at most 500 successful AI translations and the app memory reset clears it. Emoji uses the same policy; with translation active it searches only on Enter or the explicit magnifier and keeps a busy state from translation through result rendering.
 - Autosave uses IndexedDB generation records referenced by small stable `workspace-current`/`workspace-previous` pointers, an immediate dirty marker, a 1.2 s debounce, and a small synchronous fallback. Rotation does not read the previous large JSON into RAM. A serialized workspace stores the active project once and project switches do not deep-clone asset Data URL strings. Startup can recover without a localStorage pointer and legacy records remain readable.
 - Asset GC runs after history truncation, redo-branch replacement, page deletion, object deletion, and explicit project close. Preserve references reachable from current pages/history plus the independent last AI reference and internal clipboard.
 - The image widget reports source/crop pixels, encoded bytes, decoded bitmap RAM estimate, physical size, and effective DPI. Local resampling can replace one selected image at ¼×, ⅓×, ½×, 2×, 3×, or 4× without changing its page geometry or crop.
 - Object position lock is context-menu-only and serialized. Touch users open the same menu with a stationary 1.4 s long press. Export-region mode temporarily disables target finding and restores each object's previous interaction flags on exit.
 - Export supports PDF, PNG, JPG, region, and client-side ZIP. JSON can optionally include history.
-- PWA is offered only on public HTTPS domains, not file/localhost/IP/private hosts. Updates use a waiting-worker banner and explicit activation. Social metadata uses absolute URLs from `CHICCANVA_PUBLIC_URL` (default `https://chiccanva.testthis.one/`) so Telegram can crawl it without JavaScript.
+- PWA is offered only on public HTTPS domains, not file/localhost/IP/private hosts. Updates use a waiting-worker banner and explicit activation. Its lightweight `index.html` exposes static title, description and absolute Open Graph/Twitter URLs from `CHICCANVA_PUBLIC_URL` (default `https://chiccanva.testthis.one/`) plus a 1200×630 share image, so Telegram can crawl it without JavaScript.
 
 ## Non-negotiable implementation rules
 
@@ -118,7 +121,7 @@ Root, local-build, and PWA HTML must be byte-identical. The PWA cache ID is deri
 
 ## Last validated state
 
-The current release line is 1.8.1. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
+The current release line is 1.9.3. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
 
 - Puter fetch checkboxes remain disabled and unchecked until the AI section reports an active Puter session. Login links navigate to that section; they must never open nested dialogs.
 

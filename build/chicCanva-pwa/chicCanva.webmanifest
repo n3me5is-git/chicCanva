@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "chicCanva — laboratorio creativo didattico",
+  "name": "chicCanva — Piccole idee, grandi progetti",
   "short_name": "chicCanva",
-  "description": "Mini editor per cartelloni, scritte, schede e lavori da stampare per bambini e didattica.",
+  "description": "Editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.",
   "lang": "it",
   "dir": "ltr",
   "start_url": "./",
@@ -19,4 +19,3 @@
     {"src": "chiccanva-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }
-

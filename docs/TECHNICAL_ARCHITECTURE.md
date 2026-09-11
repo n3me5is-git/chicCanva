@@ -91,7 +91,7 @@ flowchart TD
 
 `build-workspace.py` performs deterministic string insertion and replacement against the baseline. Assertions on every replacement fail fast if an expected anchor disappears. It reads the semantic display version from `development/version.json`, injects the current ISO build date and absolute social metadata derived from `CHICCANVA_PUBLIC_URL` (defaulting to `https://chiccanva.testthis.one/`), then extracts each inline script and asks `node --check -` to validate syntax through standard input. Node is a developer-side validation aid; setting `CHICCANVA_SKIP_NODE_CHECK=1` skips that check, and a missing Node binary produces a warning instead of making the application impossible to build.
 
-The composer writes the root HTML, copies the local build, copies the hosted HTML, computes the first 16 hexadecimal characters of the HTML SHA-256, and injects that identifier into the service worker. It asserts that root, local, and PWA HTML bytes are identical.
+The composer writes one monolithic root HTML and an identical local-server copy. For the hosted PWA it extracts the single style block and three inline JavaScript payloads into same-origin files while preserving document order, leaving static metadata and markup in a lightweight index. It hashes the index plus all extracted payloads and injects the first 16 hexadecimal characters into the service worker cache name.
 
 ## 4. Runtime component model
 
@@ -324,12 +324,26 @@ The request uses `normalize:true`. Current Puter therefore places the answer in 
 
 `development/ai-generation.js` keeps the user-facing catalog separate from Puter's request payload. Each profile stores the exact model ID, optional provider pin, supported qualities, base published price, reference capability and safety flag. `aiRequestOptions()` maps those profiles to Puter's documented provider contracts:
 
-- OpenAI Image uses `provider: 'openai-image-generation'`, `quality`, and `ratio: {w,h}`;
-- xAI uses `provider: 'xai'`, the selected Grok model, `quality: '1k'`, and `ratio: {w,h}`;
-- Together uses `aspect_ratio` and, only for explicitly named profiles, `disable_safety_checker: true`;
+- OpenAI Image uses `provider: 'openai-image-generation'`, `quality`, and `ratio: {w,h}`; with custom output enabled, `w` and `h` are the calculated pixel dimensions rather than a reduced ratio;
+- xAI uses the canonical namespaced Grok model ID and `quality: '1k' | '2k'`, relying on Puter's model inference as shown by the model card;
+- Seedream and Gemini 3.1 Flash Lite Image use their canonical namespaced IDs without a forced provider, dimensions or fallback model. Juggernaut, HiDream and Qwen remain hidden because live requests were rerouted by Puter to an unavailable FLUX endpoint;
 - image references use the cross-provider `input_images` array plus `input_image_mime_type`.
 
-The reference scale control renders a temporary PNG with `imageSmoothingQuality='high'`, frees its temporary canvas after encoding, and never rewrites the project asset. The displayed cost is an estimate from the published per-image base price and selected quality. There is no documented `txt2img()` preflight quote endpoint, so the app labels the amount with `~`; account usage after generation is authoritative.
+The reference scale control renders a temporary PNG with `imageSmoothingQuality='high'`, frees its temporary canvas after encoding, and never rewrites the project asset. OpenAI quality tiers remain independent from custom raster size. `aiOpenAiDimensions()` treats the preset selector as an approximate short edge; exact mode uses `aiOpenAiCustomDimensions()` and explicit width and height. Both paths validate 16-pixel units, aspect, edge, and total-pixel constraints before request construction. Four controlled Low-quality Puter probes confirmed that documented `ratio:{w,h}` preserves custom dimensions while an undocumented `size` string is ignored. xAI maps its resolution selector to `quality: '1k' | '2k'`.
+
+`aiGeneratedImageDataUrl()` treats generation and asset ingestion as separate phases. It supports Blob, canvas, data URL and image-element returns, then tries bounded direct fetch, the localhost proxy and Puter network fetch. Failure in the second phase creates `aiPendingGenerated` and the recovery UI instead of throwing away a successful provider result. Retry insertion operates on that retained result and does not call `txt2img()` again. The build also removes the legacy Together catalog containing `black-forest-labs/FLUX.1-schnell`; static and browser tests assert the curated canonical IDs and fail if that old fallback reappears.
+
+`aiPuterGenerationError()` recognizes Puter's `model_not_available` response. It reports the requested canonical ID and any server-side FLUX reroute while deliberately avoiding an automatic substitute that could change output semantics or consume a different number of credits. Live provider smoke tests are documented in `FEATURES_AND_PROCESSES.md` and should be repeated when Puter changes routing.
+
+`txt2img()` normally returns an `HTMLImageElement`. `aiGeneratedImageDataUrl()` first accepts embedded `data:` output or a browser-readable Blob/URL. Only when a remote output URL is blocked by CORS does it retry through `puter.net.fetch()`, with a bounded timeout. This conversion is required because project autosave and JSON export must retain the generated bytes rather than an expiring remote URL.
+
+Usage values from `getMonthlyUsage()` are displayed directly as Puter dashboard Credits. The public object documentation still calls the underlying resource unit “microcents”, but the live dashboard and response scale observed for this app use values such as 1,000 monthly Credits and 11.76 Credits for a Flare Low 1024×1024 output. The preflight estimate is therefore calibrated in that visible scale: the published/observed dollar estimate is multiplied by 2,000. Prompt cost follows the observed 0.01 Credit per estimated input token; image references use a conservative pixel-based approximation because observed input rows vary with the encoded image. No documented `txt2img()` quote endpoint exists, so the UI keeps `~` and treats refreshed account usage as authoritative.
+
+## Prompt Library storage
+
+The Prompt Library uses its own `chicCanva-prompt-library` IndexedDB database and `prompts` object store. Separating it from project autosave avoids rewriting every project when one reusable prompt changes. An entry can retain a Data URL reference, so references are strictly opt-in. The editor can write prompt text or the optional image as a PNG-compatible Clipboard item; the AI widget can read text and append it after a blank line. Import/export uses `{type, version, exportedAt, prompts}` and browser memory clearing explicitly clears this store.
+
+The system clipboard image command is also separate from the editable internal clipboard. Right-click or long-press on the Copy toolbar button renders a group or active selection to a bounded transparent PNG. A single unmodified image reads its native asset blob first, preserving the source bytes where the platform accepts that MIME type; the clipboard compatibility helper falls back to PNG for formats rejected by the browser.
 
 # Colorizer raster pipeline
 

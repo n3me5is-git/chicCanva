@@ -6,14 +6,14 @@ version=json.loads((dev/'version.json').read_text(encoding='utf-8'))['version']
 build_date=date.today().isoformat()
 public_url=os.environ.get('CHICCANVA_PUBLIC_URL','https://chiccanva.testthis.one/').strip().rstrip('/')+'/'
 assert re.fullmatch(r'https://[^\s]+/',public_url), 'CHICCANVA_PUBLIC_URL deve essere un URL HTTPS pubblico'
-share_image_url=public_url+'chiccanva-512.png'
+share_image_url=public_url+'chiccanva-share.png?v='+version
 subprocess.run([sys.executable,str(dev/'build-guide.py')],cwd=root,check=True)
 subprocess.run([sys.executable,str(dev/'build-docs.py')],cwd=root,check=True)
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
-s=s.replace('<title>chicCanva — editor outline multi-page</title>','<title>chicCanva — mini editor didattico</title>',1)
+s=s.replace('<title>chicCanva — editor outline multi-page</title>','<title>chicCanva · Piccole idee, grandi progetti</title>',1)
 share_icon_b64=base64.b64encode((dev/'pwa/chiccanva-192.png').read_bytes()).decode('ascii')
 share_meta='''<meta name="application-name" content="chicCanva">
-<meta name="description" content="Laboratorio creativo didattico per creare schede, cartelloni, scritte, immagini e materiali da stampare.">
+<meta name="description" content="chicCanva è un editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.">
 <meta name="author" content="chicCanva contributors">
 <meta name="theme-color" content="#298879">
 <link rel="canonical" href="__PUBLIC_URL__">
@@ -22,17 +22,17 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="chicCanva">
 <meta property="og:title" content="chicCanva · Piccole idee, grandi progetti">
-<meta property="og:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
+<meta property="og:description" content="Editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.">
 <meta property="og:image" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:url" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:secure_url" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Chicca, la mascotte insegnante di chicCanva">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="chicCanva · Piccole idee, grandi progetti">
-<meta name="twitter:description" content="Mini editor creativo per bambini e didattica: crea schede, cartelloni e materiali pronti da stampare.">
+<meta name="twitter:description" content="Editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.">
 <meta name="twitter:image" content="__SHARE_IMAGE_URL__">
 <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,'''+share_icon_b64+'''">
 <link rel="apple-touch-icon" sizes="192x192" href="chiccanva-192.png">'''
@@ -52,8 +52,8 @@ def before(id,markup):
  global s
  m=re.search(r'<[a-zA-Z][^>]*\bid="'+id+r'"[^>]*>',s);assert m,id
  s=s[:m.start()]+markup+s[m.start():]
-rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'shapes.css').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.css').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.css').read_text(encoding='utf-8')+'\n</style>')
-rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8')+'\n'+(dev/'interaction-ui.html').read_text(encoding='utf-8'))
+rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.css').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'shapes.css').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.css').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8')+'\n'+(dev/'interaction-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.html').read_text(encoding='utf-8')+'\n'+(dev/'ai-result-fallback.html').read_text(encoding='utf-8'))
 rep('<aside class="sidebar" id="sidebar">','<aside class="sidebar" id="sidebar"><div class="sidebar-controls"><button class="btn" id="collapseSections">Richiudi sezioni</button><button class="btn" id="expandSections">Espandi sezioni</button><label class="check"><input id="singleSection" type="checkbox" checked>Espandi singolarmente</label></div>'+(dev/'clipart-ui.html').read_text(encoding='utf-8')+(dev/'shapes-ui.html').read_text(encoding='utf-8')+(dev/'colorizer-ui.html').read_text(encoding='utf-8'))
 rep('<div class="tabs"><button class="active" data-mode="whole">Frase su pagina</button><button data-mode="single">1 lettera/gruppo</button><button data-mode="custom">Multi custom page</button></div>','<div class="project-strip"><div id="projectTabs" class="project-tabs" role="tablist" aria-label="Progetti aperti"></div><button class="btn" id="newProjectBtn" title="Crea un nuovo progetto">+ Progetto</button></div>')
 before('previewBtn','<button class="btn" id="quickAddPage" title="Aggiungi una pagina vuota al progetto">+ Pagina</button>')
@@ -76,6 +76,7 @@ rep('<div class="row" style="margin-top:8px"><button class="btn grow" id="startC
 rep('<label class="small">Immagine di riferimento · opzionale</label><div class="row"><button class="btn" id="referenceFromUrl" title="Allega un’immagine di riferimento tramite URL">Riferimento da URL</button><button class="btn grow" id="attachAiReference">＋ Allega immagine</button><button class="btn" id="useCanvasReference" title="Usa l’immagine selezionata come riferimento AI">Dal canvas</button></div>','<label class="small">Immagine di riferimento · opzionale</label><div class="row reference-source-actions"><button class="btn" id="referenceFromUrl" title="Allega un’immagine di riferimento tramite URL">Da URL</button><button class="btn grow" id="attachAiReference">＋ Allega</button><button class="btn" id="pasteAiReferenceBtn">Incolla</button><button class="btn" id="useCanvasReference" title="Usa l’immagine selezionata come riferimento AI">Dal canvas</button></div>')
 rep('<label class="small">Provider</label><select id="aiProvider"><option value="openai-image-generation">OpenAI Image</option><option value="gemini">Gemini</option><option value="xai">xAI</option><option value="together">Together</option><option value="replicate-image-generation">Replicate</option></select>','<label class="small">Famiglia / provider</label><select id="aiProvider"><option value="openai-image-generation">OpenAI Image</option><option value="xai">xAI</option><option value="other">Altri modelli</option></select>')
 rep('<label class="small">Modello</label><div class="row"><select class="grow" id="aiModel"></select><button class="btn" id="refreshAiModels">Aggiorna</button></div>','<label class="small">Modello</label><select id="aiModel"></select><button class="hidden" id="refreshAiModels" type="button" tabindex="-1" aria-hidden="true">Aggiorna</button>')
+rep('<div class="grid2"><div><label class="small">Qualità</label><select id="aiQuality"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="auto">Auto</option><option value="1K">1K</option><option value="2K">2K</option><option value="4K">4K</option></select></div><div><label class="small">Aspect ratio</label><select id="aiRatio"><option>1:1</option><option>4:3</option><option>3:4</option><option>16:9</option><option>9:16</option></select></div></div>','<div class="ai-output-primary"><div><label class="small">Qualità</label><select id="aiQuality"></select></div><div><label class="small">Aspect ratio</label><select id="aiRatio"><option>1:1</option><option>4:3</option><option>3:4</option><option>16:9</option><option>9:16</option></select></div></div><div id="aiResolutionWrap" class="ai-resolution-row hidden"><label class="small" id="aiResolutionLabel">Risoluzione · lato corto</label><select id="aiResolution"></select></div><label id="aiCustomResolutionWrap" class="check hidden ai-custom-resolution"><input id="aiCustomResolution" type="checkbox">Inserisci larghezza e altezza personalizzate</label><div id="aiCustomResolutionFields" class="ai-custom-resolution-fields hidden"><label><span>Larghezza px</span><input class="field" id="aiCustomWidth" type="number" min="16" max="3840" step="16" value="1024"></label><label><span>Altezza px</span><input class="field" id="aiCustomHeight" type="number" min="16" max="3840" step="16" value="1024"></label></div><p class="help ai-output-warning hidden" id="aiOutputWarning" role="status"></p><p class="help" id="aiOutputHelp">Qualità e risoluzione vengono mostrate separatamente solo quando il provider le espone come parametri distinti.</p>')
 rep('<div id="aiReferencePreview" class="reference-preview hidden"><img id="aiReferenceImg" alt="Immagine di riferimento"><div class="grow"><strong id="aiReferenceName"></strong><div class="help">Verrà inviata a Puter quando premi Genera.</div></div><button id="clearAiReference" class="iconbtn" title="Rimuovi riferimento">×</button></div>','<div id="aiReferencePreview" class="reference-preview hidden"><img id="aiReferenceImg" alt="Immagine di riferimento"><div class="grow"><strong id="aiReferenceName"></strong><div class="help">Verrà inviata a Puter quando premi Genera.</div></div><button id="clearAiReference" class="iconbtn" title="Rimuovi riferimento">×</button></div><div id="aiReferenceScalePanel" class="ai-reference-scale hidden"><div class="range-label"><span>Risoluzione inviata</span><strong id="aiReferenceScaleLabel">1×</strong></div><input id="aiReferenceScale" type="range" min="0" max="3" step="1" value="3" list="aiReferenceScaleTicks"><datalist id="aiReferenceScaleTicks"><option value="0" label="0,25×"></option><option value="1" label="0,5×"></option><option value="2" label="0,75×"></option><option value="3" label="1×"></option></datalist><div class="range-ends"><span>0,25×</span><span>0,5×</span><span>0,75×</span><span>1×</span></div><p class="help" id="aiReferenceScaleInfo">L’originale resta invariato; la copia ridotta viene creata soltanto per la richiesta.</p></div>')
 rep('<div id="puterControls">',(dev/'puter-auth.html').read_text(encoding='utf-8')+'<div id="puterControls">'+(dev/'puter-usage.html').read_text(encoding='utf-8'))
 rep('<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><p class="help">Usa il link diretto a un’immagine. Il sito deve consentire il caricamento da altre origini (CORS). Se non lo consente, scarica l’immagine e caricala da file.</p>','<dialog id="urlDialog" class="chic-dialog"><h2 id="urlTitle">Carica immagine da URL</h2><label>Indirizzo dell’immagine<input type="url" id="imageUrlInput" placeholder="https://…/immagine.png"></label><label class="check puter-url-option"><input id="imageUrlUsePuter" type="checkbox">Usa Puter per scaricare l’immagine</label><p class="help puter-login-hint" data-puter-login-hint>Per usare il caricamento tramite Puter effettua il login nella sezione Generazione immagini AI · Puter. <button type="button" class="text-link" data-puter-login-link>Vai al login</button></p><p class="help">Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare <strong>Incolla immagine dagli appunti</strong>.</p>')
@@ -92,9 +93,11 @@ rep('<button data-action="duplicate" role="menuitem">','<button data-action="cop
 rep('<div class="preview hidden" id="previewPanel">',(dev/'workspace-special.html').read_text(encoding='utf-8')+'<div class="preview hidden" id="previewPanel">')
 rep('<button class="btn" id="closePreview">Chiudi</button>','<div class="preview-reorder"><button class="btn" id="previewReorder">Riordina</button><button class="btn" id="previewMoveLeft" title="Sposta pagina a sinistra">←</button><button class="btn" id="previewMoveRight" title="Sposta pagina a destra">→</button></div><button class="btn" id="closePreview">Chiudi</button>')
 before('customPageName','<div class="page-reorder"><button class="btn" id="pageMoveLeft" title="Sposta la pagina prima">← Prima</button><button class="btn" id="pageMoveRight" title="Sposta la pagina dopo">Dopo →</button></div>')
-rep('<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"','<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"')
-rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
+rep('<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"',(dev/'prompt-library-launch.html').read_text(encoding='utf-8')+'<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"')
+rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><button class="btn ai-paste-prompt" id="pasteAiPromptBtn" type="button">Incolla testo e aggiungi al prompt</button><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
 rep('<button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>','<div class="ai-cost-estimate" id="aiCostEstimate" aria-live="polite"><strong>Stima consumo Puter</strong><span>~ calcolo…</span></div><button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>')
+rep("together:['black-forest-labs/FLUX.1-schnell-Free','black-forest-labs/FLUX.1-schnell']","together:[]")
+assert 'black-forest-labs/FLUX.1-schnell' not in s, 'Il vecchio fallback Together/Flux non deve entrare nella build'
 canvas_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div class="card-title">Canvas, griglia & export immagine</div>[\s\S]*?</section>',s);assert canvas_card
 canvas_markup=canvas_card.group(0)
 canvas_markup=canvas_markup.replace('Canvas, griglia & export immagine','Canvas, griglia e snap').replace('Griglia e snapping sono indipendenti. L’export regione può avere margine e trasparenza.','Imposta gli aiuti visivi del foglio; non vengono stampati.')
@@ -107,7 +110,7 @@ rep('<label class="check"><input type="radio" name="pdfScope" value="current" ch
 pdf_import=(dev/'pdf-import.js').read_text(encoding='utf-8')
 pdf_worker=base64.b64encode((dev/'vendor/pdf.worker.min.js').read_bytes()).decode('ascii')
 pdf_import="const PDF_WORKER_BASE64='"+pdf_worker+"';\n"+pdf_import
-rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'search-translation.js').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.js').read_text(encoding='utf-8')+'\n'+(dev/'shapes.js').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.js').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'search-translation.js').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.js').read_text(encoding='utf-8')+'\n'+(dev/'shapes.js').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
 # Remove obsolete mode explanations from the guide.
 s=s.replace('<h3>1. Scegli come lavorare</h3>', '<h3>1. Progetti e funzioni speciali</h3>')
 start=s.index('<h3>1. Progetti e funzioni speciali</h3>');end=s.index('<h3>2. Trova il carattere giusto</h3>',start)
@@ -143,12 +146,36 @@ else:
 (root/'chicCanva.html').write_text(s,encoding='utf-8')
 for name in ['chicCanva.html','chicCanva_server.bat']:shutil.copy2(root/name,root/'build/chicCanva'/name)
 pwa_build=root/'build/chicCanva-pwa';pwa_build.mkdir(parents=True,exist_ok=True)
-shutil.copy2(root/'chicCanva.html',pwa_build/'index.html')
-for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
-build_id=hashlib.sha256((root/'chicCanva.html').read_bytes()).hexdigest()[:16]
+# The hosted PWA keeps the exact same generated application, but externalizes the
+# large inline payloads. Crawlers receive the title and Open Graph metadata in a
+# small initial document, while the desktop/server distribution remains monolithic.
+pwa_html=s
+script_names=['fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js']
+script_blocks=[]
+def externalize_script(match):
+ index=len(script_blocks);script_blocks.append(match.group(2))
+ assert index<len(script_names), 'Trovati più script inline del previsto'
+ attrs=match.group(1) or ''
+ return '<script'+attrs+' src="'+script_names[index]+'" defer></script>'
+pwa_html=re.sub(r'<script(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)</script>',externalize_script,pwa_html,flags=re.I)
+assert len(script_blocks)==len(script_names), f'Attesi {len(script_names)} script inline, trovati {len(script_blocks)}'
+for name,content in zip(script_names,script_blocks):(pwa_build/name).write_text(content.strip()+'\n',encoding='utf-8')
+style_blocks=[]
+def externalize_style(match):
+ style_blocks.append(match.group(1))
+ return '<link rel="stylesheet" href="chiccanva.css">' if len(style_blocks)==1 else ''
+pwa_html=re.sub(r'<style(?:\s[^>]*)?>([\s\S]*?)</style>',externalize_style,pwa_html,flags=re.I)
+assert len(style_blocks)==1, f'Atteso un blocco CSS inline, trovati {len(style_blocks)}'
+(pwa_build/'chiccanva.css').write_text(style_blocks[0].strip()+'\n',encoding='utf-8')
+(pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
+for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
+(pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: *\nAllow: /\n',encoding='utf-8')
+build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])
+build_id=hashlib.sha256(build_material).hexdigest()[:16]
 sw=(dev/'pwa'/'chicCanva-sw.js').read_text(encoding='utf-8').replace('__BUILD_ID__',build_id)
 assert '__BUILD_ID__' not in sw
 (pwa_build/'chicCanva-sw.js').write_text(sw,encoding='utf-8')
-assert (pwa_build/'index.html').read_bytes()==(root/'chicCanva.html').read_bytes(), 'HTML PWA non sincronizzato'
+assert len(pwa_html.encode('utf-8'))<500000, 'Index PWA ancora troppo pesante per crawler e avvio rapido'
+assert 'chiccanva-app.js' in pwa_html and 'og:image:width" content="1200' in pwa_html
 assert "const BUILD_ID='"+build_id+"'" in sw, 'Versione service worker non sincronizzata'
 print('Build chicCanva',version,'del',build_date,':',len(s),'caratteri · PWA',build_id)
