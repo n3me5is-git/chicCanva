@@ -1,7 +1,13 @@
 <div class="puter-usage hidden" id="puterUsage" aria-live="polite">
-  <div class="puter-usage-head"><strong>Credito Puter dell’app</strong><button class="btn" id="puterUsageRefresh" title="Aggiorna il consumo Puter">Aggiorna</button></div>
+  <div class="puter-usage-head"><strong>Credito e account Puter</strong><button class="btn" id="puterUsageRefresh" title="Aggiorna il consumo Puter">Aggiorna</button></div>
   <div class="puter-usage-track" role="progressbar" aria-label="Credito Puter utilizzato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="puterUsageBar"></span></div>
   <div class="puter-usage-values"><span id="puterUsageUsed">Usato —</span><span id="puterUsageRemaining">Disponibile —</span></div>
-  <div class="help" id="puterUsageDetail">Dati mensili limitati alle operazioni di chicCanva.</div>
+  <dl class="puter-usage-breakdown">
+    <div><dt>Tipo account</dt><dd id="puterAccountType">—</dd></div>
+    <div><dt>Allowance mensile</dt><dd id="puterMonthlyAllowance">—</dd></div>
+    <div><dt>Crediti extra / top-up</dt><dd id="puterTopupCredits">—</dd></div>
+    <div><dt>Uso di chicCanva</dt><dd id="puterAppUsage">—</dd></div>
+  </dl>
+  <div class="help" id="puterUsageDetail">Il saldo generale e il consumo dell’app sono letti separatamente dall’account.</div>
   <a class="puter-topup-link" href="https://apps.puter.com/puter-topup" target="_blank" rel="noopener noreferrer">Ricarica credito Puter</a>
 </div>

@@ -6,7 +6,8 @@ version=json.loads((dev/'version.json').read_text(encoding='utf-8'))['version']
 build_date=date.today().isoformat()
 public_url=os.environ.get('CHICCANVA_PUBLIC_URL','https://chiccanva.testthis.one/').strip().rstrip('/')+'/'
 assert re.fullmatch(r'https://[^\s]+/',public_url), 'CHICCANVA_PUBLIC_URL deve essere un URL HTTPS pubblico'
-share_image_url=public_url+'chiccanva-share.png?v='+version
+share_image_name='chiccanva-share.jpg'
+share_image_url=public_url+share_image_name+'?v='+version
 subprocess.run([sys.executable,str(dev/'build-guide.py')],cwd=root,check=True)
 subprocess.run([sys.executable,str(dev/'build-docs.py')],cwd=root,check=True)
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
@@ -16,6 +17,8 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <meta name="description" content="chicCanva è un editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.">
 <meta name="author" content="chicCanva contributors">
 <meta name="theme-color" content="#298879">
+<meta name="googlebot" content="noindex,nofollow,noarchive">
+<meta name="bingbot" content="noindex,nofollow,noarchive">
 <link rel="canonical" href="__PUBLIC_URL__">
 <meta property="og:type" content="website">
 <meta property="og:url" content="__PUBLIC_URL__">
@@ -26,7 +29,7 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <meta property="og:image" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:url" content="__SHARE_IMAGE_URL__">
 <meta property="og:image:secure_url" content="__SHARE_IMAGE_URL__">
-<meta property="og:image:type" content="image/png">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Chicca, la mascotte insegnante di chicCanva">
@@ -95,7 +98,7 @@ rep('<button class="btn" id="closePreview">Chiudi</button>','<div class="preview
 before('customPageName','<div class="page-reorder"><button class="btn" id="pageMoveLeft" title="Sposta la pagina prima">← Prima</button><button class="btn" id="pageMoveRight" title="Sposta la pagina dopo">Dopo →</button></div>')
 rep('<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"',(dev/'prompt-library-launch.html').read_text(encoding='utf-8')+'<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"')
 rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><button class="btn ai-paste-prompt" id="pasteAiPromptBtn" type="button">Incolla testo e aggiungi al prompt</button><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
-rep('<button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>','<div class="ai-cost-estimate" id="aiCostEstimate" aria-live="polite"><strong>Stima consumo Puter</strong><span>~ calcolo…</span></div><button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>')
+rep('<button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>','<div class="ai-cost-estimate" id="aiCostEstimate" aria-live="polite"><strong>Stima consumo Puter</strong><span>~ calcolo…</span></div><div class="ai-pricing-meta"><span id="aiPricingStatus">Prezziario incorporato</span><button type="button" class="text-link" id="aiPricingRefresh">Aggiorna prezziario</button></div><button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>')
 rep("together:['black-forest-labs/FLUX.1-schnell-Free','black-forest-labs/FLUX.1-schnell']","together:[]")
 assert 'black-forest-labs/FLUX.1-schnell' not in s, 'Il vecchio fallback Together/Flux non deve entrare nella build'
 canvas_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div class="card-title">Canvas, griglia & export immagine</div>[\s\S]*?</section>',s);assert canvas_card
@@ -110,7 +113,7 @@ rep('<label class="check"><input type="radio" name="pdfScope" value="current" ch
 pdf_import=(dev/'pdf-import.js').read_text(encoding='utf-8')
 pdf_worker=base64.b64encode((dev/'vendor/pdf.worker.min.js').read_bytes()).decode('ascii')
 pdf_import="const PDF_WORKER_BASE64='"+pdf_worker+"';\n"+pdf_import
-rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.js').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'search-translation.js').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.js').read_text(encoding='utf-8')+'\n'+(dev/'shapes.js').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.js').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'puter-billing.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'search-translation.js').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.js').read_text(encoding='utf-8')+'\n'+(dev/'shapes.js').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
 # Remove obsolete mode explanations from the guide.
 s=s.replace('<h3>1. Scegli come lavorare</h3>', '<h3>1. Progetti e funzioni speciali</h3>')
 start=s.index('<h3>1. Progetti e funzioni speciali</h3>');end=s.index('<h3>2. Trova il carattere giusto</h3>',start)
@@ -168,8 +171,9 @@ pwa_html=re.sub(r'<style(?:\s[^>]*)?>([\s\S]*?)</style>',externalize_style,pwa_h
 assert len(style_blocks)==1, f'Atteso un blocco CSS inline, trovati {len(style_blocks)}'
 (pwa_build/'chiccanva.css').write_text(style_blocks[0].strip()+'\n',encoding='utf-8')
 (pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
-for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
-(pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: *\nAllow: /\n',encoding='utf-8')
+for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
+(pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: *\nDisallow: /\n',encoding='utf-8')
+(pwa_build/'_headers').write_text('/chiccanva-share.jpg\n  Cache-Control: public, max-age=86400\n',encoding='utf-8')
 build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])
 build_id=hashlib.sha256(build_material).hexdigest()[:16]
 sw=(dev/'pwa'/'chicCanva-sw.js').read_text(encoding='utf-8').replace('__BUILD_ID__',build_id)

@@ -79,3 +79,21 @@ New-Item -ItemType Directory -Force -Path $output | Out-Null
 New-ChiccaIcon 192 (Join-Path $output 'chiccanva-192.png')
 New-ChiccaIcon 512 (Join-Path $output 'chiccanva-512.png')
 
+# Social crawlers receive a simple 1200x630 card containing only the app mark.
+# Keeping text out of the bitmap avoids illegible crops on compact previews.
+$source = [System.Drawing.Image]::FromFile((Join-Path $output 'chiccanva-512.png'))
+$share = [System.Drawing.Bitmap]::new(1200, 630)
+$shareGraphics = [System.Drawing.Graphics]::FromImage($share)
+$shareGraphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+$shareGraphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$shareGraphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+$shareGraphics.Clear([System.Drawing.ColorTranslator]::FromHtml('#edf6f2'))
+$markSize = 470
+$shareGraphics.DrawImage($source, [int]((1200-$markSize)/2), [int]((630-$markSize)/2), $markSize, $markSize)
+$share.Save((Join-Path $output 'chiccanva-share.png'), [System.Drawing.Imaging.ImageFormat]::Png)
+$jpegCodec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object MimeType -eq 'image/jpeg'
+$encoder = [System.Drawing.Imaging.Encoder]::Quality
+$parameters = [System.Drawing.Imaging.EncoderParameters]::new(1)
+$parameters.Param[0] = [System.Drawing.Imaging.EncoderParameter]::new($encoder, [long]90)
+$share.Save((Join-Path $output 'chiccanva-share.jpg'), $jpegCodec, $parameters)
+foreach ($item in @($parameters.Param[0], $parameters, $shareGraphics, $share, $source)) { if ($null -ne $item) { $item.Dispose() } }

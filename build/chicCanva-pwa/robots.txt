@@ -1,5 +1,11 @@
 User-agent: TelegramBot
 Allow: /
 
-User-agent: *
+User-agent: Googlebot
 Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Disallow: /

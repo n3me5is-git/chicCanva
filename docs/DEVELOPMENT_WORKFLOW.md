@@ -23,6 +23,7 @@ The most important rule is to avoid hand-editing `chicCanva.html`. It is generat
 | Unified export/URL/clipboard/Puter additions | `development/final-upgrades.js`, `final-upgrades.css`, HTML fragments |
 | Memory, image diagnostics, locks, interaction guards | `development/memory-optimizations.js`, `.css`, `memory-ui.html` |
 | Touch viewport and Puter session UI | `development/runtime-upgrades.js`, `runtime-upgrades.css`, `puter-auth.html` |
+| Puter balance and image pricing | `development/puter-billing.js`, `puter-usage.html`, `ai-generation.css` |
 | PDF import and embedded renderer | `development/pdf-import.js`, `pdf-import.html`, `pdf-import.css`, `development/vendor/pdf*` |
 | App release number | `development/version.json` |
 | Clipart | `development/clipart.js`, `clipart-ui.html`, `clipart.css` |
@@ -119,7 +120,9 @@ Avoid unawaited asynchronous mutations during startup. A rejected promise in ini
 
 ## 6. Mutation and history discipline
 
-Mutating operations should be undoable when they change project state. Use the existing history wrapper or explicit `commitHistory()` boundary. Do not record high-frequency pointer updates as separate snapshots; commit the final transformation.
+Mutating operations should be undoable when they change the printable project: page structure/properties or objects on a page. Use the existing history wrapper or explicit `commitHistory()` boundary. Do not record high-frequency pointer updates as separate snapshots; commit the final transformation.
+
+History entries deliberately contain only page collections plus the minimum page cursor/mode metadata needed to restore them. Tool configuration, draft text, prompts, search/filter state, AI reference selection, zoom/pan, active tool, sidebar state, export choices and general preferences remain in the live project/autosave but do not create undo steps and do not change while travelling through history. A style control becomes historical only when it is applied to an object. This distinction keeps the menu useful and avoids multiplying large history snapshots for configuration-only input.
 
 A typical async mutation:
 
@@ -190,7 +193,7 @@ For every material feature, document:
 
 ### Browser regression tests
 
-`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave generations and active-project deduplication, asset collection, export-region interaction isolation, object locks, image diagnostics, export ZIP signature, clipboard ingestion and object-to-image clipboard controls, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, provider-specific AI quality/resolution, OpenAI output limits, Puter dashboard-Credit estimates, Prompt Library persistence/clipboard controls, sidebar behavior, and guide quality.
+`v7-tests.js` exercises workspace tabs, groups, mixed text/emoji, page insertion/reordering/deletion, autosave generations and active-project deduplication, asset collection, export-region interaction isolation, object locks, image diagnostics, export ZIP signature, clipboard ingestion and object-to-image clipboard controls, PDF parsing/rasterization, image effects, mobile settings, chroma detection, eyedropper coordinate mapping, provider-specific AI quality/resolution, OpenAI output limits, Puter allowance/top-up arithmetic, unit conversion, pricing normalization/cache, local estimates, Prompt Library persistence/clipboard controls, sidebar behavior, and guide quality.
 
 Prefer meaningful behavior tests. For example, the eyedropper regression uses a fixture whose CSS dimensions differ from its backing buffer, proving the coordinate transform rather than merely checking that a button exists.
 

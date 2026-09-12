@@ -20,11 +20,14 @@ bat=(root/'chicCanva_server.bat').read_text(encoding='utf-8')
 assert '/__chiccanva_image_proxy' in bat and '/__chiccanva_openclipart_search' in bat and 'Test-PublicUri' in bat and '12582912' in bat
 assert 'api.fontsource.org' not in s
 assert "puter.auth.getMonthlyUsage()" in s and 'allowanceInfo' in s and 'puterUsageBar' in ids
+assert {'puterAccountType','puterMonthlyAllowance','puterTopupCredits','puterAppUsage','aiPricingRefresh','aiPricingStatus'}.issubset(ids)
+assert 'getDetailedAppUsage(puter.auth.appID)' in s and 'usage.allowanceUsed' in s and 'addons?.purchasedCredits' in s
+assert 'PUTER_IMAGE_PRICING_TTL_MS=30*24*60*60*1000' in s and 'api.puter.com/puterai/image/models/details' in s
 assert 'openclipart.org/search/' in s and 'parseOpenclipartResults' in s and 'clipartCard' in ids
 assert 'api.mymemory.translated.net/get' not in s and 'SEARCH_IT_EN' in s and 'translateClipartLocally' in s and 'google/gemma-4-31b-it' in s and 'clipartTranslate' in ids
 assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
 pwa=root/'build/chicCanva-pwa'
-expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','robots.txt'}
+expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg','robots.txt','_headers'}
 assert {p.name for p in pwa.iterdir()}==expected
 pwa_html=(pwa/'index.html').read_text(encoding='utf-8')
 assert len(pwa_html.encode('utf-8'))<500000 and '<style' not in pwa_html
@@ -43,7 +46,10 @@ for size in (192,512):
  width,height=struct.unpack('>II',data[16:24]);assert (width,height)==(size,size)
 share=(pwa/'chiccanva-share.png').read_bytes();assert share[:8]==b'\x89PNG\r\n\x1a\n'
 assert struct.unpack('>II',share[16:24])==(1200,630)
-assert 'User-agent: TelegramBot' in (pwa/'robots.txt').read_text(encoding='utf-8')
+share_jpg=(pwa/'chiccanva-share.jpg').read_bytes();assert share_jpg[:2]==b'\xff\xd8' and share_jpg[-2:]==b'\xff\xd9' and len(share_jpg)<128000
+headers=(pwa/'_headers').read_text(encoding='utf-8');robots=(pwa/'robots.txt').read_text(encoding='utf-8')
+assert 'X-Robots-Tag' not in headers and 'Cache-Control: public, max-age=86400' in headers
+assert all(rule in robots for rule in ['User-agent: TelegramBot\nAllow: /','User-agent: Googlebot\nAllow: /','User-agent: Bingbot\nAllow: /','User-agent: *\nDisallow: /'])
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
 assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate','aiGeneratedFallback','aiGeneratedDialog','aiGeneratedRetryBtn','aiGeneratedDownloadBtn'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
@@ -56,7 +62,7 @@ assert f'id="appVersion">v{expected_version}' in s
 assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
 assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
-assert 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-share.png?v=' in s and 'property="og:image:width" content="1200"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
+assert 'name="robots"' not in s and 'name="googlebot" content="noindex,nofollow,noarchive"' in s and 'name="bingbot" content="noindex,nofollow,noarchive"' in s and 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-share.jpg?v=' in s and 'property="og:image:type" content="image/jpeg"' in s and 'property="og:image:width" content="1200"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
 assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class="license">' in s
 assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-puter-login-link' in s
 assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s
@@ -72,9 +78,11 @@ assert {'shapeTabs','shapePrevPage','shapeNextPage','shapeDragNodes','shapeDupli
 assert len(re.findall(r'data-shape="[^"]+"',body))>=40 and 'smoothTrace' in s and 'duplicateSelectionAsImage' in s and 'startSelectionTapMode' in s
 assert {'colorizerCard','startColorizerBtn','restoreColorizerOriginalBtn','colorizerPaintType','colorizerSmartEdges','copyColorizedBtn','copyColorizerOriginalBtn'}.issubset(ids)
 assert 'colorizerFloodFill' in s and 'colorizerBrushStamp' in s and 'expandDerivedAssetDependencies' in s and "objectType:'colorized'" in s
+assert 'COLORIZER_BRUSH_ENGINE_DEFAULT=\'optimized\'' in s and 'colorizerBrush=legacy' not in s, 'unexpected literal fallback URL in generated app'
+assert 'colorizerProcessBrushSamples' in s and 'colorizer-live-overlay' in s and 'setChicCanvaColorizerBrushEngine' in s
 assert '#colorizerCard .card-b{display:grid' not in s, 'Colorizer must not override the shared collapsed-section display rule'
 docs=root/'docs'
-expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','user-guide.html'}
+expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','PUTER_BILLING_AND_PRICING.md','user-guide.html'}
 assert expected_docs.issubset({p.name for p in docs.iterdir()})
 guide=(root/'development/help-v7.html').read_text(encoding='utf-8')
 assert guide in (docs/'user-guide.html').read_text(encoding='utf-8')

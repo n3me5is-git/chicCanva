@@ -53,9 +53,18 @@ chicCanva.webmanifest
 chicCanva-sw.js
 chiccanva-192.png
 chiccanva-512.png
+chiccanva-share.jpg
 ```
 
-The lightweight PWA index includes Open Graph and Twitter Card metadata before any application script. Crawlers such as Telegram receive an absolute HTTPS `og:url`, canonical URL, and 1200×630 PNG URL without running JavaScript. The default public origin is `https://chiccanva.testthis.one/`. For another host or subpath, set `CHICCANVA_PUBLIC_URL` to the complete public HTTPS base URL before running `python development/build-workspace.py`. Keep `chiccanva-share.png` publicly reachable beside `index.html`; the generated absolute URL points to it. The service worker scope remains its containing directory.
+The lightweight PWA index includes Open Graph and Twitter Card metadata before any application script. Crawlers such as Telegram receive an absolute HTTPS `og:url`, canonical URL, robots permission, and 1200×630 JPEG URL without running JavaScript. The social card shows the centered Chicca logo only, avoiding cropped text in narrow preview layouts. The default public origin is `https://chiccanva.testthis.one/`. For another host or subpath, set `CHICCANVA_PUBLIC_URL` to the complete public HTTPS base URL before running `python development/build-workspace.py`. Keep `chiccanva-share.jpg` publicly reachable beside `index.html`; the generated absolute versioned URL points to it. The service worker scope remains its containing directory.
+
+### Coolify, Traefik and Telegram
+
+For a Coolify static application, open **Configuration → Domains → Search engine indexing**, select **Indexable**, save and redeploy. Coolify otherwise adds `X-Robots-Tag: noindex, nofollow` at the proxy. A page-level meta cannot override that HTTP response header, and Telegram may refuse to build a preview even though browsers and WhatsApp accept the Open Graph fields.
+
+The project then applies its own crawler policy without a generic response header. `index.html` contains targeted `googlebot` and `bingbot` directives with `noindex,nofollow,noarchive`, while omitting a generic `robots` meta that a social crawler could interpret. `robots.txt` explicitly allows TelegramBot, allows Googlebot and Bingbot so they can read their noindex directive, and disallows the generic crawler group. `_headers` only controls caching of the social image; it deliberately does not emit `X-Robots-Tag`.
+
+After deployment check both the HTML and image response with a Telegram crawler user agent. Neither should return an HTTP `noindex`; both must return HTTP 200, and the image must be `image/jpeg`. A Googlebot request should receive the HTML containing its targeted noindex meta. Telegram caches link previews aggressively. Once the response is corrected, use the new versioned `og:image` URL and ask `@WebpageBot` to refresh the public page if the old failure remains cached.
 
 Enable gzip or Brotli for HTML, CSS and JavaScript. The hosted index is kept below 500 KB and loads the larger application payloads from same-origin files; this helps crawlers read metadata promptly and lets browsers cache each part independently. Telegram can retain a failed preview by URL, so after uploading a corrected build test once with a harmless query string such as `?share=2`.
 
@@ -67,6 +76,7 @@ Recommended server behavior:
 | `chicCanva-sw.js` | `text/javascript; charset=utf-8` | `no-cache` or always revalidate |
 | `chicCanva.webmanifest` | `application/manifest+json` | short/moderate cache |
 | PNG icons | `image/png` | long immutable cache if filenames stay stable only with purge strategy |
+| `chiccanva-share.jpg` | `image/jpeg` | public, moderate cache; change its query version every release |
 
 The service worker's internal shell cache is content-versioned from the PWA index and all local CSS/JavaScript payloads. Serving an old `chicCanva-sw.js` behind a CDN can still delay updates, so the SW response should be revalidated.
 
@@ -154,20 +164,21 @@ Projects and embedded Data URL assets remain available through origin storage wh
 To release:
 
 1. run the standard build/tests;
-2. deploy all five PWA files together;
+2. deploy the complete PWA directory together;
 3. ensure the SW is not served from stale CDN cache;
 4. load the domain in a normal tab and verify update prompt/activation;
 5. launch the installed PWA and verify autosave recovery;
 6. smoke-test one remote asset and one local export.
 
-To roll back, redeploy a complete earlier five-file PWA set. Its service-worker cache ID must match its own `index.html`. Do not mix an earlier HTML with a later service worker.
+To roll back, redeploy a complete earlier PWA set. Its service-worker cache ID must match its own `index.html`. Do not mix an earlier HTML with a later service worker.
 
 ## 11. Hosting checklist
 
 - [ ] Public HTTPS URL resolves.
 - [ ] All PWA files return HTTP 200 with correct MIME types.
 - [ ] Manifest `start_url` and icon paths resolve within scope.
-- [ ] The public page source exposes absolute chicCanva Open Graph/Twitter/canonical URLs and `chiccanva-share.png` is reachable by link-preview crawlers without authentication or bot filtering.
+- [ ] The public page source exposes absolute chicCanva Open Graph/Twitter/canonical URLs and `chiccanva-share.jpg` is reachable by link-preview crawlers without authentication or bot filtering.
+- [ ] Coolify domain indexing is **Indexable** and neither HTML nor social image returns a generic `X-Robots-Tag: noindex, nofollow`; project-level Google/Bing noindex and Telegram allowance are present.
 - [ ] Service worker is revalidated and contains no `__BUILD_ID__` placeholder.
 - [ ] Install UI is hidden on localhost/file and available on the public domain where supported.
 - [ ] Reload while offline reaches the editor after one successful online load.

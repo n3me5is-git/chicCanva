@@ -14,6 +14,7 @@ This directory is the technical and operational reference for chicCanva. It is w
 | [DEVELOPMENT_WORKFLOW.md](DEVELOPMENT_WORKFLOW.md) | Contributors and AI agents | Safe edit/build/test/release workflow and source-of-truth rules. |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Operators | Direct-file, PowerShell webserver, static HTTPS, and PWA deployment procedures. |
 | [SECURITY_PRIVACY_LICENSING.md](SECURITY_PRIVACY_LICENSING.md) | Maintainers and deployers | Trust boundaries, browser storage, remote services, licenses, attribution, and deployment obligations. |
+| [PUTER_BILLING_AND_PRICING.md](PUTER_BILLING_AND_PRICING.md) | Developers and AI agents | Puter allowance/top-up accounting, unit conversion, live price cache, estimate formulas, and regression fixtures. |
 | [../CONTEXT.md](../CONTEXT.md) | AI agents | Condensed handoff for resuming work quickly. |
 | [../README.md](../README.md) | Everyone | Project overview and entry point. |
 
