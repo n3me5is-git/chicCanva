@@ -31,13 +31,12 @@ expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js'
 assert {p.name for p in pwa.iterdir()}==expected
 pwa_html=(pwa/'index.html').read_text(encoding='utf-8')
 assert len(pwa_html.encode('utf-8'))<500000 and '<style' not in pwa_html
-assert all(f'src="{name}" defer' in pwa_html for name in ['fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js'])
-assert 'href="chiccanva.css"' in pwa_html
-build_material=pwa_html.encode('utf-8')+b''.join((pwa/name).read_bytes() for name in ['chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js'])
-build_id=hashlib.sha256(build_material).hexdigest()[:16]
+assert all(f'src="{name}?v=' in pwa_html and '" defer' in pwa_html for name in ['fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js'])
+assert 'href="chiccanva.css?v=' in pwa_html
 sw=(pwa/'chicCanva-sw.js').read_text(encoding='utf-8')
-assert '__BUILD_ID__' not in sw and "const BUILD_ID='"+build_id+"'" in sw
-assert 'shellNavigation(request)' in sw and 'event.waitUntil(refreshNavigation(request))' in sw
+build_id=re.search(r"const BUILD_ID='([a-f0-9]{16})'",sw).group(1)
+assert '__BUILD_ID__' not in sw and all('?v='+build_id in value for value in re.findall(r'(?:src|href)="([^"]+\?v=[a-f0-9]{16})"',pwa_html) if any(name in value for name in ['chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js']))
+assert 'shellNavigation(request)' in sw and "fetch(request,{cache:'no-store'" in sw and 'event.waitUntil(refreshNavigation(request))' not in sw
 manifest=json.loads((pwa/'chicCanva.webmanifest').read_text(encoding='utf-8'))
 assert manifest['start_url']=='./' and manifest['scope']=='./' and manifest['display']=='standalone'
 assert {'192x192','512x512'}=={icon['sizes'] for icon in manifest['icons']}
@@ -91,7 +90,8 @@ assert '#colorizerCard .card-b{display:grid' not in s, 'Colorizer must not overr
 docs=root/'docs'
 assert {'languagePickerDesktop','languagePickerMobile'}.issubset(ids)
 assert 'LANGUAGE_STORAGE_KEY' in s and 'CHICCANVA_HELP_EN' in s and 'preferredInitialLanguage' in s and "document.documentElement.lang=appLanguage" in s
-assert 'data-i18n-bootstrap' in s and s.index('data-i18n-bootstrap')<s.index('<body>') and "document.documentElement.style.visibility='hidden'" in s and "style.removeProperty('visibility')" in s
+assert 'data-i18n-bootstrap' in s and s.index('data-i18n-bootstrap')<s.index('\n<body>') and "document.documentElement.style.visibility='hidden'" in s and "style.removeProperty('visibility')" in s and '},6000)' in s
+assert "new URL(manifest.href,location.href).search" in s
 assert "setupLanguagePicker();applyLanguage(appLanguage,{persist:true,syncFeatures:false,reveal:true});await i18nBaseInit()" in s
 assert 'Small ideas, big projects' in s and 'The same user guide embedded in the app' in (root/'docs/user-guide-en.html').read_text(encoding='utf-8')
 expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AND_PROCESSES.md','UI_UX_ARCHITECTURE.md','DEVELOPMENT_WORKFLOW.md','DEPLOYMENT.md','SECURITY_PRIVACY_LICENSING.md','PUTER_BILLING_AND_PRICING.md','user-guide.html','user-guide-en.html'}

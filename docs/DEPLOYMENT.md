@@ -78,7 +78,7 @@ Recommended server behavior:
 | PNG icons | `image/png` | long immutable cache if filenames stay stable only with purge strategy |
 | `chiccanva-share.jpg` | `image/jpeg` | public, moderate cache; change its query version every release |
 
-The service worker's internal shell cache is content-versioned from the PWA index and all local CSS/JavaScript payloads. Serving an old `chicCanva-sw.js` behind a CDN can still delay updates, so the SW response should be revalidated.
+The service worker's internal shell cache is content-versioned from the PWA index and all local CSS/JavaScript payloads. The generated index also appends that build ID to CSS, scripts, and manifests, so an upload cannot silently pair a new document with a four-hour-old script. Navigation is network-first with a bounded offline fallback. Serving an old `chicCanva-sw.js` behind a CDN can still delay the update notice, so the SW response should be revalidated.
 
 ## 5. PWA eligibility and update flow
 

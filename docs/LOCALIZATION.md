@@ -6,20 +6,21 @@ chicCanva 1.12 introduces an embedded two-language interface. Italian is the edi
 
 ```mermaid
 flowchart LR
-    A[Application script parsed] --> B[Read chiccanva.language.v1]
+    A[Inline head bootstrap] --> B[Read chiccanva.language.v1]
     B -->|valid it or en| C[Use saved language]
     B -->|missing| D{Browser language starts with it?}
     D -->|yes| E[Italian]
     D -->|no| F[English]
-    C --> G[Run existing application init]
+    C --> G[Set html lang and hide first paint]
     E --> G
     F --> G
-    G --> H[Attach controls and observer]
-    H --> I[Translate static and dynamic UI]
-    I --> J[Persist selection]
+    G --> H[Parse UI and load deferred modules]
+    H --> I[Attach controls and observer]
+    I --> J[Translate static UI and reveal]
+    J --> K[Run existing init and translate dynamic dialogs]
 ```
 
-`development/i18n.js` loads after every feature module and wraps the existing `init()` function. It selects the language before invoking the wrapped initializer, then translates the DOM, observes later status/dialog changes, synchronizes desktop and mobile selectors, and emits `chiccanva:languagechange`.
+An inline bootstrap in the document head selects `html[lang]` before the body can paint. `development/i18n.js` loads after every feature module, attaches the mutation observer, translates and reveals the static DOM, and only then invokes the wrapped `init()` function. Restore dialogs and every other dynamic node are therefore translated as they are inserted. A six-second emergency reveal prevents a missing/corrupt PWA script from leaving the document permanently invisible.
 
 ```js
 t('Pagina corrente'); // "Current page" when English is active
@@ -40,17 +41,17 @@ The setting uses `chiccanva.language.v1`. With no saved value, browser locales b
 - `development/build-guide.py` generates the Italian `help-v7.html`.
 - `development/build-guide-en.py` generates the English `help-v7-en.html`.
 
-Both contain 58 feature sections, 18 workflows, 23 FAQs, a table of contents, and shortcuts. The build embeds both and mounts the active fragment. `build-docs.py` publishes the same content as `docs/user-guide.html` and `docs/user-guide-en.html`. Update both generators whenever a feature changes; never hand-edit generated guide HTML.
+Both contain the same complete set of feature sections, workflows, FAQs, a table of contents, and shortcuts. The build embeds both and mounts the active fragment. `build-docs.py` publishes the same content as `docs/user-guide.html` and `docs/user-guide-en.html`. Update both generators whenever a feature changes; never hand-edit generated guide HTML.
 
 ## AI prompt localization
 
 The user prompt stays unchanged. The application then appends the selected style preset in the active UI language, any active chroma-key instruction in that language, and a final instruction requiring visible generated text to use the language of the user prompt unless the user explicitly asks otherwise. Italian presets live in `AI_STYLES_IT`; the original `AI_STYLES` catalogue supplies English. **Show full prompt sent** displays the exact composition.
 
-Search translation is separate: Emoji/Openclipart may convert Italian keywords to English through the compact dictionary and optional Puter/Gemma fallback. It does not change project content.
+Search translation is separate: Emoji/Openclipart may convert Italian keywords to English through the compact dictionary and optional Puter/Gemma fallback. Parenthesized text supplies meaning context to Gemma but is removed from the actual search term and from local fallback output. The complete input, including context, forms the translation-cache key. It does not change project content. In English UI these Italian-to-English controls are hidden and disabled; returning to Italian restores the saved preference.
 
 ## Build behavior
 
-The desktop/server artifact remains one HTML file with both catalogues and guides. The PWA externalizes its generated application script for caching and ships `chicCanva.webmanifest` plus `chicCanva-en.webmanifest`; changing language updates the active manifest. File mode keeps the same offline editor behavior.
+The desktop/server artifact remains one HTML file with both catalogues and guides. The PWA externalizes its generated application script for caching and ships `chicCanva.webmanifest` plus `chicCanva-en.webmanifest`; changing language updates the active manifest. The head bootstrap remains inline and every local PWA asset URL carries the current build ID, preventing a newly uploaded index from executing an older cached runtime. File mode keeps the same offline editor behavior.
 
 ## Maintenance workflow
 

@@ -92,7 +92,7 @@ flowchart TD
 
 `build-workspace.py` performs deterministic string insertion and replacement against the baseline. Assertions on every replacement fail fast if an expected anchor disappears. It reads the semantic display version from `development/version.json`, injects the current ISO build date and absolute social metadata derived from `CHICCANVA_PUBLIC_URL` (defaulting to `https://chiccanva.testthis.one/`), then extracts each inline script and asks `node --check -` to validate syntax through standard input. Node is a developer-side validation aid; setting `CHICCANVA_SKIP_NODE_CHECK=1` skips that check, and a missing Node binary produces a warning instead of making the application impossible to build.
 
-The composer writes one monolithic root HTML and an identical local-server copy. For the hosted PWA it extracts the single style block and three inline JavaScript payloads into same-origin files while preserving document order, leaving static metadata and markup in a lightweight index. It hashes the index plus all extracted payloads and injects the first 16 hexadecimal characters into the service worker cache name.
+The composer writes one monolithic root HTML and an identical local-server copy. For the hosted PWA it extracts the single style block and four inline JavaScript payloads into same-origin files while preserving document order, leaving the language bootstrap, static metadata, and markup in a lightweight index. It hashes the unversioned index plus all extracted payloads, injects the first 16 hexadecimal characters into the service-worker cache name, and appends the same ID to local CSS, scripts, and manifests as a query parameter.
 
 ## 4. Runtime component model
 
@@ -260,7 +260,7 @@ The first meaningful pointer or keyboard interaction asks `navigator.storage.per
 
 PWA behavior is enabled only for a real HTTPS hostname. It is suppressed for `file:`, localhost, loopback/IP hosts, `.local`, and private network addresses. This avoids presenting the local BAT session as an installable production application.
 
-The service worker uses a SHA-derived shell cache. Navigation receives the cached app shell promptly and refreshes it in the background. A newly installed waiting worker is not forced into the active page silently: the UI displays an update bar, sends `SKIP_WAITING` only after the user acts, and reloads on `controllerchange`.
+The service worker uses a SHA-derived shell cache. Navigation tries the current network document first with a four-second bound and falls back to the cached shell offline. Build-versioned asset URLs keep a fresh document paired with its matching CSS and JavaScript even while the previous worker is still active. A newly installed waiting worker is not forced into the active page silently: the UI displays an update bar, sends `SKIP_WAITING` only after the user acts, and reloads on `controllerchange`.
 
 Large external model/font/image resources are runtime caches and are not guaranteed offline until fetched. The service worker does not turn Puter or remote search into offline features.
 
@@ -316,8 +316,9 @@ Pinch gestures use lightweight CSS sizing for every animation frame and rebuild 
 Emoji and Clipart searches first tokenize the Italian phrase and replace known terms from the embedded dictionary. If unknown tokens remain and Puter is already authenticated, chicCanva sends the compact prompt below to `google/gemma-4-31b-it`:
 
 ```js
-const prompt = JSON.stringify(keyword) +
-  ' -> translate IT to EN, output only translated text, if input EN, output the same as input. If synonyms, choose the best. Context: emoji, clipart keyword search for drawing and creative projects / educational';;
+const input = searchTranslationInput(keyword);
+const prompt = JSON.stringify(input.raw.slice(0, 160)) +
+  ' -> translate IT to EN. Text in (...) is context only: use it to choose meaning, do not output it. Output translated search text only. If input is already EN, output it unchanged. Choose one best synonym. Context: emoji/clipart search for drawing, creative and educational projects.';
 ```
 
 The request uses `normalize:true`. Current Puter therefore places the answer in `message.content` and provider reasoning in `message.reasoning`. `normalizedPuterText()` deliberately reads content first; it also removes complete and unterminated `<thought>`, `<thinking>`, `<reasoning>` and `<analysis>` blocks, strips common answer wrappers, and accepts the last non-empty line as a compatibility fallback. Keep this parser whenever the model or Puter response adapter changes; otherwise search can accidentally receive the reasoning trace instead of the English keyword.

@@ -52,7 +52,7 @@ s=s.replace('<meta name="description" content="Editor single-page HTML per testi
 # Select the locale before first paint. The full translator is embedded near the
 # end of the document, so the body stays hidden only until that synchronous
 # first translation has run.
-language_bootstrap="""<script data-i18n-bootstrap>(function(){try{var k='chiccanva.language.v1',v=localStorage.getItem(k);if(v!=='it'&&v!=='en')v=String(navigator.language||'').toLowerCase().indexOf('it')===0?'it':'en';document.documentElement.lang=v;}catch(e){document.documentElement.lang='en';}document.documentElement.classList.add('i18n-boot');document.documentElement.style.visibility='hidden';})();</script>"""
+language_bootstrap="""<script data-i18n-bootstrap>(function(){try{var k='chiccanva.language.v1',v=localStorage.getItem(k);if(v!=='it'&&v!=='en')v=String(navigator.language||'').toLowerCase().indexOf('it')===0?'it':'en';document.documentElement.lang=v;}catch(e){document.documentElement.lang='en';}document.documentElement.classList.add('i18n-boot');document.documentElement.style.visibility='hidden';setTimeout(function(){document.documentElement.classList.remove('i18n-boot');document.documentElement.style.removeProperty('visibility')},6000);})();</script>"""
 s=s.replace('</head>',language_bootstrap+'\n</head>',1)
 pdfjs=(dev/'vendor/pdf.min.js').read_text(encoding='utf-8')
 assert '</script' not in pdfjs.lower(), 'PDF.js contiene una chiusura script non incorporabile'
@@ -215,13 +215,22 @@ def externalize_style(match):
 pwa_html=re.sub(r'<style(?:\s[^>]*)?>([\s\S]*?)</style>',externalize_style,pwa_html,flags=re.I)
 assert len(style_blocks)==1, f'Atteso un blocco CSS inline, trovati {len(style_blocks)}'
 (pwa_build/'chiccanva.css').write_text(style_blocks[0].strip()+'\n',encoding='utf-8')
-(pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
 for name in ['chicCanva.webmanifest','chicCanva-en.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
 (pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: *\nDisallow: /\n',encoding='utf-8')
 (pwa_build/'_headers').write_text('/chiccanva-share.jpg\n  Cache-Control: public, max-age=86400\n',encoding='utf-8')
 build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])
 build_id=hashlib.sha256(build_material).hexdigest()[:16]
+# Stable filenames make manual uploads simple, while the per-build query keeps a
+# newly uploaded index from executing JavaScript retained by the HTTP cache or by
+# the previous service worker. This prevents mixed revisions after partial/staged
+# uploads and still lets the PWA precache the complete shell for offline use.
+versioned_assets=['chiccanva.css',*script_names,'chicCanva.webmanifest','chicCanva-en.webmanifest']
+for name in versioned_assets:
+ pwa_html=pwa_html.replace('="'+name+'"','="'+name+'?v='+build_id+'"')
+(pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
 sw=(dev/'pwa'/'chicCanva-sw.js').read_text(encoding='utf-8').replace('__BUILD_ID__',build_id)
+for name in versioned_assets:
+ sw=sw.replace("'./"+name+"'","'./"+name+"?v="+build_id+"'")
 assert '__BUILD_ID__' not in sw
 (pwa_build/'chicCanva-sw.js').write_text(sw,encoding='utf-8')
 assert len(pwa_html.encode('utf-8'))<500000, 'Index PWA ancora troppo pesante per crawler e avvio rapido'
