@@ -92,6 +92,24 @@ async function updateMemoryFootprint(){
 const memorySelectionChanged=selectionChanged;selectionChanged=function(){memorySelectionChanged();updateSelectedImageInfo();scheduleMemoryUpdate()};
 const memoryInstantiateObject=instantiateObject;instantiateObject=async function(d,target=canvas){const object=await memoryInstantiateObject(d,target);if(object?.assetId){const asset=state.assets[object.assetId],size=imageElementSize(object);if(asset&&size.width&&size.height){asset.meta??={};asset.meta.pixelWidth=size.width;asset.meta.pixelHeight=size.height;asset.meta.encodedBytes??=dataUrlByteLength(asset.dataUrl)}}return object};
 
+// Page descriptors and encoded assets remain available for history/export, while
+// decoded Fabric bitmaps and filter caches from the page just left are released.
+// loadPage clears the old canvas synchronously before its first await, therefore
+// these runtime resources can be detached without touching the new page.
+function releaseFabricPageRuntime(object){
+ for(const child of object?.getObjects?.()||object?.children||[])releaseFabricPageRuntime(child);
+ for(const key of ['_cacheCanvas','_filteredEl']){const surface=object?.[key];if(surface?.getContext){try{surface.getContext('2d')?.clearRect(0,0,surface.width||0,surface.height||0);surface.width=surface.height=1}catch(error){}}object[key]=null}
+ const element=object?.getElement?.()||object?._element;if(element?.tagName==='IMG'){try{element.removeAttribute('src');element.src=''}catch(error){}}
+}
+const memoryPageLoadBase=loadPage;
+loadPage=async function(page){
+ const retired=canvas?.getObjects?.().filter(object=>!object.excludeProject)||[];
+ const pending=memoryPageLoadBase(page);
+ for(const object of retired)releaseFabricPageRuntime(object);
+ scheduleMemoryUpdate();
+ return pending
+};
+
 function openResolutionDialog(){const image=selectedImage();if(!image)return;resolutionTarget=image;const size=imageElementSize(image);$('resolutionScale').value='2';$('resolutionInfo').textContent='Immagine attuale: '+size.width.toLocaleString('it-IT')+' × '+size.height.toLocaleString('it-IT')+' px · RAM bitmap ~'+formatBytes(size.width*size.height*4)+'. La sostituzione riguarda solo questo oggetto.';syncResolutionPreview();$('resolutionDialog').showModal()}
 function syncResolutionPreview(){if(!resolutionTarget)return;const size=imageElementSize(resolutionTarget),index=Number($('resolutionScale').value),factor=RESOLUTION_FACTORS[index],width=Math.max(1,Math.round(size.width*factor)),height=Math.max(1,Math.round(size.height*factor));$('resolutionScaleLabel').textContent=RESOLUTION_LABELS[index];$('resolutionPreview').textContent=width.toLocaleString('it-IT')+' × '+height.toLocaleString('it-IT')+' px · ~'+formatBytes(width*height*4)+' RAM'}
 async function resizeSelectedImage(){

@@ -1,7 +1,13 @@
 from pathlib import Path
-import os,re,shutil,subprocess,hashlib,sys,json,base64
+import os,re,shutil,subprocess,hashlib,sys,json,base64,time
 from datetime import date
 root=Path(__file__).resolve().parent.parent;dev=root/'development'
+def write_bytes_retry(path,data,attempts=8):
+ for attempt in range(attempts):
+  try:path.write_bytes(data);return
+  except OSError:
+   if attempt+1==attempts:raise
+   time.sleep(.15*(attempt+1))
 version=json.loads((dev/'version.json').read_text(encoding='utf-8'))['version']
 build_date=date.today().isoformat()
 public_url=os.environ.get('CHICCANVA_PUBLIC_URL','https://chiccanva.testthis.one/').strip().rstrip('/')+'/'
@@ -9,6 +15,7 @@ assert re.fullmatch(r'https://[^\s]+/',public_url), 'CHICCANVA_PUBLIC_URL deve e
 share_image_name='chiccanva-share.jpg'
 share_image_url=public_url+share_image_name+'?v='+version
 subprocess.run([sys.executable,str(dev/'build-guide.py')],cwd=root,check=True)
+subprocess.run([sys.executable,str(dev/'build-guide-en.py')],cwd=root,check=True)
 subprocess.run([sys.executable,str(dev/'build-docs.py')],cwd=root,check=True)
 s=(dev/'chic-v6-baseline.html').read_text(encoding='utf-8')
 s=s.replace('<title>chicCanva — editor outline multi-page</title>','<title>chicCanva · Piccole idee, grandi progetti</title>',1)
@@ -23,6 +30,7 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <meta property="og:type" content="website">
 <meta property="og:url" content="__PUBLIC_URL__">
 <meta property="og:locale" content="it_IT">
+<meta property="og:locale:alternate" content="en_GB">
 <meta property="og:site_name" content="chicCanva">
 <meta property="og:title" content="chicCanva · Piccole idee, grandi progetti">
 <meta property="og:description" content="Editor grafico con funzioni AI per creare schede, cartelloni, illustrazioni e lavori creativi e didattici.">
@@ -41,6 +49,11 @@ share_meta='''<meta name="application-name" content="chicCanva">
 <link rel="apple-touch-icon" sizes="192x192" href="chiccanva-192.png">'''
 share_meta=share_meta.replace('__PUBLIC_URL__',public_url).replace('__SHARE_IMAGE_URL__',share_image_url)
 s=s.replace('<meta name="description" content="Editor single-page HTML per testi outlined, OpenMoji, immagini, crop, pagine custom, PDF e asset serializzati.">',share_meta,1)
+# Select the locale before first paint. The full translator is embedded near the
+# end of the document, so the body stays hidden only until that synchronous
+# first translation has run.
+language_bootstrap="""<script data-i18n-bootstrap>(function(){try{var k='chiccanva.language.v1',v=localStorage.getItem(k);if(v!=='it'&&v!=='en')v=String(navigator.language||'').toLowerCase().indexOf('it')===0?'it':'en';document.documentElement.lang=v;}catch(e){document.documentElement.lang='en';}document.documentElement.classList.add('i18n-boot');document.documentElement.style.visibility='hidden';})();</script>"""
+s=s.replace('</head>',language_bootstrap+'\n</head>',1)
 pdfjs=(dev/'vendor/pdf.min.js').read_text(encoding='utf-8')
 assert '</script' not in pdfjs.lower(), 'PDF.js contiene una chiusura script non incorporabile'
 s=s.replace('</head>','<script>'+pdfjs+'</script>\n</head>',1)
@@ -56,7 +69,11 @@ def before(id,markup):
  m=re.search(r'<[a-zA-Z][^>]*\bid="'+id+r'"[^>]*>',s);assert m,id
  s=s[:m.start()]+markup+s[m.start():]
 rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.css').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'shapes.css').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.css').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.css').read_text(encoding='utf-8')+'\n</style>')
-rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8')+'\n'+(dev/'interaction-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.html').read_text(encoding='utf-8')+'\n'+(dev/'ai-result-fallback.html').read_text(encoding='utf-8'))
+rep('\n</style>','\n'+(dev/'alignment-guides.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n</style>','\n'+(dev/'text-editing.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n</style>','\n'+(dev/'i18n.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8')+'\n'+(dev/'interaction-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.html').read_text(encoding='utf-8')+'\n'+(dev/'raw-ai-prompt.html').read_text(encoding='utf-8')+'\n'+(dev/'ai-result-fallback.html').read_text(encoding='utf-8'))
+rep('\n<body>','\n<body>\n'+(dev/'alignment-guides-ui.html').read_text(encoding='utf-8'))
 rep('<aside class="sidebar" id="sidebar">','<aside class="sidebar" id="sidebar"><div class="sidebar-controls"><button class="btn" id="collapseSections">Richiudi sezioni</button><button class="btn" id="expandSections">Espandi sezioni</button><label class="check"><input id="singleSection" type="checkbox" checked>Espandi singolarmente</label></div>'+(dev/'clipart-ui.html').read_text(encoding='utf-8')+(dev/'shapes-ui.html').read_text(encoding='utf-8')+(dev/'colorizer-ui.html').read_text(encoding='utf-8'))
 rep('<div class="tabs"><button class="active" data-mode="whole">Frase su pagina</button><button data-mode="single">1 lettera/gruppo</button><button data-mode="custom">Multi custom page</button></div>','<div class="project-strip"><div id="projectTabs" class="project-tabs" role="tablist" aria-label="Progetti aperti"></div><button class="btn" id="newProjectBtn" title="Crea un nuovo progetto">+ Progetto</button></div>')
 before('previewBtn','<button class="btn" id="quickAddPage" title="Aggiungi una pagina vuota al progetto">+ Pagina</button>')
@@ -66,10 +83,15 @@ before('applyCropBtn','<button class="btn" id="resetCropActiveBtn" title="Rimuov
 nav_next=re.search(r'<button class="iconbtn" id="nextPage"[^>]*>.*?</button>',s);assert nav_next
 s=s[:nav_next.end()]+'<button class="iconbtn" id="quickAddNav" title="Aggiungi dopo la pagina attiva">＋</button>'+s[nav_next.end():]
 before('fontMode','<div class="font-fixed-preview"><small>Font impostato · <strong id="currentFontName"></strong></small><div id="currentFontSample" class="sample">Outline</div></div>')
+before('textInput',(dev/'text-edit-ui.html').read_text(encoding='utf-8'))
+rep('Tutto MAIUSCOLO <small>· per i nuovi testi</small>','Tutto MAIUSCOLO')
 before('wizardResultName','<div class="font-fixed-preview"><small>Anteprima proposta dal wizard</small><div id="wizardFontSample" class="sample">Outline</div></div>')
 before('emojiCategory','<label class="check emoji-translate-option"><input id="emojiTranslate" type="checkbox" checked>Traduzione automatica italiano → inglese</label><p class="help">Con la traduzione attiva premi Invio o la lente. Le parole note restano locali; Gemma tramite Puter completa i termini sconosciuti e le traduzioni riuscite vengono ricordate nel browser.</p><p class="help puter-translation-hint" data-puter-translation-hint>Senza accesso Puter la traduzione usa solo il dizionario incorporato e le traduzioni già memorizzate. <button type="button" class="text-link" data-puter-login-link>Accedi a Puter per la traduzione AI</button></p>')
 rep('<input class="field" id="emojiSearch" placeholder="Cerca smile, cuore, cat…" style="margin-top:8px">','<div class="emoji-search-row"><input class="field" id="emojiSearch" type="search" placeholder="Cerca smile, cuore, cat…"><button class="btn accent emoji-search-submit" id="emojiSearchBtn" type="button" title="Cerca emoji" aria-label="Cerca emoji"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>')
 before('helpBtn','<button class="btn hidden" id="installPwaBtn" title="Installa chicCanva su questo dispositivo" aria-label="Installa chicCanva"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v3h14v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Installa</span></button>')
+before('helpBtn',(dev/'i18n-ui.html').read_text(encoding='utf-8'))
+mobile_memory='<section class="card mobile-memory"><div class="card-b"><div class="row">'
+rep(mobile_memory,'<section class="card mobile-memory"><div class="card-b">'+(dev/'i18n-mobile-ui.html').read_text(encoding='utf-8')+'<div class="row">')
 rep('<label class="small">Simboli uniti alla precedente / successiva</label>','<label class="small" data-symbol-options>Simboli uniti alla precedente / successiva</label>')
 rep('<div class="grid2"><input class="field" id="symbolsPrev"','<div class="grid2" data-symbol-options><input class="field" id="symbolsPrev"')
 rep('<label class="check"><input type="checkbox" id="smartApostrophe"','<label class="check" data-symbol-options><input type="checkbox" id="smartApostrophe"')
@@ -97,14 +119,16 @@ rep('<div class="preview hidden" id="previewPanel">',(dev/'workspace-special.htm
 rep('<button class="btn" id="closePreview">Chiudi</button>','<div class="preview-reorder"><button class="btn" id="previewReorder">Riordina</button><button class="btn" id="previewMoveLeft" title="Sposta pagina a sinistra">←</button><button class="btn" id="previewMoveRight" title="Sposta pagina a destra">→</button></div><button class="btn" id="closePreview">Chiudi</button>')
 before('customPageName','<div class="page-reorder"><button class="btn" id="pageMoveLeft" title="Sposta la pagina prima">← Prima</button><button class="btn" id="pageMoveRight" title="Sposta la pagina dopo">Dopo →</button></div>')
 rep('<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"',(dev/'prompt-library-launch.html').read_text(encoding='utf-8')+'<label class="small">Stile illustrazione</label><select id="aiStyle"></select><label class="small">Prompt</label><textarea id="aiPrompt"')
-rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><button class="btn ai-paste-prompt" id="pasteAiPromptBtn" type="button">Incolla testo e aggiungi al prompt</button><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
-rep('<button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>','<div class="ai-cost-estimate" id="aiCostEstimate" aria-live="polite"><strong>Stima consumo Puter</strong><span>~ calcolo…</span></div><div class="ai-pricing-meta"><span id="aiPricingStatus">Prezziario incorporato</span><button type="button" class="text-link" id="aiPricingRefresh">Aggiorna prezziario</button></div><button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>')
+rep('</textarea>\n          <button class="btn accent" id="generateAiBtn"','</textarea><button class="text-link ai-raw-prompt-link" id="showRawAiPrompt" type="button">Mostra il prompt completo inviato</button><button class="btn ai-paste-prompt" id="pasteAiPromptBtn" type="button">Incolla testo e aggiungi al prompt</button><label class="check ai-postprocess"><input id="aiChromaKey" type="checkbox">Genera con sfondo uniforme per chroma key</label><label class="check ai-postprocess"><input id="aiRemoveBackground" type="checkbox">Duplica il contenuto generato e rimuovi lo sfondo</label>\n          <button class="btn accent" id="generateAiBtn"')
+rep('<button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>','<div class="ai-cost-estimate" id="aiCostEstimate" aria-live="polite"><div class="ai-cost-main"><strong>Stima Consumo</strong><span id="aiCostEstimateValue">~ calcolo…</span></div><small class="ai-last-generation hidden" id="aiLastGeneration"></small><small class="estimate-detail" id="aiCostEstimateDetail"></small><div class="ai-pricing-meta"><span id="aiPricingStatus">Prezziario incorporato</span><button type="button" class="text-link" id="aiPricingRefresh">Aggiorna prezziario</button></div></div><button class="btn accent" id="generateAiBtn" style="width:100%">Genera e inserisci</button>')
 rep("together:['black-forest-labs/FLUX.1-schnell-Free','black-forest-labs/FLUX.1-schnell']","together:[]")
 assert 'black-forest-labs/FLUX.1-schnell' not in s, 'Il vecchio fallback Together/Flux non deve entrare nella build'
 canvas_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div class="card-title">Canvas, griglia & export immagine</div>[\s\S]*?</section>',s);assert canvas_card
 canvas_markup=canvas_card.group(0)
 canvas_markup=canvas_markup.replace('Canvas, griglia & export immagine','Canvas, griglia e snap').replace('Griglia e snapping sono indipendenti. L’export regione può avere margine e trasparenza.','Imposta gli aiuti visivi del foglio; non vengono stampati.')
 canvas_markup=re.sub(r'\s*<label class="small">Export cropped image</label>[\s\S]*?<div class="status">Selection box:.*?</div>','',canvas_markup)
+guide_settings='<div class="guide-snap-settings"><label class="check"><input id="guideSnapEnabled" type="checkbox" checked>Snap a linee guida</label><div class="guide-snap-options" id="guideSnapOptions"><label class="check"><input id="guideSnapPage" type="checkbox" checked>Centro pagina</label><label class="check"><input id="guideSnapObjects" type="checkbox" checked>Allineamento oggetti</label><label class="check"><input id="guideSnapSpacing" type="checkbox" checked>Equispaziatura</label></div><label class="check"><input id="aspectRatioLock" type="checkbox">Blocca proporzioni nel resize e crop</label><p class="help"><kbd>Maiusc</kbd> inverte il blocco proporzioni. Durante lo spostamento <kbd>Alt</kbd> inverte le guide; <kbd>Maiusc</kbd> + <kbd>Alt</kbd> esclude le guide e inverte lo snap classico.</p></div>'
+canvas_markup=canvas_markup.replace('</div>\n    </section>',guide_settings+'</div>\n    </section>')
 s=s[:canvas_card.start()]+canvas_markup+s[canvas_card.end():]
 project_card=re.search(r'<section class="card">\s*<div class="card-h"><div><div class="card-title">Progetto & PDF</div>[\s\S]*?</section>',s);assert project_card
 s=s[:project_card.start()]+(dev/'export-center.html').read_text(encoding='utf-8')+s[project_card.end():]
@@ -114,6 +138,11 @@ pdf_import=(dev/'pdf-import.js').read_text(encoding='utf-8')
 pdf_worker=base64.b64encode((dev/'vendor/pdf.worker.min.js').read_bytes()).decode('ascii')
 pdf_import="const PDF_WORKER_BASE64='"+pdf_worker+"';\n"+pdf_import
 rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'workspace.js').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.js').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.js').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.js').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.js').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'crop-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'clipart.js').read_text(encoding='utf-8')+'\n'+(dev/'puter-billing.js').read_text(encoding='utf-8')+'\n'+(dev/'pwa.js').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'search-translation.js').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.js').read_text(encoding='utf-8')+'\n'+(dev/'shapes.js').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.js').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.js').read_text(encoding='utf-8')+'\n'+pdf_import+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'alignment-guides.js').read_text(encoding='utf-8')+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",(dev/'text-editing.js').read_text(encoding='utf-8')+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
+help_en_json=json.dumps((dev/'help-v7-en.html').read_text(encoding='utf-8'),ensure_ascii=False)
+i18n_script='globalThis.CHICCANVA_HELP_EN='+help_en_json+';\n'+(dev/'i18n.js').read_text(encoding='utf-8')
+rep("init().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});",i18n_script+"\ninit().catch(e=>{console.error(e);toast('Avvio incompleto: '+e.message)});")
 # Remove obsolete mode explanations from the guide.
 s=s.replace('<h3>1. Scegli come lavorare</h3>', '<h3>1. Progetti e funzioni speciali</h3>')
 start=s.index('<h3>1. Progetti e funzioni speciali</h3>');end=s.index('<h3>2. Trova il carattere giusto</h3>',start)
@@ -131,6 +160,17 @@ license=re.search(r'<details class="license"><summary>Librerie e licenze</summar
 license_html='''<div id="memoryFootprint" class="memory-footprint"><strong>Carico chicCanva</strong><br>Calcolo memoria e spazio browser…</div><div class="app-footer-meta"><p class="app-repository"><a href="https://github.com/n3me5is-git/chicCanva" target="_blank" rel="noopener noreferrer">Repository GitHub di chicCanva</a></p><div class="app-build-info">chicCanva <strong id="appVersion">v'''+version+'''</strong><br>Data build: <time id="appBuildDate" datetime="'''+build_date+'''">'''+build_date+'''</time></div></div><details class="license"><summary>Librerie, contenuti e licenze</summary><p>Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0; <a href="https://github.com/imgly/background-removal-js" target="_blank" rel="noopener">sorgente e licenza</a>. OpenMoji 17: grafica CC BY-SA 4.0, HfG Schwäbisch Gmünd e collaboratori; codice OpenMoji LGPL-3.0 dove applicabile. Le opere pubblicate su Openclipart sono indicate dal progetto come pubblico dominio/CC0 1.0. Puter.js e i servizi Puter, inclusa la traduzione opzionale con Gemma 4 31B, seguono le rispettive licenze e condizioni del servizio. Fontsource, Google Fonts e ogni famiglia tipografica conservano la propria licenza.</p></details>'''
 s=s[:license.start()]+license_html+s[license.end():]
 
+# Use the active UI locale for dates and numbers generated at runtime. The i18n
+# layer supplies appLocale(); function declarations are available throughout the
+# complete generated application script.
+s=s.replace(".toLocaleString('it-IT'", ".toLocaleString(appLocale()")
+s=s.replace(".toLocaleTimeString('it-IT'", ".toLocaleTimeString(appLocale()")
+s=s.replace(".toLocaleDateString('it-IT'", ".toLocaleDateString(appLocale()")
+s=s.replace(".toLocaleUpperCase('it-IT'", ".toLocaleUpperCase(appLocale()")
+s=s.replace(".toLocaleLowerCase('it-IT'", ".toLocaleLowerCase(appLocale()")
+s=s.replace("new Intl.NumberFormat('it-IT'", "new Intl.NumberFormat(appLocale()")
+s=s.replace("new Intl.DateTimeFormat('it-IT'", "new Intl.DateTimeFormat(appLocale()")
+
 # A malformed inline script makes the whole single-file application unusable.
 # Validate every inline block before publishing the root and final-build copies.
 node=shutil.which('node')
@@ -147,7 +187,11 @@ else:
  print('Controllo sintattico Node omesso tramite CHICCANVA_SKIP_NODE_CHECK.')
 
 (root/'chicCanva.html').write_text(s,encoding='utf-8')
-for name in ['chicCanva.html','chicCanva_server.bat']:shutil.copy2(root/name,root/'build/chicCanva'/name)
+# CopyFile2 may fail on Windows while a browser has the generated HTML memory
+# mapped. Writing the bytes in place remains safe and lets iterative builds update
+# the distribution even when its previous version is open for testing.
+for name in ['chicCanva.html','chicCanva_server.bat']:
+ write_bytes_retry(root/'build/chicCanva'/name,(root/name).read_bytes())
 pwa_build=root/'build/chicCanva-pwa';pwa_build.mkdir(parents=True,exist_ok=True)
 # The hosted PWA keeps the exact same generated application, but externalizes the
 # large inline payloads. Crawlers receive the title and Open Graph metadata in a
@@ -156,6 +200,7 @@ pwa_html=s
 script_names=['fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js']
 script_blocks=[]
 def externalize_script(match):
+ if 'data-i18n-bootstrap' in (match.group(1) or ''):return match.group(0)
  index=len(script_blocks);script_blocks.append(match.group(2))
  assert index<len(script_names), 'Trovati più script inline del previsto'
  attrs=match.group(1) or ''
@@ -171,7 +216,7 @@ pwa_html=re.sub(r'<style(?:\s[^>]*)?>([\s\S]*?)</style>',externalize_style,pwa_h
 assert len(style_blocks)==1, f'Atteso un blocco CSS inline, trovati {len(style_blocks)}'
 (pwa_build/'chiccanva.css').write_text(style_blocks[0].strip()+'\n',encoding='utf-8')
 (pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
-for name in ['chicCanva.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
+for name in ['chicCanva.webmanifest','chicCanva-en.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
 (pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: *\nDisallow: /\n',encoding='utf-8')
 (pwa_build/'_headers').write_text('/chiccanva-share.jpg\n  Cache-Control: public, max-age=86400\n',encoding='utf-8')
 build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])

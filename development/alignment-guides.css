@@ -1,0 +1,5 @@
+.guide-snap-settings{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(41,136,121,.035)}
+.guide-snap-settings>.check{margin:0 0 8px}.guide-snap-options{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin:7px 0 10px;padding-left:8px}.guide-snap-options .check{margin:0;font-size:12px}.guide-snap-settings .help{margin:8px 0 0;line-height:1.65}
+#snapOptionsMenu button[aria-checked="true"]::before{content:'✓';display:inline-block;width:18px;color:var(--accent);font-weight:900}#snapOptionsMenu button[aria-checked="false"]::before{content:'';display:inline-block;width:18px}
+#snapTool.guide-active:not(.active){box-shadow:inset 0 0 0 2px rgba(41,136,121,.48)}
+@media(max-width:720px){.guide-snap-options{grid-template-columns:1fr}.guide-snap-settings{padding:11px}.guide-snap-settings .check{min-height:34px}}

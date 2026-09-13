@@ -1,0 +1,14 @@
+<button class="btn text-edit-trigger hidden" id="editSelectedTextBtn" type="button">Modifica testo oggetto</button>
+<div class="text-edit-options hidden" id="textEditOptions">
+  <strong>Modifica dell’oggetto selezionato</strong>
+  <label class="small" for="textEditConstraint">Vincolo dimensioni</label>
+  <select id="textEditConstraint">
+    <option value="none">Nessun vincolo</option>
+    <option value="width">Mantieni larghezza</option>
+    <option value="height">Mantieni altezza</option>
+    <option value="both">Mantieni larghezza e altezza</option>
+  </select>
+  <label class="check"><input id="textEditKeepAspect" type="checkbox" checked>Conserva le proporzioni del testo</label>
+  <p class="help">Il vertice superiore sinistro resta fermo. Con le proporzioni attive il testo viene scalato senza deformarlo.</p>
+  <button class="text-link" id="cancelTextEdit" type="button">Annulla modifica testo</button>
+</div>

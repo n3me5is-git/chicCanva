@@ -35,19 +35,22 @@ The fields currently used are:
 | Account type | `user.subscribed` | Reported |
 | Monthly allowance | `allowanceInfo.monthUsageAllowance` | Reported live; never hardcoded as an account fact |
 | Purchased credits | `allowanceInfo.addons.purchasedCredits` | Reported when present, otherwise zero |
-| Total remaining | `allowanceInfo.remaining` | Authoritative reported balance |
-| Used | `usage.allowanceUsed` | Preferred reported value |
+| Monthly use | `usage.allowanceUsed` | Credits consumed from the current monthly allowance |
+| Purchased-credit use | `allowanceInfo.addons.consumedPurchaseCredits` | Credits consumed after the allowance was exhausted |
+| Reported remaining | `allowanceInfo.remaining` | Retained for diagnostics; older/current payloads may expose only one bucket here |
 | Used fallback | `usage.total` | Observed aggregate fallback |
 | App-specific use | `getDetailedAppUsage(...).total` | Separate app-scoped diagnostic |
 
-The fallback arithmetic includes both known capacity buckets:
+Puter spends the monthly allowance first and purchased credits second. The primary totals therefore use the two reported components rather than capping usage at the monthly allowance:
 
 ```js
-knownCapacity = monthUsageAllowance + purchasedCredits;
-used = knownCapacity - remaining;
+monthlyRemaining = max(0, monthUsageAllowance - allowanceUsed);
+purchasedRemaining = max(0, purchasedCredits - consumedPurchaseCredits);
+globalRemaining = monthlyRemaining + purchasedRemaining;
+globalUsed = allowanceUsed + consumedPurchaseCredits;
 ```
 
-If `remaining` exceeds the known capacity, chicCanva shows the used amount as unavailable. It never displays a negative consumption value or guesses the value of an unknown add-on.
+The progress bar is `globalRemaining / (monthUsageAllowance + purchasedCredits)`. This makes a fully spent free allowance and a nearly untouched top-up appear as a mostly available account rather than as an exhausted one. Both rows show total, used and residual values. If one of the component fields is unavailable, chicCanva keeps it unavailable and uses only a safe reported fallback; it never derives a negative balance.
 
 ### Units and USD
 
@@ -122,9 +125,9 @@ The quote includes:
 - whole Puter credits and USD to three decimals;
 - a confidence label.
 
-OpenAI output dimensions and quality are independent controls. The app validates the selected width and height before quoting or generating. Tokenized image output is estimated from the calibrated output-token curve and multiplied by the current output-token rate. Reference inputs are approximate because provider preprocessing is not known before the request.
+OpenAI output dimensions and quality are independent controls. The app validates the selected width and height before quoting or generating. Tokenized image output is estimated from a monotonic curve over total output pixel area and multiplied by the current output-token rate. Earlier code scaled from a different minimum short edge for every aspect ratio; at the same “2K short edge” that could make a larger portrait output look cheaper than a smaller square. The estimate now always rises with pixel area. This is still an approximation: provider image tokens are bucketed and dashboard rows may aggregate requests, so two nearby dimensions do not necessarily receive a perfectly proportional real charge. Reference inputs remain approximate because provider preprocessing is not known before the request.
 
-Grok uses fixed prices for its 1K/2K tiers. Seedream uses the per-image catalog price and a conservative reference fallback where Puter does not expose a separate editing-input rate. Gemini uses its image-output token rate and estimates input image tiles. These are preflight estimates; the authoritative charge remains Puter's post-generation metering.
+Grok uses fixed prices for its 1K/2K tiers. Puter's `txt2img()` adapter documents those quality tiers but does not document an aspect-ratio argument for Grok, so chicCanva keeps its ratio selector fixed rather than claiming a control that may be ignored. Seedream uses the per-image catalog price and a conservative reference fallback where Puter does not expose a separate editing-input rate. Gemini 3.1 Flash Lite Image is sent through its canonical Puter model ID with a `ratio` object; its supported ratios are `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, and `21:9`. This model exposes only 1K output and no separate quality tier. These are preflight estimates; the authoritative charge remains Puter's post-generation metering.
 
 ## Refresh behavior
 
@@ -146,17 +149,19 @@ The key top-up fixture is:
 
 ```json
 {
-  "usage": { "allowanceUsed": 911.100411 },
+  "usage": { "allowanceUsed": 1000 },
   "allowanceInfo": {
     "monthUsageAllowance": 1000,
-    "addons": { "purchasedCredits": 20000 },
-    "remaining": 20088.899589,
+    "addons": {
+      "purchasedCredits": 20000,
+      "consumedPurchaseCredits": 90.34114001228214
+    },
     "unit": "credits"
   }
 }
 ```
 
-Expected output: 911 used, 20,089 available, $0.46 used, $10.04 available, 1,000 monthly allowance, and 20,000 top-up credits. The old expression `monthUsageAllowance - remaining` would produce an invalid negative result and must never return.
+Expected output: 1,090 used globally, 19,910 available globally, zero monthly allowance remaining, and approximately 19,910 purchased credits remaining. The UI also states the allowance-first/top-up-second order. Reading `allowanceUsed` alone would incorrectly cap total use at 1,000; using an ambiguous `remaining` field alone can incorrectly hide purchased credit.
 
 ## Relevant implementation files
 
@@ -166,3 +171,10 @@ Expected output: 911 used, 20,089 available, $0.46 used, $10.04 available, 1,000
 - `development/ai-generation.css` — responsive account, estimate and reference controls.
 - `development/build-workspace.py` — embeds the module in monolithic builds and splits the PWA build.
 
+## Measured generation cost
+
+The preflight quote is labelled **Stima Listino**. It uses cached Puter price coefficients, model and quality, validated output dimensions, the effective prompt, and reduced reference-image dimensions. GPT Image 2/2.5 common low-quality dimensions use reviewed output-token calibration points; unknown sizes are interpolated or extrapolated without a flat upper cap.
+
+Immediately before `puter.ai.txt2img()`, chicCanva reads `puter.auth.getDetailedAppUsage(puter.auth.appID)`. After an image is returned it polls the same app-scoped total briefly and stores a positive delta by model, quality, dimensions, ratio, reference presence, and reference scale. Prompt text is excluded so a recurring production profile can reuse its latest observation. The UI can therefore show **Ultima Gen** below **Stima Listino**. The cache retains at most 100 profiles and the global memory-clear command removes it.
+
+This delta is diagnostic evidence rather than a guaranteed per-request invoice: concurrent activity from the same Puter app could enter the interval. OpenAI supplies token rates, while exact GPT Image 2.5 output-token consumption is only known after generation. The estimator therefore labels confidence and treats Puter's reported app-credit delta as stronger post-generation evidence.

@@ -12,7 +12,17 @@ globalThis.duplicateSelectionAsImage=duplicateSelectionAsImage;
 
 function selectedImageIsNative(object){if(selectionObjects().length!==1||object?.type!=='image'||!object.assetId||!state.assets[object.assetId]?.dataUrl||object.flipX||object.flipY||Math.abs(Number(object.angle)||0)>=.01||Number(object.opacity??1)!==1||object.filters?.length)return false;const size=typeof imageElementSize==='function'?imageElementSize(object):{width:object.getElement?.()?.naturalWidth,height:object.getElement?.()?.naturalHeight};return(Number(object.cropX)||0)===0&&(Number(object.cropY)||0)===0&&Math.abs((Number(object.width)||0)-(Number(size.width)||0))<.01&&Math.abs((Number(object.height)||0)-(Number(size.height)||0))<.01}
 async function nativeSelectionBlob(object){const response=await fetch(state.assets[object.assetId].dataUrl);if(!response.ok)throw new Error('Immagine originale non leggibile');return response.blob()}
-async function copySelectionAsImageToClipboard(){const active=canvas.getActiveObject();if(!active){toast('Seleziona prima un oggetto o un gruppo');return}try{let blob;if(selectedImageIsNative(active))blob=await nativeSelectionBlob(active);else{const longest=Math.max(1,active.getScaledWidth(),active.getScaledHeight()),multiplier=Math.max(1,Math.min(3,4096/longest)),raster=active.toCanvasElement({multiplier,withoutTransform:false,enableRetinaScaling:false});blob=await new Promise((resolve,reject)=>raster.toBlob(value=>value?resolve(value):reject(new Error('PNG non creato')),'image/png'));raster.width=raster.height=1}await writeImageBlobToClipboard(blob);toast('Immagine copiata negli appunti')}catch(error){console.error(error);toast(error?.message||'Copia immagine non riuscita')}}
+async function copySelectionAsImageToClipboard(options={}){const active=canvas.getActiveObject();if(!active){if(!options.silent)toast('Seleziona prima un oggetto o un gruppo');return false}try{let blob;if(selectedImageIsNative(active))blob=await nativeSelectionBlob(active);else{const longest=Math.max(1,active.getScaledWidth(),active.getScaledHeight()),multiplier=Math.max(1,Math.min(3,4096/longest)),raster=active.toCanvasElement({multiplier,withoutTransform:false,enableRetinaScaling:false});blob=await new Promise((resolve,reject)=>raster.toBlob(value=>value?resolve(value):reject(new Error('PNG non creato')),'image/png'));raster.width=raster.height=1}await writeImageBlobToClipboard(blob);if(!options.silent)toast('Immagine copiata negli appunti');return true}catch(error){console.error(error);if(!options.silent)toast(error?.message||'Copia immagine non riuscita');return false}}
+async function copySelectionMultipurpose(){
+ const selected=selectionObjects().filter(object=>!object.excludeProject);
+ if(!selected.length){toast('Seleziona uno o più oggetti da copiare');return}
+ // Keep the editable representation for chicCanva paste, and also expose the
+ // same selection as PNG to external applications when clipboard permission
+ // is available. A failed external write never invalidates the internal copy.
+ copySelection();
+ await copySelectionAsImageToClipboard({silent:true})
+}
+globalThis.copySelectionMultipurpose=copySelectionMultipurpose;
 globalThis.copySelectionAsImageToClipboard=copySelectionAsImageToClipboard;
 
 function restoreSelectionTapObjects(){for(const entry of selectionTapState)if(canvas.contains(entry.object))entry.object.set({lockMovementX:entry.lockMovementX,lockMovementY:entry.lockMovementY,hasControls:entry.hasControls});selectionTapState=[]}

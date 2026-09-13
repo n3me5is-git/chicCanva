@@ -1,0 +1,4 @@
+.text-edit-trigger{width:100%;margin:0 0 8px;border-color:var(--accent);color:var(--accent)}
+.text-edit-options{display:grid;gap:8px;margin:0 0 10px;padding:11px;border:1px solid rgba(41,136,121,.24);border-radius:13px;background:rgba(41,136,121,.045)}
+.text-edit-options>.small{margin:2px 0 -4px}.text-edit-options .check{margin:1px 0}.text-edit-options .help{margin:0;line-height:1.45}
+.text-edit-disabled{opacity:.48;pointer-events:none}

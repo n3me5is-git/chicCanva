@@ -25,7 +25,14 @@ async function readClipboardImage(silent=false){
 }
 async function useClipboardImageFile(file,target='canvas'){if(!file)return false;if(target==='reference')await setAiReference(file);else await handleImageUpload(file);return true}
 async function pasteClipboardImage(target='canvas'){try{const file=await readClipboardImage(false);await useClipboardImageFile(file,target);toast(target==='reference'?'Riferimento incollato':'Immagine incollata nel canvas')}catch(error){toast(error.message||'Impossibile leggere gli appunti')}}
-async function pasteSmartClipboard(){try{const file=await readClipboardImage(true);if(file){await useClipboardImageFile(file,'canvas');toast('Immagine incollata nel canvas');return}}catch(error){}await pasteSelection()}
+async function pasteSmartClipboard(){
+ // A chicCanva structured copy always wins. The operating-system clipboard may
+ // still contain an older PNG (for example a previously exported full page).
+ // Reading that image first made Ctrl+V appear to paste the wrong content.
+ if(projectClipboard?.objects?.length){await pasteSelection();return}
+ try{const file=await readClipboardImage(true);if(file){await useClipboardImageFile(file,'canvas');toast('Immagine incollata nel canvas');return}}catch(error){}
+ await pasteSelection()
+}
 const baseGenerateAiFinal=generateAi;
 async function autoRemoveGeneratedBackground(assetId,targetPage){
  const asset=state.assets[assetId],status=$('aiStatus');if(!asset)return;status.textContent='Immagine pronta · rimozione automatica dello sfondo…';$('canvasShell').classList.add('bg-busy');bgWorking=true;
@@ -33,7 +40,9 @@ async function autoRemoveGeneratedBackground(assetId,targetPage){
  }finally{bgWorking=false;$('canvasShell').classList.remove('bg-busy')}
 }
 const AI_CHROMA_INSTRUCTION='Genera l’immagine su uno sfondo completamente uniforme, piatto e senza texture, ombre o gradienti, adatto al chroma key. Scegli automaticamente un colore di sfondo molto distante da tutti i colori del soggetto e dei suoi dettagli, in modo che la rimozione non cancelli parti del soggetto.';
-generateAi=async function(){const before=new Set(Object.keys(state.assets)),targetPage=currentPage,prompt=$('aiPrompt'),originalPrompt=prompt.value;if($('aiChromaKey')?.checked)prompt.value=originalPrompt.trim()+'\n\n'+AI_CHROMA_INSTRUCTION;try{await baseGenerateAiFinal()}finally{prompt.value=originalPrompt}if(!$('aiRemoveBackground')?.checked)return;const generated=Object.values(state.assets).find(a=>!before.has(a.id)&&a.kind==='ai');if(generated)try{await autoRemoveGeneratedBackground(generated.id,targetPage)}catch(error){console.error(error);$('aiStatus').textContent='Immagine generata; la copia senza sfondo non è riuscita: '+(error.message||error);toast('Immagine creata, rimozione sfondo non riuscita')}};
+const AI_CHROMA_INSTRUCTION_EN='Generate the image on a completely uniform, flat background without texture, shadows, or gradients, suitable for chroma key. Automatically choose a background color that is very different from every color in the subject and its details, so removal does not erase parts of the subject.';
+function aiChromaInstruction(){return appLanguage==='en'?AI_CHROMA_INSTRUCTION_EN:AI_CHROMA_INSTRUCTION}
+generateAi=async function(){const before=new Set(Object.keys(state.assets)),targetPage=currentPage,prompt=$('aiPrompt'),originalPrompt=prompt.value;if($('aiChromaKey')?.checked)prompt.value=originalPrompt.trim()+'\n\n'+aiChromaInstruction();try{await baseGenerateAiFinal()}finally{prompt.value=originalPrompt}if(!$('aiRemoveBackground')?.checked)return;const generated=Object.values(state.assets).find(a=>!before.has(a.id)&&a.kind==='ai');if(generated)try{await autoRemoveGeneratedBackground(generated.id,targetPage)}catch(error){console.error(error);$('aiStatus').textContent='Immagine generata; la copia senza sfondo non è riuscita: '+(error.message||error);toast('Immagine creata, rimozione sfondo non riuscita')}};
 
 async function canvasCroppedReferenceFile(image){
  if(!image||image.type!=='image')throw new Error('Seleziona un’immagine nel canvas');

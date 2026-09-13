@@ -1,7 +1,7 @@
-const BUILD_ID='cd97976f126d0a90';
+const BUILD_ID='02c39f89af596623';
 const SHELL_CACHE='chiccanva-shell-'+BUILD_ID;
 const REMOTE_CACHE='chiccanva-remote-v8';
-const SHELL=['./','./index.html','./chiccanva.css','./fabric.js','./jspdf.js','./chiccanva-pdf.js','./chiccanva-app.js','./chicCanva.webmanifest','./chiccanva-192.png','./chiccanva-512.png','./chiccanva-share.png','./chiccanva-share.jpg','./robots.txt'];
+const SHELL=['./','./index.html','./chiccanva.css','./fabric.js','./jspdf.js','./chiccanva-pdf.js','./chiccanva-app.js','./chicCanva.webmanifest','./chicCanva-en.webmanifest','./chiccanva-192.png','./chiccanva-512.png','./chiccanva-share.png','./chiccanva-share.jpg','./robots.txt'];
 const CACHEABLE_REMOTE=new Set(['fonts.googleapis.com','fonts.gstatic.com','cdn.jsdelivr.net']);
 self.addEventListener('install',event=>event.waitUntil(caches.open(SHELL_CACHE).then(cache=>cache.addAll(SHELL))));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const current=new Set([SHELL_CACHE,REMOTE_CACHE]);for(const name of await caches.keys())if(name.startsWith('chiccanva-')&&!current.has(name))await caches.delete(name);await self.clients.claim()})()));

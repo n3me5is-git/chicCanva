@@ -54,7 +54,8 @@ La build pubblicabile include nome applicazione, descrizione, metadati Open Grap
 - `clipart*`: explorer Openclipart;
 - `pwa*`: installazione, aggiornamenti e service worker;
 - `pending.js`: persistenza, cronologia, OpenMoji e strategie mobile del remover;
-- `build-guide.py`: fonte strutturata della guida italiana.
+- `build-guide.py` e `build-guide-en.py`: fonti strutturate delle guide italiana e inglese;
+- `i18n*`: catalogo bilingue, selettori lingua e traduzione dell’interfaccia statica e dinamica.
 
 La build incorpora Fabric.js, jsPDF, PDF.js con worker, cataloghi font/OpenMoji e runtime IMG.LY/ONNX nell'HTML. I file grandi o variabili, come font scelti, SVG OpenMoji, modelli di segmentazione e servizi Puter/Openclipart, vengono richiesti quando servono. Lo stato modificabile usa descrittori di pagina e oggetto più un registro asset serializzato come Data URL. Il Colorizer mantiene nel canvas una sola immagine derivata e conserva la sorgente come descrittori e dipendenze degli asset, incluse nella raccolta degli asset raggiungibili.
 
@@ -65,7 +66,7 @@ Il flusso runtime è descritto nei dettagli in [Architettura tecnica](docs/TECHN
 Per sviluppare servono Python 3 e, preferibilmente, Node.js per il controllo sintattico degli script incorporati. Non esiste un passaggio `npm install`.
 
 1. Modifica i moduli in `development/`, mai direttamente `chicCanva.html` o le copie in `build/`.
-2. Aggiorna `development/build-guide.py`, la documentazione tecnica pertinente e i test quando cambia un comportamento.
+2. Aggiorna `development/i18n.js`, entrambe le guide, la documentazione tecnica pertinente e i test quando cambia un comportamento.
 3. Dalla root esegui:
 
 ```powershell
@@ -75,7 +76,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera la guida interna e la guida HTML autonoma, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali, poi il service worker riceve un ID derivato dall'intero insieme. La release corrente è **1.9.9**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera entrambe le guide interne e le due guide HTML autonome, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica e incorpora entrambe le lingue. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali, poi il service worker riceve un ID derivato dall'intero insieme. La release corrente è **1.12.0**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -139,7 +140,7 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 - La **Prompt Library** salva in IndexedDB titolo, tag, descrizione, prompt, preset e, solo su richiesta, il riferimento associato. I tag vengono inseriti come chip rimovibili; ricerca e filtri multipli includono i tag, mentre la lista resta scorrevole. Sono disponibili copia negli appunti di testo e immagine, import/export JSON e inserimento append del testo copiato nel prompt corrente.
 - Il riferimento opzionale da file, URL o canvas può essere inviato a 1×, 0,75×, 0,5× o 0,25×. La riduzione temporanea usa ricampionamento di alta qualità e non modifica l’originale; 1× resta il valore iniziale per conservare testo e dettagli.
 - Il widget AI nasconde i controlli finché l’utente non accede a Puter. Mostra account connesso, cambio account e logout; tutte le opzioni di fetch Puter richiamano lo stesso modale di accesso se la sessione manca.
-- Quando l’utente è collegato, il widget AI legge account, uso mensile e uso attribuito all’app. Mostra tipo Free/Subscription, allowance mensile, top-up, credito usato e residuo totale, con Credits interi e dollari a due decimali. I top-up vengono sommati alla capacità nota prima di qualsiasi calcolo derivato. Il widget include il collegamento ufficiale per ricaricare credito Puter.
+- Quando l’utente è collegato, il widget AI legge account, uso mensile e uso attribuito all’app. Mostra tipo Free/Subscription, allowance mensile e top-up con valori totali, usati e residui. Uso globale e barra sommano `allowanceUsed` e `consumedPurchaseCredits`, quindi possono superare il plafond mensile; il saldo globale somma i residui dei due bucket. Puter scala prima l’allowance mensile e poi il credito acquistato. Credits sono arrotondati all’unità e i dollari a due decimali. Il widget include il collegamento ufficiale per ricaricare credito Puter.
 - Il widget **Clipart** cerca nelle pagine pubbliche di Openclipart senza API key né catalogo incorporato. Offre keyword, categorie didattiche, paginazione, traduzione italiano→inglese attiva all’avvio tramite dizionario locale e Gemma Puter, anteprima grande, download reale e inserimento esplicito tramite Puter. Se il browser blocca la ricerca, il launcher aggiornato usa un endpoint locale limitato a Openclipart.
 - La generazione AI può richiedere uno sfondo uniforme da chroma key: chicCanva aggiunge al prompt istruzioni per scegliere un colore distante da quelli del soggetto e per evitare texture, ombre e sfumature.
 - La checkbox post elaborazione può conservare il risultato AI e crearne automaticamente un duplicato con sfondo rimosso.
@@ -154,10 +155,13 @@ Il widget **Colorizer**, collocato sotto Immagini, rasterizza in modo non distru
 
 Le applicazioni sono conservate come regioni numerate e stili separati sopra una base immutabile. Il riempimento estende la maschera soltanto verso i pixel di antialias contigui e fino al contorno scuro; il colore viene composto dietro i pixel semitrasparenti e il bordo originale viene ridisegnato sopra, eliminando il filetto bianco senza attraversare il contorno. Pennello e riempimento con lo stesso stile si fondono solo quando le regioni si toccano; compartimenti distinti restano indipendenti. Il pennello intelligente rimane nella componente connessa del punto iniziale anche se il puntatore oltrepassa un contorno, mentre disattivando la protezione dipinge in continuità anche sopra le linee. Un clic su una regione esistente ne sostituisce colore, gradiente o texture; clic destro o pressione prolungata apre il comando per eliminarla. Ogni gesto del pennello produce un solo passaggio nello storico. Il motore ottimizzato raggruppa i movimenti per frame, usa buffer tipizzati riutilizzabili e mostra la pennellata in un overlay indipendente da Fabric; al rilascio consolida una sola volta la stessa maschera canonica usata dal riempimento. Il risultato è una normale immagine, quindi supporta crop, trasformazioni, export e riferimento AI. **Ripristina oggetto originale** ricrea la sorgente modificabile; i comandi clipboard copiano il risultato visibile o un render dell’originale. La base e il descrittore sorgente sono salvati anche come metadati di recupero dell’oggetto, e gli asset attivi o in commit restano protetti dalla pulizia. Annulla e Ripristina mantengono Colorizer attivo quando lo stato raggiunto contiene ancora lo stesso oggetto colorizzato; il menu contestuale dei due pulsanti permette di saltare direttamente a un punto dello storico. Per diagnosi è disponibile il motore precedente con `?colorizerBrush=legacy`; `?colorizerBrush=optimized` forza quello nuovo. La preferenza persistente può essere impostata dalla console con `setChicCanvaColorizerBrushEngine('legacy')` o `setChicCanvaColorizerBrushEngine('optimized')` e viene rimossa da **Cancella memoria**.
 
+Nel canvas viene istanziata una sola pagina alla volta. Quando si cambia pagina chicCanva libera esplicitamente bitmap decodificati e cache grafiche della pagina precedente, conservando descrittori, asset compressi e storico necessari per riaprirla, annullare ed esportare. L’autosalvataggio stabile resta su IndexedDB e la build desktop/server continua a essere un singolo HTML.
+
 ## Canvas ed esportazione
 
 - Zoom, Fit, pulsanti `+`/`−`, manina, Ctrl + rotella e pinch a due dita con pan simultaneo.
-- Griglia e snap indipendenti; con Snap attivo anche la rotazione segue uno step configurabile, 10° per impostazione predefinita.
+- Griglia, snap classico e snap magnetico alle linee guida sono indipendenti. Le guide, attive inizialmente, aiutano a centrare sulla pagina, allineare bordi e centri degli oggetti e ottenere spazi uguali; vengono mostrate solo durante il trascinamento e non entrano in stampa o nel progetto. Il menu destro o la pressione lunga sull’icona Snap gestisce rapidamente tutte le opzioni. Con Snap classico attivo anche la rotazione segue uno step configurabile, 10° per impostazione predefinita.
+- **Blocca proporzioni**, inizialmente disattivato, impedisce lo stretching durante resize e crop. `Maiusc` inverte temporaneamente il blocco durante resize, crop e disegno; `Alt` inverte le guide durante lo spostamento; `Maiusc+Alt` esclude le guide e inverte temporaneamente il solo snap classico. Forme e disegno offre inoltre un blocco 1:1 separato per le nuove forme.
 - Il menu contestuale dell’icona rotazione e il sottomenu degli oggetti offrono azzeramento, ±90°, 180°, riflessione sinistra-destra e riflessione alto-basso.
 - La modalità **Selezione a oggetto** permette su touch di aggiungere o togliere elementi con tocchi successivi, senza Ctrl e senza spostarli.
 - Copia, incolla, duplica, elimina, ordine livelli e menu contestuale. **Fissa posizione**, disponibile nel menu destro o tramite pressione lunga su touch, blocca movimento, scala e rotazione e viene conservato nel progetto.
@@ -183,6 +187,9 @@ In fondo alla sidebar **Carico chicCanva** riporta una stima del peso compresso 
 - `Ctrl+C` / `Ctrl+V`: copia e incolla, anche tra pagine e progetti.
 - `Ctrl+D`: duplica.
 - `Ctrl+G` / `Ctrl+Maiusc+G`: raggruppa / dividi gruppo.
+- `Maiusc` durante resize, crop o disegno: inverte temporaneamente il blocco proporzioni.
+- `Alt` durante lo spostamento: inverte temporaneamente lo snap alle guide.
+- `Maiusc+Alt` durante lo spostamento: esclude le guide e inverte lo snap classico.
 - `Ctrl+Z` / `Ctrl+Y`: annulla / ripristina.
 - `Ctrl+S`: esporta JSON.
 - `CANC`: elimina.

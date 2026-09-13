@@ -4,14 +4,28 @@ from html import escape
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
-GUIDE_FRAGMENT = ROOT / "development" / "help-v7.html"
+GUIDE_FRAGMENTS = {
+    "it": ROOT / "development" / "help-v7.html",
+    "en": ROOT / "development" / "help-v7-en.html",
+}
 
 
-def build_standalone_guide() -> None:
-    """Wrap the exact guide fragment embedded by build-workspace.py in a standalone page."""
+def build_standalone_guide(language: str) -> Path:
+    """Wrap one exact embedded guide fragment in a standalone localized page."""
     DOCS.mkdir(parents=True, exist_ok=True)
-    fragment = GUIDE_FRAGMENT.read_text(encoding="utf-8")
-    title = "chicCanva User Guide"
+    fragment = GUIDE_FRAGMENTS[language].read_text(encoding="utf-8")
+    if language == "it":
+        title = "chicCanva · Guida completa"
+        subtitle = "La stessa guida utente incorporata nell'app, disponibile anche come documento autonomo."
+        back = "↑ Inizio"
+        back_label = "Torna all'inizio"
+        output = DOCS / "user-guide.html"
+    else:
+        title = "chicCanva · Complete guide"
+        subtitle = "The same user guide embedded in the app, also available as a standalone document."
+        back = "↑ Top"
+        back_label = "Back to top"
+        output = DOCS / "user-guide-en.html"
     css = r"""
 :root{--ink:#18302c;--muted:#62736f;--paper:#fff;--wash:#f3f7f4;--accent:#27816f;--line:#d7e1dd;--warm:#fff7df}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -20,13 +34,14 @@ header{background:#fff;border-bottom:1px solid var(--line);padding:24px clamp(20
 @media print{body{background:#fff}.guide-toc,.back,header p{display:none}.guide-shell{display:block}.guide-body>section{border:0;break-inside:avoid;padding:0;margin:0 0 22px}}
 """
     html = f"""<!doctype html>
-<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="{language}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{escape(title)}</title><style>{css}</style></head>
-<body id="top"><header><h1>chicCanva · Guida completa</h1><p>La stessa guida utente incorporata nell'app, disponibile anche come documento autonomo.</p></header>
-<main>{fragment}</main><a class="back" href="#top" aria-label="Torna all'inizio">↑ Inizio</a></body></html>"""
-    (DOCS / "user-guide.html").write_text(html, encoding="utf-8")
+<body id="top"><header><h1>{escape(title)}</h1><p>{escape(subtitle)}</p></header>
+<main>{fragment}</main><a class="back" href="#top" aria-label="{escape(back_label)}">{escape(back)}</a></body></html>"""
+    output.write_text(html, encoding="utf-8")
+    return output
 
 
 if __name__ == "__main__":
-    build_standalone_guide()
-    print(f"Documentation guide: {(DOCS / 'user-guide.html').stat().st_size} bytes")
+    outputs = [build_standalone_guide(language) for language in GUIDE_FRAGMENTS]
+    print("Documentation guides: " + ", ".join(f"{path.name} {path.stat().st_size} bytes" for path in outputs))

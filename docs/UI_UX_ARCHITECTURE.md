@@ -79,6 +79,10 @@ The installed PWA uses the same origin storage as its browser counterpart for th
 
 ## 6. Selection and manipulation states
 
+The canvas distinguishes three optional alignment aids. The grid is visual, classic snap quantizes coordinates to the configured millimetre step, and magnetic guides align the moving selection to page centers, object anchors, or equal gaps. Magnetic guides default on and expose independent sub-options in the Canvas section. A right click or long press on the Snap toolbar button opens the same controls without moving the sidebar. Magenta lines represent page/object alignment; teal segmented references represent equal spacing. All helpers disappear when the gesture ends.
+
+Aspect locking defaults off so side handles can stretch an object. Enabling it preserves the ratio that existed at the beginning of a resize or crop. Shift reverses the saved choice for one gesture. Shape drawing has a separate 1:1 option because a teacher may want square cards while retaining free resizing for existing objects. During movement, Alt reverses magnetic guides; Shift+Alt suppresses guides and reverses classic snap. These temporary modifiers never change the saved checkboxes.
+
 The toolbar makes modes explicit:
 
 - hand/pan;
@@ -146,7 +150,7 @@ In the chroma-key panel, the color/pipette and automatic detection are mutually 
 
 ## 11. Content and tone
 
-User-facing copy is in Italian, task-oriented, and aimed at teachers. It should explain what to do and what will happen. Console errors, implementation stack names, and developer debugging procedures belong in technical documentation. Necessary service/license names may appear where they affect privacy, cost, or attribution.
+Italian is the editorial source for user-facing copy; the runtime also supplies a complete English interface. Both languages are task-oriented and aimed at teachers: they explain what to do and what will happen. Project content, names, filenames, user prompts and search results are never translated by the interface layer. Console errors, implementation stack names, and developer debugging procedures belong in technical documentation. Necessary service/license names may appear where they affect privacy, cost, or attribution. See [LOCALIZATION.md](LOCALIZATION.md) for selector behavior, language persistence, guide parity and AI prompt rules.
 
 The internal guide is intentionally much more detailed than tooltips. Tooltips answer “what is this button”; widget help answers “what happens here”; the guide supports complete workflows and recovery.
 
@@ -184,3 +188,7 @@ Style controls progressively disclose relevant options. Solid hides the second c
 Feedback is local and plain-language: the header says what is selected, the lower status describes active behavior, and buttons disable when their action is not valid. Copy result and Copy original use the system image clipboard and surface browser permission errors through the normal toast channel.
 
 Undo and Redo preserve the active Colorizer tool when the destination snapshot still contains the same colorized object. Right-click or long press on either history button opens a scrollable operation browser; choosing an entry performs the equivalent number of undo/redo steps and then restores the valid editing mode. This supports experimentation without forcing the teacher to reopen the sidebar tool after every correction.
+
+The Text widget is selection-aware. A single text object reveals **Modifica testo oggetto** above the shared text field. During editing, controls that create or split new content are disabled; uppercase conversion and Smart Emoji remain available. The primary action becomes **Aggiorna testo**, and dimension constraints explain their fixed top-left anchor.
+
+The Snap widget uses one vocabulary for movement, resize, and crop. Magenta overlays communicate page/object alignment, green overlays communicate equal spacing, and neither is printable. Modifier help uses increased line spacing on narrow sidebars.

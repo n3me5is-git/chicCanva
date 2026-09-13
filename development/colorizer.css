@@ -2,3 +2,5 @@
 
 
 .colorizer-raster-scale{display:grid;gap:6px;font-size:10px;font-weight:800;color:var(--muted);padding:9px;border:1px solid var(--line);border-radius:10px;background:#fbfcfa}#colorizerCard .range-label{display:grid!important;grid-template-columns:minmax(0,1fr) max-content!important;column-gap:14px!important;row-gap:6px!important;align-items:center;margin:4px 0!important}#colorizerCard .range-label>span{min-width:0}#colorizerCard .range-label>strong{justify-self:end;white-space:nowrap}#colorizerCard .range-label>input{grid-column:1/-1;width:100%;margin:0}.colorizer-main-actions{margin-bottom:0}.colorizer-color-row>label{justify-content:flex-start;gap:9px;min-width:0}@media(max-width:720px){.colorizer-color-row{grid-template-columns:1fr}}
+
+#colorizerSelectionStatus{margin-bottom:7px}
