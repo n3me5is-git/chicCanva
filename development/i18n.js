@@ -23,6 +23,23 @@ Chiudi pannello\tClose panel
 Apri pannello\tOpen panel
 Installa\tInstall
 Installa chicCanva\tInstall chicCanva
+Installa ora\tInstall now
+Installa l’editor in una finestra dedicata e ritrovalo tra le tue app.\tInstall the editor in its own window and find it among your apps.
+Premi Installa.\tPress Install now.
+Conferma la finestra proposta dal browser.\tConfirm the prompt shown by the browser.
+Apri chicCanva dall’icona aggiunta al dispositivo.\tOpen chicCanva from the icon added to your device.
+Su iPhone e iPad l’installazione si completa dal menu Condividi di Safari.\tOn iPhone and iPad, installation is completed from Safari’s Share menu.
+Apri questa pagina in Safari.\tOpen this page in Safari.
+Tocca Condividi nella barra di Safari.\tTap Share in Safari’s toolbar.
+Scegli Aggiungi alla schermata Home e conferma con Aggiungi.\tChoose Add to Home Screen and confirm with Add.
+Puoi aggiungere chicCanva alle app dal menu del browser.\tYou can add chicCanva to your apps from the browser menu.
+In Safari apri File e scegli Aggiungi al Dock.\tIn Safari, open File and choose Add to Dock.
+In Chrome o Edge apri il menu del browser e scegli Installa chicCanva.\tIn Chrome or Edge, open the browser menu and choose Install chicCanva.
+Conferma per creare l’icona dell’app.\tConfirm to create the app icon.
+Il browser può installare chicCanva dal proprio menu.\tThe browser can install chicCanva from its menu.
+Apri il menu del browser.\tOpen the browser menu.
+Scegli Installa app oppure Aggiungi alla schermata Home.\tChoose Install app or Add to Home Screen.
+Se la voce non compare, apri il dominio con Chrome, Edge o un browser che supporta le PWA.\tIf the command is missing, open the domain with Chrome, Edge, or another browser that supports PWAs.
 Pagina\tPage
 Pagine\tPages
 Speciali\tSpecial
@@ -283,6 +300,7 @@ Categoria emoji\tEmoji category
 Cerca emoji\tSearch emoji
 Cerca smile, cuore, cat…\tSearch smile, heart, cat…
 Traduzione automatica italiano → inglese\tAutomatically translate Italian → English
+Elimina traduzioni salvate\tDelete saved translations
 Colore outlined\tOutline color
 Generazione immagini AI · Puter\tAI image generation · Puter
 Genera e inserisce l’immagine direttamente nel canvas.\tGenerates and inserts the image directly into the canvas.
@@ -524,6 +542,13 @@ const I18N_PATTERNS=[
 const I18N_SKIP_SELECTOR='script,style,template,textarea,input,[contenteditable="true"],[data-i18n-ignore],#projectTabs,#pageSelect,#customPageName,#pageCaption,#customPageChips,#previewGrid,#fontResults,#emojiGrid,#clipartResults,#promptLibraryItems,#promptEntryPrompt,#promptEntryTitle,#promptEntryDescription,#promptEntryTags,#aiPrompt,#textInput,#specialText';
 const i18nOriginalText=new WeakMap(),i18nLastText=new WeakMap(),i18nOriginalAttrs=new WeakMap(),i18nLastAttrs=new WeakMap();
 function appLocale(){return appLanguage==='it'?'it-IT':'en-GB'}
+function browserPrefersItalian(languages=navigator.languages,language=navigator.language,intlLocale='',legacyLanguage=navigator.userLanguage){const candidates=[...(Array.isArray(languages)?languages:[]),language,intlLocale,legacyLanguage].filter(Boolean).map(value=>String(value).trim().toLowerCase());return candidates.some(value=>value==='it'||value.startsWith('it-'))}
+function localizedProjectName(index){return(appLanguage==='it'?'Progetto ':'Project ')+index}
+function localizedPageName(index){return(appLanguage==='it'?'Pagina ':'Page ')+index}
+function localizedUntitledPageName(){return appLanguage==='it'?'Pagina senza nome':'Untitled page'}
+function localizedCopySuffix(){return appLanguage==='it'?' copia':' copy'}
+function localizedRecoveredProjectName(){return appLanguage==='it'?'Progetto recuperato':'Recovered project'}
+function localizedSpecialProjectName(explicit,text){return(appLanguage==='it'?(explicit?'Gruppi':'Lettere'):(explicit?'Groups':'Letters'))+' · '+text.slice(0,35)}
 function t(value){if(appLanguage!=='en'||value===null||value===undefined)return String(value??'');const source=String(value),exact=I18N_EN[source];if(exact!==undefined)return exact;for(const[pattern,replacement]of I18N_PATTERNS)if(pattern.test(source))return source.replace(pattern,replacement);return source}
 function i18nSkipped(node){return node.parentElement?.closest(I18N_SKIP_SELECTOR)}
 function translateTextNode(node){if(!node?.parentElement||i18nSkipped(node))return;const current=node.nodeValue;if(!i18nForce&&i18nLastText.get(node)===current)return;let source=i18nOriginalText.get(node);if(source===undefined||(!i18nForce&&current!==i18nLastText.get(node))){source=current;i18nOriginalText.set(node,source)}const leading=source.match(/^\s*/)?.[0]||'',trailing=source.match(/\s*$/)?.[0]||'',core=source.trim();if(!core)return;const next=appLanguage==='it'?source:leading+t(core)+trailing;i18nApplying=true;node.nodeValue=next;i18nLastText.set(node,next);i18nApplying=false}
@@ -531,11 +556,11 @@ function translateAttributes(element){if(element.matches?.(I18N_SKIP_SELECTOR))r
 function translateSubtree(root=document.body){if(!root)return;if(root.nodeType===Node.TEXT_NODE){translateTextNode(root);return}if(root.nodeType!==Node.ELEMENT_NODE&&root!==document.body)return;if(root!==document.body)translateAttributes(root);for(const element of root.querySelectorAll?.('*')||[])translateAttributes(element);const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode())translateTextNode(node)}
 function syncLanguagePickers(){for(const picker of document.querySelectorAll('[data-language-picker]')){const flag=picker.querySelector('[data-language-flag]');flag.classList.toggle('flag-it',appLanguage==='it');flag.classList.toggle('flag-gb',appLanguage==='en');const name=picker.querySelector('[data-language-name]');if(name)name.textContent=appLanguage==='it'?'Italiano':'English';for(const button of picker.querySelectorAll('[data-language]'))button.setAttribute('aria-checked',String(button.dataset.language===appLanguage))}}
 function swapLocalizedGuide(){const content=$('helpLayer')?.querySelector('.help-content');if(!content)return;if(!globalThis.CHICCANVA_HELP_IT)globalThis.CHICCANVA_HELP_IT=content.innerHTML;const html=appLanguage==='en'?globalThis.CHICCANVA_HELP_EN:globalThis.CHICCANVA_HELP_IT;if(html&&content.innerHTML!==html){i18nApplying=true;content.innerHTML=html;i18nApplying=false}}
-function syncSearchTranslationLanguage(){const italian=appLanguage==='it',saved=localStorage.getItem(TRANSLATION_PREFERENCE_KEY),preferred=saved===null?true:saved==='true';for(const id of ['emojiTranslate','clipartTranslate']){const input=$(id);if(!input)continue;input.closest('label')?.classList.toggle('hidden',!italian);input.disabled=!italian;input.checked=italian&&preferred}for(const hint of document.querySelectorAll('[data-puter-translation-hint]'))hint.classList.toggle('language-hidden',!italian);if(typeof syncEmojiSearchMode==='function')syncEmojiSearchMode()}
+function syncSearchTranslationLanguage(){const italian=appLanguage==='it',saved=localStorage.getItem(TRANSLATION_PREFERENCE_KEY),preferred=saved===null?true:saved==='true';for(const id of ['emojiTranslate','clipartTranslate']){const input=$(id);if(!input)continue;input.closest('label')?.classList.toggle('hidden',!italian);input.disabled=!italian;input.checked=italian&&preferred}for(const node of document.querySelectorAll('[data-puter-translation-hint],[data-translation-cache-control]'))node.classList.toggle('language-hidden',!italian);if(typeof syncEmojiSearchMode==='function')syncEmojiSearchMode()}
 function applyLanguage(language,{persist=true,syncFeatures=true,reveal=true}={}){appLanguage=SUPPORTED_LANGUAGES.includes(language)?language:'en';if(persist)localStorage.setItem(LANGUAGE_STORAGE_KEY,appLanguage);document.documentElement.lang=appLanguage;document.title=appLanguage==='it'?'chicCanva · Piccole idee, grandi progetti':'chicCanva · Small ideas, big projects';const manifest=document.querySelector('link[rel="manifest"]');if(manifest){const version=new URL(manifest.href,location.href).search;manifest.href=(appLanguage==='en'?'./chicCanva-en.webmanifest':'./chicCanva.webmanifest')+version}swapLocalizedGuide();i18nForce=true;translateSubtree(document.body);i18nForce=false;syncLanguagePickers();if(syncFeatures)syncSearchTranslationLanguage();if(reveal){document.documentElement.classList.remove('i18n-boot');document.documentElement.style.removeProperty('visibility')}document.dispatchEvent(new CustomEvent('chiccanva:languagechange',{detail:{language:appLanguage,locale:appLocale()}}));return appLanguage}
 function closeLanguageMenus(){for(const menu of document.querySelectorAll('.language-menu'))menu.classList.add('hidden');for(const button of document.querySelectorAll('[data-language-trigger]'))button.setAttribute('aria-expanded','false')}
 function setupLanguagePicker(){if(i18nPickerReady)return;i18nPickerReady=true;for(const button of document.querySelectorAll('.quick-jump button'))button.dataset.i18nKey=button.textContent.trim();for(const picker of document.querySelectorAll('[data-language-picker]')){const trigger=picker.querySelector('[data-language-trigger]'),menu=picker.querySelector('.language-menu');trigger.onclick=event=>{event.stopPropagation();const opening=menu.classList.contains('hidden');closeLanguageMenus();menu.classList.toggle('hidden',!opening);trigger.setAttribute('aria-expanded',String(opening))};for(const button of menu.querySelectorAll('[data-language]'))button.onclick=()=>{applyLanguage(button.dataset.language);closeLanguageMenus();toast(appLanguage==='it'?'Lingua impostata: Italiano':'Language set: English')}}document.addEventListener('pointerdown',event=>{if(!event.target.closest('[data-language-picker]'))closeLanguageMenus()});for(const id of ['emojiTranslate','clipartTranslate'])$(id)?.addEventListener('change',event=>{if(appLanguage==='it')localStorage.setItem(TRANSLATION_PREFERENCE_KEY,String(event.currentTarget.checked))});i18nObserver=new MutationObserver(records=>{if(i18nApplying)return;for(const record of records){if(record.type==='characterData')translateTextNode(record.target);else if(record.type==='attributes')translateAttributes(record.target);else for(const node of record.addedNodes)translateSubtree(node)}});i18nObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder','alt','data-tip']});syncLanguagePickers()}
-function preferredInitialLanguage(){const saved=localStorage.getItem(LANGUAGE_STORAGE_KEY);if(SUPPORTED_LANGUAGES.includes(saved))return saved;return String(navigator.language||'').toLowerCase().startsWith('it')?'it':'en'}
+function preferredInitialLanguage(){let saved=null;try{saved=localStorage.getItem(LANGUAGE_STORAGE_KEY)}catch(error){}if(SUPPORTED_LANGUAGES.includes(saved))return saved;let intlLocale='';try{intlLocale=Intl.DateTimeFormat().resolvedOptions().locale}catch(error){}return browserPrefersItalian(navigator.languages,navigator.language,intlLocale)?'it':'en'}
 const i18nBaseInit=init;init=async function(){appLanguage=preferredInitialLanguage();setupLanguagePicker();applyLanguage(appLanguage,{persist:true,syncFeatures:false,reveal:true});await i18nBaseInit();applyLanguage(appLanguage,{persist:false,syncFeatures:true,reveal:true})};
 const i18nBaseClearAllMemory=clearAllMemory;clearAllMemory=async function(){await i18nBaseClearAllMemory();localStorage.removeItem(LANGUAGE_STORAGE_KEY);localStorage.removeItem(TRANSLATION_PREFERENCE_KEY)};
-globalThis.t=t;globalThis.appLocale=appLocale;globalThis.applyLanguage=applyLanguage;
+globalThis.t=t;globalThis.appLocale=appLocale;globalThis.applyLanguage=applyLanguage;globalThis.browserPrefersItalian=browserPrefersItalian;globalThis.localizedProjectName=localizedProjectName;globalThis.localizedPageName=localizedPageName;

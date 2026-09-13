@@ -472,8 +472,9 @@ anno\tyear
 function normalizeSearchWord(value){return String(value).toLocaleLowerCase('it-IT').normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 const SEARCH_TRANSLATION_CACHE_KEY='chicCanva.search-translations.v1',SEARCH_TRANSLATION_CACHE_LIMIT=500;
 function readSearchTranslationCache(){try{const parsed=JSON.parse(localStorage.getItem(SEARCH_TRANSLATION_CACHE_KEY)||'{}');return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{}}catch(error){return{}}}
-function cachedSearchTranslation(keyword){const item=readSearchTranslationCache()[normalizeSearchWord(String(keyword).trim())];return item&&typeof item.translated==='string'&&item.translated.trim()?item.translated.trim():''}
-function rememberSearchTranslation(keyword,translated){try{const key=normalizeSearchWord(String(keyword).trim()),value=String(translated).trim();if(!key||!value)return;const cache=readSearchTranslationCache();cache[key]={translated:value,saved:Date.now()};const entries=Object.entries(cache).sort((a,b)=>(b[1]?.saved||0)-(a[1]?.saved||0)).slice(0,SEARCH_TRANSLATION_CACHE_LIMIT);localStorage.setItem(SEARCH_TRANSLATION_CACHE_KEY,JSON.stringify(Object.fromEntries(entries)))}catch(error){console.warn('Cache traduzioni non disponibile',error)}}
+function searchTranslationCacheKey(keyword){return normalizeSearchWord(searchTranslationInput(keyword).query)}
+function cachedSearchTranslation(keyword){const item=readSearchTranslationCache()[searchTranslationCacheKey(keyword)];return item&&typeof item.translated==='string'&&item.translated.trim()?item.translated.trim():''}
+function rememberSearchTranslation(keyword,translated){try{const key=searchTranslationCacheKey(keyword),value=String(translated).trim();if(!key||!value)return;const cache=readSearchTranslationCache();cache[key]={translated:value,saved:Date.now()};const entries=Object.entries(cache).sort((a,b)=>(b[1]?.saved||0)-(a[1]?.saved||0)).slice(0,SEARCH_TRANSLATION_CACHE_LIMIT);localStorage.setItem(SEARCH_TRANSLATION_CACHE_KEY,JSON.stringify(Object.fromEntries(entries)))}catch(error){console.warn('Cache traduzioni non disponibile',error)}}
 function clearSearchTranslationCache(){try{localStorage.removeItem(SEARCH_TRANSLATION_CACHE_KEY)}catch(error){}}
 function searchTranslationInput(keyword){const raw=String(keyword||'').trim(),context=[];const query=raw.replace(/\(([^()]*)\)/g,(_,value)=>{const hint=String(value||'').trim();if(hint)context.push(hint);return' '}).replace(/\s+/g,' ').trim();return{raw,query:query||raw,context:context.join('; ')}}
 function translateClipartLocally(keyword){
@@ -497,7 +498,7 @@ function normalizedPuterText(response){
 async function translateSearchKeyword(keyword){
  const input=searchTranslationInput(keyword),local=translateClipartLocally(input.query);
  if(local.complete&&!input.context)return{translated:local.translated,note:'dizionario locale: “'+local.translated+'”',source:'local'};
- const cached=cachedSearchTranslation(input.raw);if(cached)return{translated:cached,note:'traduzione AI memorizzata: “'+cached+'”',source:'cache'};
+ const cached=cachedSearchTranslation(input.query);if(cached)return{translated:cached,note:'traduzione AI memorizzata: “'+cached+'”',source:'cache'};
  if(location.protocol==='file:'||typeof puterSignedIn!=='function'||!puterSignedIn())return{translated:local.translated,note:local.changed?'traduzione locale parziale: “'+local.translated+'”':'termine originale · accedi a Puter per la traduzione AI',source:'fallback'};
  try{
   await ensurePuter();
@@ -516,7 +517,7 @@ async function translateSearchKeyword(keyword){
    route='default';response=await clipartTimed(puter.ai.chat(prompt,{model:SEARCH_TRANSLATION_MODEL,normalize:true}),60000);translated=normalizedPuterText(response)
   }
   if(!translated||translated.length>240)throw new Error('Risposta di traduzione non valida');
-  rememberSearchTranslation(input.raw,translated);
+  rememberSearchTranslation(input.query,translated);
   schedulePuterUsageRefresh?.();
   return{translated,note:'traduzione AI Puter: “'+translated+'”',source:'puter',route}
  }catch(error){console.warn('Traduzione Gemma non disponibile',error);return{translated:local.translated,note:local.changed?'Puter non disponibile · traduzione locale parziale: “'+local.translated+'”':'Traduzione AI non disponibile · termine originale',source:'fallback'}}

@@ -12,12 +12,12 @@ function pwaPlatform(){const ua=navigator.userAgent||'',touchMac=navigator.platf
 function setPwaInstallVisible(visible){const button=$('installPwaBtn');if(button)button.classList.toggle('hidden',!visible)}
 function fillPwaSteps(items){const list=$('pwaInstallSteps');list.replaceChildren(...items.map(item=>{const li=document.createElement('li');li.textContent=item;return li}))}
 function showPwaInstructions(){
- const platform=pwaPlatform(),confirm=$('pwaInstallConfirm');confirm.classList.toggle('hidden',!deferredPwaInstall);
+ const platform=pwaPlatform(),confirm=$('pwaInstallConfirm');confirm.classList.toggle('hidden',!deferredPwaInstall);confirm.disabled=!deferredPwaInstall;
  if(deferredPwaInstall){$('pwaInstallLead').textContent='Installa l’editor in una finestra dedicata e ritrovalo tra le tue app.';fillPwaSteps(['Premi Installa.','Conferma la finestra proposta dal browser.','Apri chicCanva dall’icona aggiunta al dispositivo.'])}
  else if(platform==='ios'){$('pwaInstallLead').textContent='Su iPhone e iPad l’installazione si completa dal menu Condividi di Safari.';fillPwaSteps(['Apri questa pagina in Safari.','Tocca Condividi nella barra di Safari.','Scegli Aggiungi alla schermata Home e conferma con Aggiungi.'])}
  else if(platform==='mac'){$('pwaInstallLead').textContent='Puoi aggiungere chicCanva alle app dal menu del browser.';fillPwaSteps(['In Safari apri File e scegli Aggiungi al Dock.','In Chrome o Edge apri il menu del browser e scegli Installa chicCanva.','Conferma per creare l’icona dell’app.'])}
  else{$('pwaInstallLead').textContent='Il browser può installare chicCanva dal proprio menu.';fillPwaSteps(['Apri il menu del browser.','Scegli Installa app oppure Aggiungi alla schermata Home.','Se la voce non compare, apri il dominio con Chrome, Edge o un browser che supporta le PWA.'])}
- $('pwaInstallDialog').showModal();
+ if(!$('pwaInstallDialog').open)$('pwaInstallDialog').showModal();
 }
 async function promptPwaInstall(){
  if(!deferredPwaInstall){showPwaInstructions();return}
@@ -35,11 +35,11 @@ async function setupDomainPwa(){
  const allowed=pwaDomainAllowed();document.documentElement.dataset.pwa=allowed?'domain':'off';
  if(!allowed){setPwaInstallVisible(false);return}
  injectPwaMetadata();const standalone=pwaStandalone();setPwaInstallVisible(!standalone);
- if(!standalone)window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPwaInstall=event;setPwaInstallVisible(true)});
+ if(!standalone)window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPwaInstall=event;setPwaInstallVisible(true);if($('pwaInstallDialog')?.open)showPwaInstructions()});
  if(!standalone)window.addEventListener('appinstalled',()=>{deferredPwaInstall=null;setPwaInstallVisible(false);$('pwaInstallDialog')?.close();toast('chicCanva installata: la trovi tra le tue app')});
  if('serviceWorker'in navigator){try{pwaRegistration=await navigator.serviceWorker.register('./chicCanva-sw.js',{scope:'./'});const offerUpdate=()=>{if(pwaRegistration.waiting&&navigator.serviceWorker.controller)$('pwaUpdateBar')?.classList.remove('hidden')};offerUpdate();pwaRegistration.addEventListener('updatefound',()=>{const worker=pwaRegistration.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed')offerUpdate()})});navigator.serviceWorker.addEventListener('controllerchange',()=>{if(pwaReloading)location.reload()})}catch(error){console.error('Registrazione PWA non riuscita',error)}}
 }
-if($('installPwaBtn'))$('installPwaBtn').onclick=()=>deferredPwaInstall?promptPwaInstall():showPwaInstructions();
+if($('installPwaBtn'))$('installPwaBtn').onclick=showPwaInstructions;
 if($('pwaInstallConfirm'))$('pwaInstallConfirm').onclick=()=>{$('pwaInstallDialog').close();promptPwaInstall()};
 if($('pwaInstallCancel'))$('pwaInstallCancel').onclick=()=>$('pwaInstallDialog').close();
 if($('pwaUpdateNow'))$('pwaUpdateNow').onclick=()=>{const worker=pwaRegistration?.waiting;if(worker){pwaReloading=true;$('pwaUpdateNow').disabled=true;worker.postMessage({type:'SKIP_WAITING'})}else location.reload()};

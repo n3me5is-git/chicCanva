@@ -14,7 +14,7 @@ normalizeImportedAssets=async function(input){
 normalizeCustomSnapshot=function(snap){const result=cloneProjectWithoutAssetStrings(snap);if(!result.state.workspaceCustom)throw new Error('Usa un progetto chicCanva v7');result.state.mode='custom';result.pages.whole=[];result.pages.single=[];return result};
 normalizeCustomProject=function(input){validateProject(input);if(input.version!==7)throw new Error('Formato richiesto: chicCanva v7');const p=normalizeCustomSnapshot(input);p.version=7;delete p.workspace;if(p.history)p.history.entries=p.history.entries.map(entry=>{const copy=cloneData(entry);copy.state.workspaceCustom=true;copy.state.mode='custom';copy.pages.whole=[];copy.pages.single=[];return copy});return p};
 function projectSnapshotForWorkspace(includeHistory=true){
- const p=v6FullPayload(includeHistory);p.version=7;p.name=activeProject()?.name||'Progetto';p.state.workspaceCustom=true;p.state.documentFields=documentFields();return cloneProjectWithoutAssetStrings(p)
+ const p=v6FullPayload(includeHistory);p.version=7;p.name=activeProject()?.name||localizedProjectName(1);p.state.workspaceCustom=true;p.state.documentFields=documentFields();return cloneProjectWithoutAssetStrings(p)
 }
 // Keep one active-project representation in serialized workspaces. Old saves remain readable.
 currentDocument=function(includeHistory=true){return projectSnapshotForWorkspace(includeHistory)};

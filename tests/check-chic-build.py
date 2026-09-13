@@ -26,6 +26,8 @@ assert 'PUTER_IMAGE_PRICING_TTL_MS=30*24*60*60*1000' in s and 'api.puter.com/put
 assert 'openclipart.org/search/' in s and 'parseOpenclipartResults' in s and 'clipartCard' in ids
 assert 'api.mymemory.translated.net/get' not in s and 'SEARCH_IT_EN' in s and 'translateClipartLocally' in s and 'google/gemma-4-31b-it' in s and 'clipartTranslate' in ids
 assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
+assert {'clearEmojiTranslations','clearClipartTranslations'}.issubset(ids) and 'searchTranslationCacheKey' in s
+assert 'OPENCLIPART_REMOTE_PAGE_SIZE=32' in s and 'clipartPageCache' in s and 'clipartItemsForPage' in s
 pwa=root/'build/chicCanva-pwa'
 expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-en.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg','robots.txt','_headers'}
 assert {p.name for p in pwa.iterdir()}==expected
@@ -52,6 +54,7 @@ headers=(pwa/'_headers').read_text(encoding='utf-8');robots=(pwa/'robots.txt').r
 assert 'X-Robots-Tag' not in headers and 'Cache-Control: public, max-age=86400' in headers
 assert all(rule in robots for rule in ['User-agent: TelegramBot\nAllow: /','User-agent: Googlebot\nAllow: /','User-agent: Bingbot\nAllow: /','User-agent: *\nDisallow: /'])
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
+assert "$('installPwaBtn').onclick=showPwaInstructions" in s and 'id="pwaInstallConfirm">Installa ora' in s
 assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate','aiGeneratedFallback','aiGeneratedDialog','aiGeneratedRetryBtn','aiGeneratedDownloadBtn'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
 vendor=root/'development/vendor'
@@ -90,6 +93,7 @@ assert '#colorizerCard .card-b{display:grid' not in s, 'Colorizer must not overr
 docs=root/'docs'
 assert {'languagePickerDesktop','languagePickerMobile'}.issubset(ids)
 assert 'LANGUAGE_STORAGE_KEY' in s and 'CHICCANVA_HELP_EN' in s and 'preferredInitialLanguage' in s and "document.documentElement.lang=appLanguage" in s
+assert 'navigator.languages' in s and 'browserPrefersItalian' in s and 'localizedProjectName' in s and 'localizedPageName' in s
 assert 'data-i18n-bootstrap' in s and s.index('data-i18n-bootstrap')<s.index('\n<body>') and "document.documentElement.style.visibility='hidden'" in s and "style.removeProperty('visibility')" in s and '},6000)' in s
 assert "new URL(manifest.href,location.href).search" in s
 assert "setupLanguagePicker();applyLanguage(appLanguage,{persist:true,syncFeatures:false,reveal:true});await i18nBaseInit()" in s
