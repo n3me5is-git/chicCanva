@@ -2,6 +2,7 @@
 // prices from the Puter model catalog; Puter exposes usage, not a quote API.
 const AI_IMAGE_PROFILES=Object.freeze([
  {id:'gpt-image-2.5-flare',group:'openai-image-generation',label:'GPT Image 2.5 Flare',provider:'openai-image-generation',model:'openai/gpt-image-2.5-flare',providerModel:'gpt-image-2.5-flare',qualities:['low','medium','high'],defaultQuality:'low',resolutions:['min','816','1024','1536','2048'],defaultResolution:'1024',customResolution:true,usd:.00588,reference:true,arbitraryRatio:true,qualityUsd:{low:.00588,medium:.053,high:.211}},
+ {id:'gpt-image-2.5-sunburst',group:'openai-image-generation',label:'GPT Image 2.5 Sunburst',provider:'openai-image-generation',model:'openai/gpt-image-2.5-sunburst',providerModel:'gpt-image-2.5-sunburst',qualities:['low','medium','high'],defaultQuality:'low',resolutions:['min','816','1024','1536','2048'],defaultResolution:'1024',customResolution:true,usd:.00588,reference:true,arbitraryRatio:true,qualityUsd:{low:.00588,medium:.02439,high:.097}},
  {id:'gpt-image-2',group:'openai-image-generation',label:'GPT Image 2',provider:'openai-image-generation',model:'openai/gpt-image-2',providerModel:'gpt-image-2',qualities:['low','medium'],defaultQuality:'low',resolutions:['min','816','1024','1536','2048'],defaultResolution:'1024',customResolution:true,usd:.0059,reference:true,arbitraryRatio:true,qualityUsd:{low:.0059,medium:.053}},
  {id:'grok-imagine-image',group:'xai',label:'Grok Imagine · Standard',model:'x-ai/grok-imagine-image',qualities:['standard'],defaultQuality:'standard',resolutions:['1k','2k'],defaultResolution:'1k',usd:.02,reference:true,referenceUsd:.002},
  {id:'grok-imagine-image-quality',group:'xai',label:'Grok Imagine · Quality',model:'x-ai/grok-imagine-image-quality',qualities:['standard'],defaultQuality:'standard',resolutions:['1k','2k'],defaultResolution:'1k',usd:.05,reference:true,referenceUsd:.002},
@@ -49,14 +50,18 @@ function aiResolutionDimensions(profile,ratio=aiSelectedRatio()){
  if(rw>=rh)return{width:longEdge,height:Math.max(64,Math.round(longEdge*rh/rw/16)*16),label:resolution.toUpperCase()};
  return{width:Math.max(64,Math.round(longEdge*rw/rh/16)*16),height:longEdge,label:resolution.toUpperCase()}
 }
-function aiReferenceEstimate(profile,width,height){if(!state.aiReference)return 0;if(profile.referenceUsd)return profile.referenceUsd*1.1;if(profile.group==='openai-image-generation'){const megapixels=Math.max(.05,width*height/1000000),estimatedInputUnits=20+32*megapixels,estimatedCredits=estimatedInputUnits*.01*1.15;return estimatedCredits/2000}return profile.usd*.25*1.15}
+function aiReferenceEstimate(profile,width,height){if(!state.aiReference)return 0;if(profile.referenceUsd)return profile.referenceUsd*1.1;if(profile.group==='openai-image-generation'){return aiOpenAiReferenceProxyTokens(width,height)*8/1000000}return profile.usd*.25*1.15}
+function aiRoundHalfToEven(value){const floor=Math.floor(value),fraction=value-floor;return Math.abs(fraction-.5)<1e-12?floor+(floor%2):Math.round(value)}
+// Reimplementation of the public OpenAI GPT Image output calculator. The
+// quality grid makes token use depend on shape as well as raw pixel count.
 function aiOpenAiOutputEstimate(profile,quality,dimensions){
- const width=dimensions.width,height=dimensions.height,short=Math.min(width,height),long=Math.max(width,height),aspect=long/short,key=short+'x'+long,reviewed={'608x1088':96,'672x1584':112,'688x976':118,'768x1376':128,'816x816':171,'848x1264':184,'896x1200':190,'928x1152':192,'1024x1024':196,'1200x1200':256,'1264x1264':278,'1376x1376':326,'1456x2048':440,'1536x1536':392,'2048x2048':620,'2048x3840':870};let lowTokens=reviewed[key],confidence=lowTokens?'high':'medium';
- if(!lowTokens){
-  const samples=Object.entries(reviewed).map(([size,tokens])=>{const[s,l]=size.split('x').map(Number);return{s,l,aspect:l/s,tokens,distance:Math.abs(Math.log(short/s))*.8+Math.abs(Math.log(aspect/(l/s)))*1.35}}).sort((a,b)=>a.distance-b.distance).slice(0,4),outside=short<608||short>2048||aspect>2.36;
-  let weighted=0,weights=0;for(const sample of samples){const scale=Math.pow(short/sample.s,1.05)*Math.pow(aspect/sample.aspect,.12),weight=1/Math.max(.025,sample.distance);weighted+=sample.tokens*scale*weight;weights+=weight}lowTokens=weighted/weights;confidence=outside?'low':'medium'
- }
- const multiplier=(profile.qualityUsd?.[quality]||profile.qualityUsd?.low||profile.usd)/(profile.qualityUsd?.low||profile.usd),tokens=Math.max(1,Math.round(lowTokens*multiplier));return{tokens,usd:tokens*30/1000000,confidence}
+ const width=Number(dimensions.width),height=Number(dimensions.height),is25=String(profile.model||'').includes('gpt-image-2.5'),bases=is25?{low:16,medium:24,high:48,xhigh:64,max:96}:{low:16,medium:48,high:96},base=bases[quality]||bases.low,long=Math.max(width,height),short=Math.min(width,height),shortGrid=aiRoundHalfToEven(base/(long/short)),gridWidth=width>=height?base:shortGrid,gridHeight=width>=height?shortGrid:base,tokens=Math.ceil(gridWidth*gridHeight*(2000000+width*height)/4000000);return{tokens,usd:tokens*30/1000000,confidence:'high'}
+}
+// OpenAI does not publish a GPT Image 2.5 reference-input calculator. This
+// uses the documented 32 px patch method for current vision inputs as a clearly
+// labelled proxy, capped at 2,500 patches and multiplied by 1.2.
+function aiOpenAiReferenceProxyTokens(width,height){
+ width=Math.max(1,Number(width)||1);height=Math.max(1,Number(height)||1);const maxDimension=2048,dimensionScale=Math.min(1,maxDimension/Math.max(width,height));width=Math.floor(width*dimensionScale);height=Math.floor(height*dimensionScale);let patches=Math.ceil(width/32)*Math.ceil(height/32);if(patches>2500){const scale=Math.sqrt(2500/patches);width=Math.max(1,Math.floor(width*scale/32)*32);height=Math.max(1,Math.floor(height*scale/32)*32);patches=Math.ceil(width/32)*Math.ceil(height/32)}return Math.ceil(patches*1.2)
 }
 function aiEstimateBreakdown(){
  const profile=aiProfile(),quality=$('aiQuality')?.value||profile.defaultQuality,prompt=aiFullPrompt(true),tokens=Math.max(1,Math.ceil(prompt.length/4)),ref=state.aiReference,factor=aiReferenceFactor(),ratio=aiSelectedRatio(),dimensions=aiResolutionDimensions(profile,ratio),resolutionFactor=profile.provider==='together'?dimensions.width*dimensions.height/(1024*1024):1,openAiOutput=profile.group==='openai-image-generation'&&dimensions.valid!==false?aiOpenAiOutputEstimate(profile,quality,dimensions):null,outputUsd=openAiOutput?.usd??((profile.qualityUsd?.[quality]||profile.usd)*resolutionFactor),promptUsd=profile.group==='openai-image-generation'?tokens/1000000*5:0;

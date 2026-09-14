@@ -9,7 +9,16 @@
     <div><dt>Dimensione sulla pagina</dt><dd id="imagePrintSize">—</dd></div>
     <div><dt>Risoluzione di stampa</dt><dd id="imagePrintDpi">—</dd></div>
   </dl>
-  <button class="btn hidden" id="changeResolutionBtn">Cambia risoluzione</button>
+  <div class="row image-inspector-actions hidden" id="imageInspectorActions">
+    <button class="btn grow" id="changeResolutionBtn">Cambia risoluzione</button>
+    <div class="image-copy-control grow" id="imageCopyControl">
+      <button class="btn image-copy-trigger" id="imageCopyMenuBtn" type="button" aria-haspopup="menu" aria-expanded="false">Copia immagine <span aria-hidden="true">⌄</span></button>
+      <div class="image-copy-actions hidden" id="imageCopyActions" role="menu">
+        <button class="btn" id="copyOriginalImageBtn" type="button" role="menuitem">Copia originale</button>
+        <button class="btn hidden" id="copyCroppedImageBtn" type="button" role="menuitem">Copia cropped</button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <dialog id="resolutionDialog" class="chic-dialog resolution-dialog">

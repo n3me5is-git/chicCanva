@@ -24,6 +24,8 @@ Apri pannello\tOpen panel
 Installa\tInstall
 Installa chicCanva\tInstall chicCanva
 Installa ora\tInstall now
+Installa con il browser\tInstall with browser
+Il browser non ha ancora reso disponibile il dialogo nativo: usa il menu indicato nel popup.\tThe browser has not made the native install dialog available yet; use the menu shown in the popup.
 Installa l’editor in una finestra dedicata e ritrovalo tra le tue app.\tInstall the editor in its own window and find it among your apps.
 Premi Installa.\tPress Install now.
 Conferma la finestra proposta dal browser.\tConfirm the prompt shown by the browser.
@@ -150,6 +152,9 @@ Ruota 180°\tRotate 180°
 Rifletti sinistra ↔ destra\tFlip horizontally
 Rifletti alto ↕ basso\tFlip vertically
 Adatta selezione\tFit selection
+Adatta con margine\tFit with margin
+Adatta senza margine\tFit without margin
+Margine adattamento (mm)\tFit margin (mm)
 Azioni oggetto\tObject actions
 Aggiunge una frase o singole lettere/gruppi alla pagina corrente.\tAdds a phrase or individual letters/groups to the current page.
 Inserisci testo nella modalità corrente.\tEnter text for the current mode.
@@ -256,6 +261,9 @@ Dimensione pennello\tBrush size
 Non oltrepassare i bordi\tStay inside edges
 Copia risultato\tCopy result
 Copia originale\tCopy original
+Copia cropped\tCopy crop
+Immagine originale copiata negli appunti\tOriginal image copied to clipboard
+Immagine croppata copiata negli appunti\tCropped image copied to clipboard
 Ripristina oggetto originale\tRestore original object
 Elimina questo Colorize\tDelete this colorization
 Azioni Colorizer\tColorizer actions
@@ -428,6 +436,7 @@ Collega il tuo account per generare immagini e usare i download assistiti da Put
 Imposta gli aiuti visivi del foglio; non vengono stampati.\tSet the page’s visual aids; they are not printed.
 Salva una pagina, tutte le pagine o una zona disegnata nel formato più adatto.\tSave one page, all pages or a drawn area in the most suitable format.
 Centro pagina\tPage center
+Bordi pagina\tPage edges
 Allinea agli oggetti\tAlign to objects
 Esporta JSON e chiudi\tExport JSON and close
 L’operazione può essere annullata dalla cronologia finché il progetto rimane aperto.\tThe operation can be undone from history while the project remains open.

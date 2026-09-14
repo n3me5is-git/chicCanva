@@ -4,18 +4,19 @@ const GUIDE_COLOR='#d52c83',GUIDE_SPACING_COLOR='#168f83';
 
 function ensureAlignmentState(){
  state.snap=state.snap||{};
- state.guideSnap={enabled:true,page:true,objects:true,spacing:true,...(state.guideSnap||{})};
+ state.guideSnap={enabled:true,page:true,edges:true,objects:true,spacing:true,...(state.guideSnap||{})};
  if(typeof state.aspectLock!=='boolean')state.aspectLock=false
 }
 function alignmentSetting(id){
  ensureAlignmentState();
- return{id:'',classic:!!state.snap.enabled,guides:!!state.guideSnap.enabled,page:!!state.guideSnap.page,objects:!!state.guideSnap.objects,spacing:!!state.guideSnap.spacing,aspect:!!state.aspectLock}[id]
+ return{id:'',classic:!!state.snap.enabled,guides:!!state.guideSnap.enabled,page:!!state.guideSnap.page,edges:!!state.guideSnap.edges,objects:!!state.guideSnap.objects,spacing:!!state.guideSnap.spacing,aspect:!!state.aspectLock}[id]
 }
 function setAlignmentSetting(id,value){
  ensureAlignmentState();
  if(id==='classic')state.snap.enabled=value;
  else if(id==='guides')state.guideSnap.enabled=value;
  else if(id==='page')state.guideSnap.page=value;
+ else if(id==='edges')state.guideSnap.edges=value;
  else if(id==='objects')state.guideSnap.objects=value;
  else if(id==='spacing')state.guideSnap.spacing=value;
  else if(id==='aspect')state.aspectLock=value;
@@ -23,7 +24,7 @@ function setAlignmentSetting(id,value){
 }
 function syncAlignmentUi(){
  ensureAlignmentState();
- const map={guideSnapEnabled:'enabled',guideSnapPage:'page',guideSnapObjects:'objects',guideSnapSpacing:'spacing'};
+ const map={guideSnapEnabled:'enabled',guideSnapPage:'page',guideSnapEdges:'edges',guideSnapObjects:'objects',guideSnapSpacing:'spacing'};
  for(const[id,key]of Object.entries(map))if($(id))$(id).checked=!!state.guideSnap[key];
  if($('aspectRatioLock'))$('aspectRatioLock').checked=!!state.aspectLock;
  if($('guideSnapOptions'))$('guideSnapOptions').classList.toggle('disabled',!state.guideSnap.enabled);
@@ -61,6 +62,10 @@ function applyAlignmentGuides(options){
   bestX=nearestGuideCandidate(bounds.cx,[{value:canvas.width/2,type:'page',axis:'x'}],threshold);
   bestY=nearestGuideCandidate(bounds.cy,[{value:canvas.height/2,type:'page',axis:'y'}],threshold)
  }
+ if(state.guideSnap.edges){
+  for(const current of [bounds.left,bounds.right]){const candidate=nearestGuideCandidate(current,[{value:0,type:'page-edge',axis:'x'},{value:canvas.width,type:'page-edge',axis:'x'}],threshold);if(candidate&&(!bestX||Math.abs(candidate.delta)<Math.abs(bestX.delta)))bestX=candidate}
+  for(const current of [bounds.top,bounds.bottom]){const candidate=nearestGuideCandidate(current,[{value:0,type:'page-edge',axis:'y'},{value:canvas.height,type:'page-edge',axis:'y'}],threshold);if(candidate&&(!bestY||Math.abs(candidate.delta)<Math.abs(bestY.delta)))bestY=candidate}
+ }
  if(state.guideSnap.objects&&others.length){
   const xCandidates=[],yCandidates=[];for(const object of others){const r=objectBounds(object);for(const value of [r.left,r.cx,r.right])xCandidates.push({value,type:'object',other:r,axis:'x'});for(const value of [r.top,r.cy,r.bottom])yCandidates.push({value,type:'object',other:r,axis:'y'})}
   for(const current of [bounds.left,bounds.cx,bounds.right]){const candidate=nearestGuideCandidate(current,xCandidates,threshold);if(candidate&&(!bestX||Math.abs(candidate.delta)<Math.abs(bestX.delta)))bestX=candidate}
@@ -89,7 +94,7 @@ function constrainAspectRatio(options){
  target.set({scaleX:Math.sign(target.scaleX||memory.scaleX)*Math.abs(memory.scaleX)*factor,scaleY:Math.sign(target.scaleY||memory.scaleY)*Math.abs(memory.scaleY)*factor});restoreTransformAnchor(target,memory);target.setCoords();if(target===cropSession?.rect)cropSession.syncPreview?.()
 }
 
-function resizeGuideValues(target){const valuesX=[],valuesY=[];if(state.guideSnap.page){valuesX.push({value:canvas.width/2,type:'page'});valuesY.push({value:canvas.height/2,type:'page'})}if(state.guideSnap.objects)for(const object of guideCandidateObjects(target)){const r=objectBounds(object);for(const value of [r.left,r.cx,r.right])valuesX.push({value,type:'object'});for(const value of [r.top,r.cy,r.bottom])valuesY.push({value,type:'object'})}return{valuesX,valuesY}}
+function resizeGuideValues(target){const valuesX=[],valuesY=[];if(state.guideSnap.page){valuesX.push({value:canvas.width/2,type:'page'});valuesY.push({value:canvas.height/2,type:'page'})}if(state.guideSnap.edges){valuesX.push({value:0,type:'page-edge'},{value:canvas.width,type:'page-edge'});valuesY.push({value:0,type:'page-edge'},{value:canvas.height,type:'page-edge'})}if(state.guideSnap.objects)for(const object of guideCandidateObjects(target)){const r=objectBounds(object);for(const value of [r.left,r.cx,r.right])valuesX.push({value,type:'object'});for(const value of [r.top,r.cy,r.bottom])valuesY.push({value,type:'object'})}return{valuesX,valuesY}}
 function scalingDraggedPoint(bounds,corner){return{x:corner.includes('l')?bounds.left:corner.includes('r')?bounds.right:bounds.cx,y:corner.includes('t')?bounds.top:corner.includes('b')?bounds.bottom:bounds.cy}}
 function applyResizeSnapping(options){
  const target=options?.target;if(!target||target===exportRegion||loadingPage||(target.excludeProject&&target!==cropSession?.rect))return;
@@ -109,12 +114,13 @@ function positionSnapOptionsMenu(x,y){const menu=$('snapOptionsMenu');syncAlignm
 function bindSnapOptionsMenu(){
  const button=$('snapTool'),menu=$('snapOptionsMenu');button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();positionSnapOptionsMenu(event.clientX,event.clientY)});
  menu.onclick=event=>{const option=event.target.closest('[data-snap-option]')?.dataset.snapOption;if(!option)return;setAlignmentSetting(option,!alignmentSetting(option));positionSnapOptionsMenu(parseFloat(menu.style.left)||8,parseFloat(menu.style.top)||8)};
- button.addEventListener('pointerdown',event=>{if(event.pointerType!=='touch')return;snapMenuLongPressStart={x:event.clientX,y:event.clientY};clearTimeout(snapMenuLongPress);snapMenuLongPress=setTimeout(()=>{positionSnapOptionsMenu(event.clientX,event.clientY);navigator.vibrate?.(25)},900)},{passive:true});button.addEventListener('pointermove',event=>{if(snapMenuLongPressStart&&Math.hypot(event.clientX-snapMenuLongPressStart.x,event.clientY-snapMenuLongPressStart.y)>12)clearTimeout(snapMenuLongPress)},{passive:true});for(const name of ['pointerup','pointercancel'])button.addEventListener(name,()=>{clearTimeout(snapMenuLongPress);snapMenuLongPressStart=null},{passive:true});document.addEventListener('pointerdown',event=>{if(!event.target.closest('#snapOptionsMenu,#snapTool'))menu.classList.add('hidden')})
+ button.addEventListener('pointerdown',event=>{if(event.pointerType!=='touch')return;snapMenuLongPressStart={x:event.clientX,y:event.clientY};clearTimeout(snapMenuLongPress);snapMenuLongPress=setTimeout(()=>{positionSnapOptionsMenu(event.clientX,event.clientY);navigator.vibrate?.(25)},1200)},{passive:true});button.addEventListener('pointermove',event=>{if(snapMenuLongPressStart&&Math.hypot(event.clientX-snapMenuLongPressStart.x,event.clientY-snapMenuLongPressStart.y)>12)clearTimeout(snapMenuLongPress)},{passive:true});for(const name of ['pointerup','pointercancel'])button.addEventListener(name,()=>{clearTimeout(snapMenuLongPress);snapMenuLongPressStart=null},{passive:true});document.addEventListener('pointerdown',event=>{if(!event.target.closest('#snapOptionsMenu,#snapTool'))menu.classList.add('hidden')})
 }
 
 function setupAlignmentGuides(){
  ensureAlignmentState();
- for(const id of ['guideSnapEnabled','guideSnapPage','guideSnapObjects','guideSnapSpacing','aspectRatioLock'])$(id).onchange=event=>setAlignmentSetting({guideSnapEnabled:'guides',guideSnapPage:'page',guideSnapObjects:'objects',guideSnapSpacing:'spacing',aspectRatioLock:'aspect'}[id],event.target.checked);
+ for(const id of ['guideSnapEnabled','guideSnapPage','guideSnapEdges','guideSnapObjects','guideSnapSpacing','aspectRatioLock'])$(id).onchange=event=>setAlignmentSetting({guideSnapEnabled:'guides',guideSnapPage:'page',guideSnapEdges:'edges',guideSnapObjects:'objects',guideSnapSpacing:'spacing',aspectRatioLock:'aspect'}[id],event.target.checked);
+ if($('fitMarginMm'))$('fitMarginMm').onchange=event=>{event.target.value=clamp(Number(event.target.value)||0,0,100);scheduleAutosave?.()};
  const baseSnapClick=$('snapTool').onclick;$('snapTool').onclick=event=>{baseSnapClick?.call($('snapTool'),event);syncAlignmentUi();scheduleAutosave?.()};
  canvas.on('before:transform',rememberAlignmentTransform);canvas.on('object:scaling',options=>{constrainAspectRatio(options);applyResizeSnapping(options)});canvas.on('object:moving',applyAlignmentGuides);canvas.on('mouse:up',()=>{alignmentTransform=null;clearAlignmentGuides()});canvas.on('object:modified',clearAlignmentGuides);canvas.on('selection:cleared',clearAlignmentGuides);
  const upper=canvas.upperCanvasEl;upper.addEventListener('pointerdown',event=>{alignmentPointerModifiers={shift:event.shiftKey,alt:event.altKey};if(event.shiftKey&&event.altKey){temporaryClassicSnap=state.snap.enabled;state.snap.enabled=!state.snap.enabled}},true);const restore=()=>{if(temporaryClassicSnap!==null){state.snap.enabled=temporaryClassicSnap;temporaryClassicSnap=null;syncAlignmentUi()}alignmentPointerModifiers={shift:false,alt:false};clearAlignmentGuides()};window.addEventListener('pointerup',restore,true);window.addEventListener('pointercancel',restore,true);window.addEventListener('blur',restore);

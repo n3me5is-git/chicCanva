@@ -106,7 +106,7 @@ Only models visible in chicCanva are normalized:
 
 | Model | Strategy | Live fields used |
 | --- | --- | --- |
-| GPT Image 2 / 2.5 Flare | text, image-input and image-output token rates | `text_input`, `image_input`, `image_output` |
+| GPT Image 2 / 2.5 Flare / 2.5 Sunburst | text, image-input and image-output token rates | `text_input`, `image_input`, `image_output` |
 | Grok Imagine Standard / Quality | fixed output tier plus media input | `output:1k`, `output:2k`, `media_input` |
 | Seedream 5 Lite | fixed per image | `per-image` |
 | Gemini 3.1 Flash Lite Image | text/image token rates and 1K headline | `input`, `output`, `output_image`, `1K:1x1` |
@@ -125,9 +125,27 @@ The quote includes:
 - whole Puter credits and USD to three decimals;
 - a confidence label.
 
-OpenAI output dimensions and quality are independent controls. The app validates the selected width and height before quoting or generating. Tokenized image output is estimated from reviewed observations keyed by both dimensions. Exact known sizes retain their measured calibration. For an unknown size, chicCanva blends the four closest observations in logarithmic short-edge/aspect-ratio space, with only a mild extrapolation by short edge and shape. It deliberately does not scale cost linearly with raw pixel area: provider image tokens are bucketed and the observed dashboard can charge a square differently from a similarly sized portrait. Estimates outside the reviewed range are marked low confidence. Reference inputs remain approximate because provider preprocessing is not known before the request.
+OpenAI output dimensions and quality are independent controls. The app validates the selected width and height before quoting or generating. GPT Image 2.5 output tokens use the formula published in OpenAI's own calculator. Let `B` be the quality base (`16/24/48/64/96` for low/medium/high/xhigh/max), `S` and `L` the short and long edges, and `R = banker's-round(B / (L/S))`. The virtual grid is `B × R`, oriented like the image, and the final token estimate is `ceil(gridWidth × gridHeight × (2,000,000 + width × height) / 4,000,000)`. This explains why a larger portrait can cost less than a square: aspect ratio reduces one virtual-grid dimension before the pixel factor is applied. Flare and Sunburst use the same GPT Image 2.5 bases and published token rates.
 
-Grok uses fixed prices for its 1K/2K tiers. Puter's `txt2img()` adapter documents those quality tiers but does not document an aspect-ratio argument for Grok, so chicCanva keeps its ratio selector fixed rather than claiming a control that may be ignored. Seedream uses the per-image catalog price and a conservative reference fallback where Puter does not expose a separate editing-input rate. Gemini 3.1 Flash Lite Image is sent through its canonical Puter model ID with a `ratio` object; its supported ratios are `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, and `21:9`. This model exposes only 1K output and no separate quality tier. These are preflight estimates; the authoritative charge remains Puter's post-generation metering.
+Text input is estimated as `ceil(prompt characters / 3.7)`. It is a tokenizer-independent heuristic and is deliberately kept separate from image input. OpenAI does not publish a preflight token calculator for GPT Image 2.5 reference images. Its Vision guide explicitly states that the Vision calculator and patch/tile rules do not apply to GPT Image generation/editing inputs. chicCanva therefore labels reference cost as approximate and uses a bounded Vision-derived proxy only to obtain a plausible order of magnitude: scale the longest edge to at most 2,048 px, count 32×32 patches, cap at 2,500 patches, and apply a 1.2 multiplier before the published `$8/M` image-input rate. The selected 1×/0.75×/0.5×/0.25× reference reduction is applied first. This proxy is more defensible than the former linear megapixel guess, but it is not an OpenAI billing contract.
+
+Grok uses xAI's fixed prices for its 1K/2K tiers. Standard costs `$0.02` at either resolution plus `$0.002` for one media input; Quality costs `$0.05` at 1K or `$0.07` at 2K plus `$0.01` per media input. Prompt length does not change xAI image-output billing. Puter's `txt2img()` adapter documents those resolution tiers but does not document an aspect-ratio argument for Grok, so chicCanva keeps its ratio selector fixed rather than claiming a control that may be ignored.
+
+Seedream uses Puter's published `$0.035` fixed price per generation. Puter exposes no separate configuration or reference-input surcharge for this model, so chicCanva no longer invents a conservative reference premium. Gemini 3.1 Flash Lite Image is sent through its canonical Puter model ID with a `ratio` object; its supported ratios are `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, and `21:9`. This model exposes only 1K output and no separate quality tier. The 1K result is 1,120 image tokens at `$30/M`; text and image input use `$0.25/M`. Reference images use Google's documented visual tokenization: 258 tokens for small inputs, while larger images are tiled and counted at 258 tokens per tile. These are preflight estimates; the authoritative charge remains Puter's post-generation metering.
+
+### Cross-check against observed Puter meters
+
+The supplied Puter dashboard history confirms the unit scale and the fixed-price families:
+
+| Meter sample | Observed | Calculation |
+| --- | ---: | --- |
+| Grok Standard output, 6 images | 240 Credits | `6 × $0.02 × 2,000 = 240` |
+| Grok media input, 1 image | 4 Credits | `1 × $0.002 × 2,000 = 4` |
+| Seedream 5 Lite, 4 images | 280 Credits | `4 × $0.035 × 2,000 = 280` |
+| Gemini 1K output, 2 × 1,120 tokens | 134 Credits | `2,240 × $30/M × 2,000 = 134.4` |
+| Gemini input, 155 tokens | 0.08 Credits | `155 × $0.25/M × 2,000 = 0.0775` |
+
+These matches justify high confidence for the fixed output prices. A Gemini reference preflight still carries medium confidence because the effective image token count depends on the adapter's media-resolution handling and image normalization.
 
 ## Refresh behavior
 
@@ -173,8 +191,20 @@ Expected output: 1,090 used globally, 19,910 available globally, zero monthly al
 
 ## Measured generation cost
 
-The preflight quote is labelled **Stima Listino**. It uses cached Puter price coefficients, model and quality, validated output dimensions, the effective prompt, and reduced reference-image dimensions. GPT Image 2/2.5 common low-quality dimensions use reviewed output-token calibration points; unknown sizes use the shape-aware interpolation described above rather than total-pixel linear scaling.
+The preflight quote is labelled **Stima Listino**. It uses cached Puter price coefficients, model and quality, validated output dimensions, the effective prompt, and reduced reference-image dimensions. GPT Image 2.5 output uses OpenAI's public calculator formula exactly; prompt text uses the documented local heuristic and the reference image uses the explicitly labelled Vision-derived proxy above.
 
 Immediately before `puter.ai.txt2img()`, chicCanva reads `puter.auth.getDetailedAppUsage(puter.auth.appID)`. After an image is returned it polls the same app-scoped total briefly and stores a positive delta by model, quality, dimensions, ratio, reference presence, and reference scale. Prompt text is excluded so a recurring production profile can reuse its latest observation. When available, **Ultima Gen** becomes the primary value and **Stima Listino** remains a normal-weight secondary line directly below the estimate heading. The cache retains at most 100 profiles and the global memory-clear command removes it.
 
-This delta is diagnostic evidence rather than a guaranteed per-request invoice: concurrent activity from the same Puter app could enter the interval. OpenAI supplies token rates, while exact GPT Image 2.5 output-token consumption is only known after generation. The estimator therefore labels confidence and treats Puter's reported app-credit delta as stronger post-generation evidence.
+This delta is diagnostic evidence rather than a guaranteed per-request invoice: concurrent activity from the same Puter app could enter the interval. OpenAI publishes the GPT Image 2.5 output formula and token rates, but not an equivalent preflight formula for its reference-image input. The estimator therefore treats Puter's reported app-credit delta and the response's actual `usage` fields as stronger post-generation evidence.
+
+## External research notes
+
+- OpenAI's Image Generation guide is the authoritative source for GPT Image 2.5 text/image-input and image-output rates and for the instruction to use the response `usage` object for actual consumption: <https://developers.openai.com/api/docs/guides/image-generation>.
+- OpenAI's public GPT Image calculator supplies the non-linear output formula implemented by chicCanva. The official model pages confirm the same pricing for Flare and Sunburst: <https://developers.openai.com/api/docs/models/gpt-image-2.5-flare> and <https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst>.
+- OpenAI's Vision guide documents patch/tile methods but explicitly excludes GPT Image generation/editing inputs: <https://developers.openai.com/api/docs/guides/images-vision>. Those rules are used only as a visibly approximate proxy.
+- A review of public GitHub calculators found vision-only tools and empirical GPT Image wrappers, but no reliable implementation of a documented GPT Image 2.5 reference-input formula. Do not silently promote an empirical table or a Vision calculator to an exact estimate.
+- xAI's current pricing table documents the Standard/Quality 1K/2K output fees and per-image media input fees used above: <https://docs.x.ai/developers/pricing>.
+- Puter's Seedream model card publishes a fixed `$0.035` generation price and no configurable resolution: <https://developer.puter.com/ai/byteplus/seedream-5-0-lite-260128/>.
+- Google's token documentation states that small image inputs use 258 tokens and larger inputs are divided into visual tiles, each costing 258 tokens: <https://ai.google.dev/gemini-api/docs/generate-content/tokens>. Its image-generation table publishes 1K output dimensions and token counts by aspect ratio: <https://ai.google.dev/gemini-api/docs/image-generation>.
+
+The supplied Puter dashboard sample is consistent with the published rates and the 2,000 Credits/USD conversion. A Flare `2048×2912` text-only input row with 145 units costs 1.45 Credits: `145 × $5/M × 2,000`. A reference-bearing row at the same output size reports 1,530 aggregate input units and 24.01 Credits. Because Puter aggregates differently priced text and image tokens in that row, units alone cannot reconstruct the split exactly; subtracting a prompt contribution leaves an image-input cost in the same order of magnitude as the patch proxy. This is useful validation of scale, not enough evidence to derive a new proprietary formula. Keep the proxy labelled and let the app-scoped before/after measurement supersede it for repeated settings.

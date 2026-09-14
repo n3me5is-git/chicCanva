@@ -3,7 +3,7 @@ import re,json,struct,hashlib
 root=Path(__file__).resolve().parent.parent
 s=(root/'chicCanva.html').read_text(encoding='utf-8')
 assert 'black-forest-labs/FLUX.1-schnell' not in s, 'vecchio fallback Flux presente nella build'
-for expected_model in ('byteplus/seedream-5-0-lite-260128','google/gemini-3.1-flash-lite-image'):
+for expected_model in ('openai/gpt-image-2.5-sunburst','byteplus/seedream-5-0-lite-260128','google/gemini-3.1-flash-lite-image'):
  assert expected_model in s, f'modello Puter mancante: {expected_model}'
 for hidden_model in ('rundiffusion/juggernaut-lightning-flux','hidream-ai/hidream-i1-fast','hidream-ai/hidream-i1-dev','qwen/qwen-image'):
  assert hidden_model not in s, f'modello Puter non funzionante ancora visibile: {hidden_model}'
@@ -52,9 +52,9 @@ assert struct.unpack('>II',share[16:24])==(1200,630)
 share_jpg=(pwa/'chiccanva-share.jpg').read_bytes();assert share_jpg[:2]==b'\xff\xd8' and share_jpg[-2:]==b'\xff\xd9' and len(share_jpg)<128000
 headers=(pwa/'_headers').read_text(encoding='utf-8');robots=(pwa/'robots.txt').read_text(encoding='utf-8')
 assert 'X-Robots-Tag' not in headers and 'Cache-Control: public, max-age=86400' in headers
-assert all(rule in robots for rule in ['User-agent: TelegramBot\nAllow: /','User-agent: Googlebot\nAllow: /','User-agent: Bingbot\nAllow: /','User-agent: *\nDisallow: /'])
+assert all(rule in robots for rule in ['User-agent: TelegramBot\nAllow: /','User-agent: WhatsApp\nAllow: /','User-agent: facebookexternalhit\nAllow: /','User-agent: Twitterbot\nAllow: /','User-agent: LinkedInBot\nAllow: /','User-agent: Slackbot\nAllow: /','User-agent: Discordbot\nAllow: /','User-agent: Googlebot\nAllow: /','User-agent: Bingbot\nAllow: /','User-agent: *\nDisallow: /'])
 assert "protocol!=='https:'" in s and "navigator.serviceWorker.register('./chicCanva-sw.js'" in s
-assert "$('installPwaBtn').onclick=showPwaInstructions" in s and 'id="pwaInstallConfirm">Installa ora' in s
+assert "$('installPwaBtn').onclick=showPwaInstructions" in s and 'id="pwaInstallConfirm">Installa con il browser' in s
 assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate','aiGeneratedFallback','aiGeneratedDialog','aiGeneratedRetryBtn','aiGeneratedDownloadBtn'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
 vendor=root/'development/vendor'
@@ -65,7 +65,7 @@ expected_version=json.loads((root/'development/version.json').read_text(encoding
 assert f'id="appVersion">v{expected_version}' in s
 assert 'touchControlProfile' in s and 'touchCornerSize:40' in s and 'touchSizeX:hit' in s and 'touch?44' in s
 assert 'property="og:title" content="chicCanva · Piccole idee, grandi progetti"' in s
-assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s
+assert 'name="twitter:card" content="summary_large_image"' in s and 'data:image/png;base64,' in s and 'href="chiccanva-192.png"' in pwa_html
 assert 'name="robots"' not in s and 'name="googlebot" content="noindex,nofollow,noarchive"' in s and 'name="bingbot" content="noindex,nofollow,noarchive"' in s and 'property="og:image" content="https://chiccanva.testthis.one/chiccanva-share.jpg?v=' in s and 'property="og:image:type" content="image/jpeg"' in s and 'property="og:image:width" content="1200"' in s and 'property="og:url" content="https://chiccanva.testthis.one/"' in s and 'rel="canonical" href="https://chiccanva.testthis.one/"' in s
 assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class="license">' in s
 assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-puter-login-link' in s
@@ -79,9 +79,10 @@ assert 'runBackgroundWorker' in s and 'modello rimosso dalla RAM' in s
 assert 'canvas.skipTargetFind=true' in s and 'showLongPressObjectMenu' in s and 'locked=true' in s
 assert {'shapesCard','shapeTools','shapeEditPoints','shapeFinish'}.issubset(ids)
 assert 'beginShapeMode' in s and 'objectType===\'shape\'' in s and 'Mantieni dimensione costante' in s
-assert {'shapeTabs','shapePrevPage','shapeNextPage','shapeDragNodes','shapeDuplicateImage','snapRotationStep','rotationMenu','selectionModeMenu','objectTransformMenu'}.issubset(ids)
-assert {'guideSnapEnabled','guideSnapPage','guideSnapObjects','guideSnapSpacing','aspectRatioLock','shapeLockSquare','snapOptionsMenu'}.issubset(ids)
-assert 'applyAlignmentGuides' in s and 'constrainAspectRatio' in s and "objectType='alignment-guide'" in s and 'temporaryClassicSnap' in s
+assert {'shapeTabs','shapePrevPage','shapeNextPage','shapeDragNodes','shapeDuplicateImage','snapRotationStep','rotationMenu','selectionModeMenu','objectTransformMenu','fitSelectionMenu'}.issubset(ids)
+assert {'guideSnapEnabled','guideSnapPage','guideSnapEdges','guideSnapObjects','guideSnapSpacing','fitMarginMm','aspectRatioLock','shapeLockSquare','snapOptionsMenu'}.issubset(ids)
+assert 'applyAlignmentGuides' in s and 'constrainAspectRatio' in s and "objectType='alignment-guide'" in s and 'temporaryClassicSnap' in s and 'fitSelectionFromContext' in s
+assert s.index('id="pageMoveLeft"') < s.index('<label class="small">Nome pagina</label>')
 assert len(re.findall(r'data-shape="[^"]+"',body))>=40 and 'smoothTrace' in s and 'duplicateSelectionAsImage' in s and 'startSelectionTapMode' in s
 assert {'colorizerCard','startColorizerBtn','restoreColorizerOriginalBtn','colorizerPaintType','colorizerSmartEdges','copyColorizedBtn','copyColorizerOriginalBtn'}.issubset(ids)
 assert 'colorizerFloodFill' in s and 'colorizerBrushStamp' in s and 'expandDerivedAssetDependencies' in s and "objectType:'colorized'" in s
