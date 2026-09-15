@@ -2,10 +2,13 @@
 
 This directory is the technical and operational reference for chicCanva. It is written for maintainers, reviewers, deployers, and AI agents taking over development. The Italian and English end-user guides are generated from the same two sources embedded in the application.
 
+Coding agents and automated contributors must begin with [`AGENTS.md`](../AGENTS.md). It defines implementation invariants, human-approval gates, the bilingual UI policy, canvas and persistence safeguards, and feature-specific test expectations.
+
 ## Documentation map
 
 | Document | Audience | Purpose |
 |---|---|---|
+| [../AGENTS.md](../AGENTS.md) | Coding agents and reviewers | Operational contract, approval gates, implementation playbooks, and validation matrix. |
 | [user-guide.html](user-guide.html) | Teachers and end users | Standalone copy of the complete in-app guide. |
 | [user-guide-en.html](user-guide-en.html) | Teachers and end users | Complete standalone English guide. |
 | [LOCALIZATION.md](LOCALIZATION.md) | Developers and AI agents | Runtime language selection, prompt localization, guide parity, and maintenance rules. |

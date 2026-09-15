@@ -96,7 +96,7 @@ The toolbar makes modes explicit:
 
 Shape drawing follows the same isolation rule as export-region drawing: existing objects temporarily become non-selectable and non-evented, and target finding is disabled. A crosshair and an active tool tile make the state visible. Escape and the sidebar cancel command restore the exact previous interaction flags. Polygon point editing is a separate state applied only after a completed object is selected.
 
-Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop begins at the current visible image boundary, cannot exceed the original source, and changes one image's visible window; export selection defines output bounds only. Export-region mode suppresses object hit testing until it ends, so starting the rectangle over a photo cannot move the photo. The image inspector places **Copy image** beside **Change resolution**. Without a crop it copies the original immediately; with an active crop it opens the **Copy original / Copy crop** menu. Image output exposes **Copy to clipboard** only for a single page or region, where the result is one unambiguous image rather than a multi-page ZIP.
+Rotation is disabled by default to prevent accidental changes while resizing. Group selection uses a thicker purple boundary to distinguish a persistent group from a transient multi-selection. Crop and export selection are visually and behaviorally distinct: crop begins at the current visible image boundary, cannot exceed the original source, and changes one image's visible window; export selection defines output bounds only. Export-region mode suppresses object hit testing until it ends, so starting the rectangle over a photo cannot move the photo. The image inspector places **Copy image** beside **Change quality**. Without a crop it copies the original immediately; with an active crop it opens the persistent **Copy original / Copy crop** menu, which closes only after a command, an outside click, or Escape. **Change quality** presents independent resolution and PNG-quality sliders; 1× changes compression without changing dimensions. Image output exposes **Copy to clipboard** only for a single page or region, where the result is one unambiguous image rather than a multi-page ZIP.
 
 Keyboard support includes common editing conventions (`Ctrl/Cmd+C`, `V`, `D`, `Z`, `Y`, `S`) plus feature shortcuts (`F`, `H`, `G`, `R`, `F1`). Shortcuts are ignored while typing in form fields.
 
@@ -112,7 +112,7 @@ Native browser dialogs are avoided for core workflows because they are visually 
 - Clipart preview;
 - autosave recovery;
 - settings and memory clearing.
-- image resolution replacement, including projected pixel and bitmap-memory values.
+- image quality replacement, including independent resolution, PNG color precision, projected pixel, and bitmap-memory values.
 
 A dialog should state the affected project/page, the consequence, and the reversible or recovery path. The primary action should describe the operation, while cancel remains visually secondary.
 

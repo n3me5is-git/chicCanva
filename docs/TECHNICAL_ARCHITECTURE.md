@@ -1,5 +1,7 @@
 # Technical architecture
 
+This document describes the system and its invariants. Coding agents must also follow the operational contract in [`AGENTS.md`](../AGENTS.md), which maps these architectural rules to approval gates, feature-specific implementation playbooks, and required validation.
+
 ## 1. Product boundary
 
 chicCanva is a browser-based, multi-project page composition editor aimed at printable educational material. The shipped editor is one self-contained HTML file. It combines markup, CSS, application JavaScript, the Fabric.js canvas runtime, jsPDF, PDF.js with its worker, an OpenMoji metadata catalog, a font metadata catalog, and the JavaScript portions of the IMG.LY/ONNX background-removal runtime.
@@ -15,6 +17,7 @@ Online services and large media/model files remain remote. Puter, Google Fonts/F
 
 ```text
 chicCanvas/
+├── AGENTS.md                       # coding-agent contract and change playbooks
 ├── chicCanva.html                 # generated single-file application
 ├── chicCanva_server.bat           # dependency-free local HTTP server
 ├── README.md
@@ -349,6 +352,8 @@ Image preflight pricing is normalized from `https://api.puter.com/puterai/image/
 The Prompt Library uses its own `chicCanva-prompt-library` IndexedDB database and `prompts` object store. Separating it from project autosave avoids rewriting every project when one reusable prompt changes. An entry can retain a Data URL reference, so references are strictly opt-in. The editor can write prompt text or the optional image as a PNG-compatible Clipboard item; the AI widget can read text and append it after a blank line. Import/export uses `{type, version, exportedAt, prompts}` and browser memory clearing explicitly clears this store.
 
 The system clipboard image command is also separate from the editable internal clipboard. Right-click or long-press on the Copy toolbar button renders a group or active selection to a bounded transparent PNG. A single unrotated image reads its native asset directly: without crop it preserves the source blob; with crop it extracts `cropX`, `cropY`, `width`, and `height` into a same-resolution PNG without display-scale resampling. The image inspector exposes the original and cropped variants explicitly. The clipboard compatibility helper falls back to PNG for formats rejected by the browser.
+
+Selected-image quality replacement uses progressive high-quality canvas resampling for reductions and one high-quality interpolation pass for enlargement. Resolution factors include intermediate steps and 1×. After resampling, an independent PNG-quality stage optionally quantizes RGB precision while preserving alpha; 100% skips quantization. This ordering keeps geometry and text-edge resampling independent from compressed storage size. The derived asset records `resolutionFactor`, `pngQuality`, dimensions, encoded bytes, and resampling mode; Fabric scale and crop coordinates are adjusted inversely so physical placement remains unchanged.
 
 # Colorizer raster pipeline
 

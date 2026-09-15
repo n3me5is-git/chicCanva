@@ -43,7 +43,7 @@ These constraints define the product and should be treated as requirements:
 - OpenMoji browser and smart emoji conversion
 - Vector shapes, lines, editable polygon points, and raw/smoothed freehand drawing
 - Images, clipboard, URLs, crop, grayscale, and edge outline
-- Selected-image pixel/RAM/DPI diagnostics and explicit high-quality resampling
+- Selected-image pixel/RAM/DPI diagnostics plus explicit high-quality resampling and PNG storage-quality control
 - Local PDF-to-PNG import into A4 project pages
 - Chroma-key and local AI background removal
 - Puter image generation with reference images and style presets

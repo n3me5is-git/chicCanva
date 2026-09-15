@@ -7,6 +7,7 @@ const I18N_EN=Object.fromEntries(`
 Lingua\tLanguage
 Italiano\tItalian
 Piccole idee, grandi progetti · con Chicca\tSmall ideas, big projects · with Chicca
+Ciao! Sono Chicca 👋\tHi! I'm Chicca 👋
 Memoria\tStorage
 Guida\tGuide
 ? Guida\t? Guide
@@ -52,6 +53,18 @@ Forme\tShapes
 Immagini\tImages
 Clipart\tClipart
 Export\tExport
+Esporta\tExport
+Apri\tOpen
+Apri Pagina\tOpen Page
+Apri Speciali\tOpen Special
+Apri Testo\tOpen Text
+Apri Font\tOpen Fonts
+Apri Emoji\tOpen Emoji
+Apri Forme\tOpen Shapes
+Apri Immagini\tOpen Images
+Apri Clipart\tOpen Clipart
+Apri AI\tOpen AI
+Apri Esporta\tOpen Export
 Richiudi sezioni\tCollapse sections
 Espandi sezioni\tExpand sections
 Espandi singolarmente\tExpand one at a time
@@ -218,6 +231,13 @@ RAM bitmap stimata\tEstimated bitmap RAM
 Dimensione sulla pagina\tSize on page
 Risoluzione di stampa\tPrint resolution
 Cambia risoluzione\tChange resolution
+Cambia qualità\tChange quality
+Qualità PNG\tPNG quality
+Colori originali\tOriginal colours
+Precisione colori ridotta\tReduced colour precision
+Immagine attuale:\tCurrent image:
+La sostituzione riguarda solo questo oggetto.\tReplacement affects only this object.
+La dimensione sulla pagina non cambia. L’upscaling tradizionale aumenta i pixel ma non crea nuovi dettagli. A 100% i colori restano invariati; valori inferiori riducono gradualmente la precisione cromatica per alleggerire il PNG, mantenendo la trasparenza.\tThe size on the page does not change. Traditional upscaling increases pixels but does not create new detail. At 100%, colours remain unchanged; lower values gradually reduce colour precision to make the PNG smaller while preserving transparency.
 Sostituisci immagine\tReplace image
 Trasformazioni immagine\tImage transformations
 Bianco e nero\tBlack and white
@@ -332,6 +352,35 @@ Cerca per titolo, tag, descrizione o prompt…\tSearch title, tags, description 
 Filtra per tag\tFilter by tags
 Azzera filtri\tReset filters
 La libreria è vuota.\tThe library is empty.
+Nessun prompt corrisponde alla ricerca e ai tag selezionati.\tNo prompt matches the selected search and tags.
+Rimuovi tag\tRemove tag
+Immagine associata\tAttached image
+Titolo e prompt sono obbligatori.\tTitle and prompt are required.
+Prompt aggiornato\tPrompt updated
+Prompt salvato nella libreria\tPrompt saved to the library
+Prompt eliminato\tPrompt deleted
+Eliminare il prompt selezionato dalla Prompt Library?\tDelete the selected prompt from the Prompt Library?
+Testo del prompt copiato\tPrompt text copied
+Immagine del prompt copiata\tPrompt image copied
+Gli appunti non contengono testo\tThe clipboard contains no text
+Testo aggiunto al prompt\tText added to the prompt
+Prompt Library importata\tPrompt Library imported
+Catalogo curato chicCanva aggiornato.\tCurated chicCanva catalogue updated.
+Qualità e risoluzione sono indipendenti; i lati sono multipli di 16, rapporto massimo 3:1 e limite 3840 px / 8.294.400 pixel.\tQuality and resolution are independent; sides are multiples of 16, the maximum aspect ratio is 3:1, with limits of 3840 px / 8,294,400 pixels.
+Gemini Flash Lite supporta i rapporti elencati e un solo livello output 1K; Puter non espone un livello qualitativo separato per questo modello.\tGemini Flash Lite supports the listed aspect ratios and a single 1K output level; Puter does not expose a separate quality level for this model.
+Puter espone per Grok il livello 1K/2K, ma al momento non documenta l’inoltro dell’aspect ratio tramite txt2img().\tPuter exposes the 1K/2K level for Grok, but currently does not document forwarding the aspect ratio through txt2img().
+Il modello espone soltanto le opzioni supportate dal relativo provider.\tThe model exposes only the options supported by its provider.
+Proporzioni non valide.\tInvalid aspect ratio.
+Risoluzione non valida.\tInvalid resolution.
+OpenAI accetta proporzioni comprese tra 1:3 e 3:1.\tOpenAI accepts aspect ratios between 1:3 and 3:1.
+Questa combinazione supera il lato massimo OpenAI di 3840 px.\tThis combination exceeds OpenAI’s maximum side of 3840 px.
+Questa combinazione supera 8.294.400 pixel.\tThis combination exceeds 8,294,400 pixels.
+Questa combinazione non raggiunge il minimo di 655.360 pixel.\tThis combination does not reach the minimum of 655,360 pixels.
+Larghezza e altezza devono essere numeri interi positivi.\tWidth and height must be positive integers.
+Larghezza e altezza devono essere multipli di 16 px.\tWidth and height must be multiples of 16 px.
+La risoluzione personalizzata supera il lato massimo OpenAI di 3840 px.\tThe custom resolution exceeds OpenAI’s maximum side of 3840 px.
+La risoluzione personalizzata supera 8.294.400 pixel.\tThe custom resolution exceeds 8,294,400 pixels.
+La risoluzione personalizzata non raggiunge il minimo di 655.360 pixel.\tThe custom resolution does not reach the minimum of 655,360 pixels.
 Titolo\tTitle
 Breve descrizione\tShort description
 Quando e perché usare questo prompt\tWhen and why to use this prompt
@@ -340,6 +389,7 @@ Stile associato\tAssociated style
 Salva anche l’immagine di riferimento corrente\tAlso save the current reference image
 Usa questo prompt\tUse this prompt
 Salva prompt\tSave prompt
+Aggiorna prompt\tUpdate prompt
 Copia prompt\tCopy prompt
 ← Torna alla lista\t← Back to list
 Chiudi Prompt Library\tClose Prompt Library
@@ -365,6 +415,44 @@ Duplica il contenuto generato e rimuovi lo sfondo\tDuplicate generated content a
 Risoluzione inviata\tSent resolution
 Genera e inserisci\tGenerate and insert
 Stima Consumo\tEstimated usage
+Stima Listino:\tPrice-list estimate:
+Ultima Gen:\tLast Gen:
+crediti\tcredits
+Usato\tUsed
+Disponibile\tAvailable
+Usati:\tUsed:
+Residui:\tRemaining:
+Non disponibile\tUnavailable
+Free / senza abbonamento\tFree / no subscription
+testo\ttext
+riferimento\treference
+output non valido\tinvalid output
+prompt complessivo\tfull prompt
+confidenza\tconfidence
+consumo ricavato dal saldo\tusage derived from the balance
+consumo comunicato da Puter\tusage reported by Puter
+aggiornato\tupdated
+L’uso chicCanva è una lettura separata limitata a questa app.\tchicCanva usage is a separate reading limited to this app.
+Output OpenAI: formula ufficiale basata su griglia qualità e dimensioni.\tOpenAI output: official quality-grid and size formula.
+Riferimento: proxy a token visivi; resta autorevole il consumo misurato dopo la generazione.\tReference: visual-token proxy; the measured post-generation cost remains authoritative.
+xAI: tariffa output fissa per il livello 1K/2K selezionato.\txAI: fixed output price for the selected 1K/2K tier.
+Si aggiunge la tariffa ufficiale per il riferimento.\tThe official media-input fee is added.
+Tariffa Puter fissa per generazione Seedream; non è pubblicato un sovrapprezzo separato per il riferimento.\tFixed Puter price per Seedream generation; no separate reference surcharge is published.
+Gemini: token immagine output alla tariffa ufficiale 1K.\tGemini: output image tokens at the official 1K rate.
+Riferimento stimato con le regole Google per i tile visivi.\tReference estimated with Google’s visual-tile token rules.
+Stima di riserva dal prezziario incorporato.\tFallback estimate from the embedded price list.
+bassa\tlow
+discreta\tfair
+buona\tgood
+Immagine attuale:\tCurrent image:
+La sostituzione riguarda solo questo oggetto.\tReplacement affects only this object.
+Colori originali\tOriginal colours
+Precisione colori ridotta\tReduced colour precision
+Elaborazione…\tProcessing…
+Qualità immagine modificata · dimensione sulla pagina invariata\tImage quality changed · size on page unchanged
+Cambio qualità non riuscito:\tImage quality change failed:
+Immagine originale copiata negli appunti\tOriginal image copied to clipboard
+Immagine croppata copiata negli appunti\tCropped image copied to clipboard
 Prezziario incorporato\tBuilt-in price list
 Aggiorna prezziario\tRefresh price list
 Immagine generata\tGenerated image
@@ -520,6 +608,12 @@ Usa l’immagine selezionata come riferimento AI\tUse the selected image as the 
 Verrà inviata a Puter quando premi Genera.\tIt will be sent to Puter when you press Generate.
 L’originale resta invariato; la copia ridotta viene creata soltanto per la richiesta.\tThe original remains unchanged; the reduced copy is created only for the request.
 Allega una foto o un disegno; senza allegato la generazione parte dal solo testo.\tAttach a photo or drawing; without an attachment, generation starts from text only.
+Allega una foto o un disegno; senza allegato la generazione funziona come prima.\tAttach a photo or drawing; without an attachment, generation works as before.
+Riferimento pronto · descrivi nel prompt cosa mantenere o cambiare.\tReference ready · describe in the prompt what to keep or change.
+Riferimento pronto · usa il ritaglio visibile, senza rotazione o scala del canvas.\tReference ready · using the visible crop without canvas rotation or scaling.
+Questo modello non dichiara un input immagine compatibile: rimuovi il riferimento o scegli un altro modello.\tThis model does not declare a compatible image input: remove the reference or choose another model.
+Per usare il riferimento seleziona OpenAI Image, Gemini o xAI. Puoi anche rimuoverlo per usare questo modello.\tTo use the reference, select OpenAI Image, Gemini, or xAI. You can also remove it to use this model.
+Spunta “Salva anche l’immagine” per conservarne una copia nella libreria.\tCheck “Save the image too” to keep a copy in the library.
 ＋ Salva\t＋ Save
 Puter usa il modello user-pays: eventuali costi/crediti sono gestiti dall’account Puter dell’utente.\tPuter uses the user-pays model: any costs or credits are managed by the user’s Puter account.
 Griglia mm\tGrid mm
@@ -531,6 +625,230 @@ Il JSON conserva il progetto modificabile; PDF e immagini producono file pronti 
 Rimuove il crop senza deformare l’immagine\tRemove the crop without distorting the image
 Usa come riferimento AI\tUse as AI reference
 Ruota e rifletti\tRotate and flip
+Elimina\tDelete
+Snap classico\tClassic snapping
+Snap a linee guida\tGuide snapping
+Equispaziatura\tEven spacing
+Blocca proporzioni\tLock proportions
+Rotazione a scatti\tRotation step
+Blocca proporzioni nel resize e crop\tLock proportions while resizing and cropping
+Maiusc inverte il blocco proporzioni. Durante lo spostamento Alt inverte le guide; Maiusc + Alt esclude le guide e inverte lo snap classico.\tShift reverses proportion locking. While moving, Alt reverses guides; Shift + Alt excludes guides and reverses classic snapping.
+ADATTAMENTO PROPORZIONALE · MARGINE 8%\tPROPORTIONAL FIT · 8% MARGIN
+Larghezza / altezza possono far uscire il contenuto dall’altro lato.\tWidth / height may extend the content beyond the opposite edge.
+Smart emoticon: le emoji Unicode nel testo vengono renderizzate come OpenMoji e trattate come singoli caratteri.\tSmart emoji: Unicode emoji in text are rendered as OpenMoji and treated as single characters.
+le emoji Unicode nel testo vengono renderizzate come OpenMoji e trattate come singoli caratteri.\tUnicode emoji in text are rendered as OpenMoji and treated as single characters.
+caratteri pieni\tfilled characters
+Anteprima immediata mentre cambi il valore. Conferma per fissare la nuova base.\tLive preview while you change the value. Confirm to set the new baseline.
+Ogni gruppo viene adattato separatamente.\tEach group is fitted separately.
+Usa\tUse
+Caricamento\tLoading
+Font attivo:\tActive font:
+Nessun carattere: prova un’altra categoria o ricerca.\tNo fonts found: try another category or search.
+Nessuna emoji trovata.\tNo emoji found.
+Caricamento catalogo OpenMoji…\tLoading OpenMoji catalogue…
+Allineamento oggetti\tAlign to objects
+CATEGORIA\tCATEGORY
+Funzione\tFunction
+Orientamento A4\tA4 orientation
+Maiusc\tShift
+database protetto del browser\tprotected browser database
+inverte il blocco proporzioni. Durante lo spostamento\treverses proportion locking. While moving,
+inverte le guide;\treverses guides;
+esclude le guide e inverte lo snap classico.\texcludes guides and reverses classic snapping.
+Tutti\tAll
+Cicciottelli\tChunky
+Rotondi\tRounded
+Squadrati\tSquare
+Artistici\tArtistic
+Serif\tSerif
+Sans serif\tSans serif
+Scrittura\tHandwriting
+Monospazio\tMonospace
+Outline nativi\tNative outlines
+Cerca font o stile: rotondo, bambino, serif…\tSearch fonts or styles: rounded, child, serif…
+Rettangolo\tRectangle
+Rettangolo arrotondato\tRounded rectangle
+Arrotondato\tRounded
+Ovale\tOval
+Cerchio\tCircle
+Triangolo\tTriangle
+Rombo\tDiamond
+Pentagono\tPentagon
+Esagono\tHexagon
+Stella\tStar
+Stella 8\t8-point star
+Stella a 8 punte\t8-point star
+Cuore\tHeart
+Luna\tMoon
+Sole\tSun
+Nuvola\tCloud
+Casa\tHouse
+Libro\tBook
+Pergamena\tScroll
+Segnalibro\tBookmark
+Etichetta\tTag
+Scudo\tShield
+Spunta\tCheck mark
+Croce\tCross
+Più\tPlus
+Graffa\tBrace
+Nastro\tRibbon
+Puzzle\tPuzzle
+Lampadina\tLight bulb
+Freccia\tArrow
+Freccia outline\tOutline arrow
+Doppia freccia\tDouble arrow
+Freccia su e giù\tUp and down arrow
+Fumetto\tCallout
+Fumetto pensiero\tThought bubble
+Segmento\tLine segment
+Linea con freccia\tArrow line
+Linea con doppia freccia\tDouble arrow line
+Spezzata\tPolyline
+Poligono\tPolygon
+Mano libera liscia\tSmooth freehand
+Mano libera raw\tRaw freehand
+Mela\tApple
+Matita\tPencil
+Righello\tRuler
+Cappello diploma\tGraduation cap
+Certificato\tCertificate
+Quaderno\tNotebook
+Lavagna\tBlackboard
+Globo\tGlobe
+Beuta\tFlask
+Lente\tMagnifier
+Orologio\tClock
+Calendario\tCalendar
+Fiore\tFlower
+Albero\tTree
+Corona\tCrown
+Medaglia\tMedal
+Distintivo\tBadge
+Biglietto\tTicket
+Pesce\tFish
+Farfalla\tButterfly
+Orma\tPaw print
+Piccolo · 44 MB · rapido\tSmall · 44 MB · fast
+Medio · 88 MB · bilanciato\tMedium · 88 MB · balanced
+Grande · 176 MB · precisione completa\tLarge · 176 MB · full precision
+Elaborazione\tProcessing
+Il modello viene caricato dalla cache in un processo isolato e rimosso dalla RAM al termine.\tThe model is loaded from cache in an isolated process and removed from RAM when finished.
+Modalità mobile: modello piccolo in un processo isolato; al termine la RAM viene liberata e i file restano nella cache.\tMobile mode: the small model runs in an isolated process; RAM is released when finished and files remain cached.
+1× · leggera\t1× · light
+2× · consigliata\t2× · recommended
+3× · alta\t3× · high
+4× · molto alta\t4× · very high
+Nessuna · ricerca libera\tNone · free search
+Bambini\tChildren
+Animali\tAnimals
+Alfabeto\tAlphabet
+Numeri\tNumbers
+Scienze\tScience
+Natura\tNature
+Trasporti\tTransport
+Cibo\tFood
+Musica\tMusic
+Meteo\tWeather
+Emozioni\tEmotions
+Free / senza abbonamento\tFree / no subscription
+Minima valida\tMinimum valid
+≈ 0,8K lato corto\t≈ 0.8K short side
+1K lato corto\t1K short side
+1,5K lato corto\t1.5K short side
+2K lato corto\t2K short side
+Da prompt\tFrom prompt
+96 dpi · bozza\t96 dpi · draft
+150 dpi · standard\t150 dpi · standard
+200 dpi · nitido\t200 dpi · sharp
+300 dpi · stampa\t300 dpi · print
+Disegna un’area da esportare in PNG, con margine e trasparenza.\tDraw an area to export as PNG, with margin and transparency.
+Il modello viene caricato dalla cache in un processo isolato e rimosso dalla RAM al termine.\tThe model is loaded from cache in an isolated process and removed from RAM when finished.
+L’originale resta invariato; la copia ridotta esiste solo durante la richiesta.\tThe original remains unchanged; the reduced copy exists only during the request.
+Richiama istruzioni ricorrenti, stili e riferimenti conservati nel browser.\tReuse recurring instructions, styles, and references stored in the browser.
+La barra mostra il saldo globale residuo rispetto alla capacità nota (allowance + top-up). Puter scala prima l’allowance mensile, poi i crediti acquistati.\tThe bar shows the total remaining balance against known capacity (allowance + top-up). Puter uses the monthly allowance first, then purchased credits.
+Licenze, contenuti e crediti\tLicenses, content and credits
+Progetti aperti\tOpen projects
+Calcolo memoria e spazio browser…\tCalculating memory and browser storage…
+Prompt riutilizzabili salvati nello storage del browser.\tReusable prompts saved in browser storage.
+Adattamento proporzionale · margine 8%\tProportional fit · 8% margin
+Applica\tApply
+Formato\tFormat
+Snap mm\tSnap mm
+Numero pagina PDF\tPDF page number
+Login, cambio account e logout da Puter sono gestibili nella sezione Generazione immagini AI della sidebar.\tPuter sign-in, account switching, and sign-out are managed in the AI image generation section of the sidebar.
+Output previsto 1024 × 1024 px. Qualità e risoluzione sono indipendenti; i lati sono multipli di 16, rapporto massimo 3:1 e limite 3840 px / 8.294.400 pixel.\tExpected output 1024 × 1024 px. Quality and resolution are independent; sides are multiples of 16, the maximum aspect ratio is 3:1, and the limits are 3840 px / 8,294,400 pixels.
+Modello e runtime vengono salvati nel browser dopo il primo download. L’avvio richiede comunque il caricamento in memoria. La cache può essere rimossa dal browser se lo spazio scarseggia.\tThe model and runtime are saved in the browser after the first download. Startup still requires loading them into memory. The browser may remove the cache when storage is low.
+2,100 famiglie incorporate · nessuna richiesta all’API Fontsource.\t2,100 embedded families · no Fontsource API request.
+Snap, guide e proporzioni\tSnapping, guides, and proportions
+Scegli dal canvas il colore per strokeColor\tPick the text colour from the canvas
+Scegli dal canvas il colore per emojiInk\tPick the emoji colour from the canvas
+Cronologia modifiche\tEdit history
+Apri in nuova scheda\tOpen in new tab
+Indirizzo dell’immagine\tImage address
+Usa Puter per scaricare l’immagine\tUse Puter to download the image
+Per usare il caricamento tramite Puter effettua il login nella sezione Generazione immagini AI · Puter.\tTo load through Puter, sign in from the AI image generation · Puter section.
+Vai al login\tGo to sign-in
+Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare Incolla immagine dagli appunti.\tDirect loading is free, but some sites block it. Puter uses account bandwidth or allowance. You can also copy the image from the site and use Paste image from clipboard.
+Come usarla senza Puter\tHow to use it without Puter
+Puoi salvarla sul dispositivo. In alternativa apri l’immagine grande, usa il comando del browser Copia immagine, torna in chicCanva e premi Ctrl+V oppure Incolla speciale.\tYou can save it to your device. Alternatively, open the large image, use the browser’s Copy image command, return to chicCanva, and press Ctrl+V or Paste special.
+Per inserire tramite Puter effettua il login nella sezione Generazione immagini AI · Puter.\tTo insert through Puter, sign in from the AI image generation · Puter section.
+Accesso Puter richiesto\tPuter sign-in required
+Fattore di scala\tScale factor
+Qualità / compressione PNG\tPNG quality / compression
+Tag\tTags
+Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0;\tFabric.js 5.1.0 and jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla and contributors. ONNX Runtime Web 1.21.0: MIT and related notices. IMG.LY background-removal 1.7.0: AGPL-3.0;
+sorgente e licenza\tsource and license
+. OpenMoji 17: grafica CC BY-SA 4.0, HfG Schwäbisch Gmünd e collaboratori; codice OpenMoji LGPL-3.0 dove applicabile. Le opere pubblicate su Openclipart sono indicate dal progetto come pubblico dominio/CC0 1.0. Puter.js e i servizi Puter, inclusa la traduzione opzionale con Gemma 4 31B, seguono le rispettive licenze e condizioni del servizio. Fontsource, Google Fonts e ogni famiglia tipografica conservano la propria licenza.\t. OpenMoji 17: artwork under CC BY-SA 4.0, HfG Schwäbisch Gmünd and contributors; OpenMoji code under LGPL-3.0 where applicable. Works published on Openclipart are identified by the project as public domain/CC0 1.0. Puter.js and Puter services, including optional translation with Gemma 4 31B, follow their respective licences and terms of service. Fontsource, Google Fonts, and each font family retain their own licence.
+Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare\tDirect loading is free, but some sites block it. Puter uses account bandwidth or allowance. You can also copy the image from the site and use
+Puoi salvarla sul dispositivo. In alternativa apri l’immagine grande, usa il comando del browser\tYou can save it to your device. Alternatively, open the large image and use the browser’s
+, torna in chicCanva e premi Ctrl+V oppure Incolla speciale.\tcommand, then return to chicCanva and press Ctrl+V or Paste special.
+Quadrata · 210×210\tSquare · 210×210
+Faccine ed emozioni\tSmileys and emotions
+Persone e corpo\tPeople and body
+Componenti e varianti\tComponents and variants
+Animali e natura\tAnimals and nature
+Cibo e bevande\tFood and drink
+Viaggi e luoghi\tTravel and places
+Simboli\tSymbols
+Bandiere\tFlags
+Extra OpenMoji\tExtra OpenMoji
+Extra Unicode\tExtra Unicode
+Contorni spessi\tBold outlines
+Contorni delicati\tDelicate outlines
+Fumetto a colori\tColour comic
+Clipart educativa\tEducational clipart
+Pastello\tPastel
+Geometrico\tGeometric
+Acquerello semplice\tSimple watercolour
+Accedi a Puter per la traduzione AI\tSign in to Puter for AI translation
+← Precedente\t← Previous
+Successiva →\tNext →
+Pensiero\tThought bubble
+Freccia piena\tSolid arrow
+Doppia piena\tSolid double arrow
+Su / giù\tUp / down
+Linea freccia\tArrow line
+Linea doppia\tDouble arrow line
+Mano liscia\tSmooth freehand
+Mano raw\tRaw freehand
+Rigenera\tRegenerate
+Righe\tStripes
+Pois\tDots
+Quadretti\tChecks
+Griglia\tGrid
+Onde\tWaves
+Coriandoli\tConfetti
+Tratteggio\tHatching
+Mattoncini\tBricks
+Zig zag\tZigzag
+Rombi\tDiamonds
+Nido d’ape\tHoneycomb
+Codette\tSprinkles
+Stelline\tLittle stars
+Scaglie\tScales
+Tessuto\tFabric
+CANC\tDelete
 `.trim().split('\n').filter(Boolean).map(line=>{const i=line.indexOf('\t');return[line.slice(0,i),line.slice(i+1)]}));
 
 const I18N_PATTERNS=[
@@ -538,7 +856,7 @@ const I18N_PATTERNS=[
  [/^Usato (.+)$/,'Used $1'],[/^Residuo (.+)$/,'Remaining $1'],[/^Disponibile (.+)$/,'Available $1'],
  [/^Pagina (\d+)(.*)$/,'Page $1$2'],[/^Progetto (\d+)(.*)$/,'Project $1$2'],
  [/^(\d+) pagine$/,'$1 pages'],[/^(\d+) oggetti$/,'$1 objects'],[/^(\d+) assets?$/,'$1 assets'],
- [/^Salvato alle (.+)$/,'Saved at $1'],[/^Ultimo salvataggio: (.+)$/,'Last saved: $1'],
+ [/^Salvato alle (.+)$/,'Saved at $1'],[/^Ultimo salvataggio: (.+) · (\d+) progetti\.$/,'Last saved: $1 · $2 projects.'],[/^Ultimo salvataggio: (.+)$/,'Last saved: $1'],
  [/^Aggiornato (.+)$/,'Updated $1'],[/^Prezzi Puter aggiornati (.+)$/,'Puter prices updated $1'],[/^Prezzi Puter salvati (.+)$/,'Saved Puter prices $1'],
  [/^Stima Listino: (.+)$/,'Price-list estimate: $1'],[/^Ultima Gen: (.+)$/,'Last generation: $1'],
  [/^Font selezionato: (.+)$/,'Selected font: $1'],[/^(\d[\d.]*) famiglie incorporate(.*)$/,'$1 embedded families$2'],
@@ -547,6 +865,21 @@ const I18N_PATTERNS=[
  [/^Asset nei progetti: (.+) · bitmap pagina attiva: (.+)$/,'Project assets: $1 · active-page bitmap: $2'],
  [/^Spazio browser: (.+)$/,'Browser storage: $1'],
  [/^(.+) · doppio clic o clic destro per rinominare$/,'$1 · double-click or right-click to rename']
+ ,[/^(\d[\d.,]*) famiglie$/,'$1 families']
+ ,[/^Invio: (\d+) × (\d+) px\. L’originale resta invariato; la copia ridotta esiste solo durante la richiesta\.$/,'Sent: $1 × $2 px. The original remains unchanged; the reduced copy exists only during the request.']
+ ,[/^Usati? ([\d.,]+) crediti(.*)$/i,'Used $1 credits$2']
+ ,[/^Disponibile ([\d.,]+)% · ([\d.,]+) crediti(.*)$/i,'Available $1% · $2 credits$3']
+ ,[/^(.*?)([\d.,]+) crediti(.*)$/i,'$1$2 credits$3']
+ ,[/^Scegli dal canvas il colore per (.+)$/,'Pick $1 from the canvas']
+ ,[/^(Last saved: .+ · \d+) progetti\.$/,'$1 projects.']
+ ,[/^Match curato · colorabile (\d+) · forma (\d+) · artistico (\d+) · bordo suggerito (.+)\.$/,'Curated match · colorability $1 · shape $2 · artistic $3 · suggested outline $4.']
+ ,[/^Mostra altri \((.+)\)$/,'Show more ($1)']
+ ,[/^Mostra altre (\d+)$/,'Show $1 more']
+ ,[/^(\d+) di (\d+) emoji · ricerca globale(.*)$/,'$1 of $2 emoji · global search$3']
+ ,[/^(\d+) di (\d+) emoji(.*)$/,'$1 of $2 emoji$3']
+ ,[/^Rimuovi tag (.+)$/,'Remove tag $1']
+ ,[/^Output previsto (\d+) × (\d+) px\. Qualità e risoluzione sono indipendenti; i lati sono multipli di 16, rapporto massimo 3:1 e limite 3840 px \/ 8\.294\.400 pixel\.$/,'Expected output $1 × $2 px. Quality and resolution are independent; sides are multiples of 16, the maximum aspect ratio is 3:1, with limits of 3840 px / 8,294,400 pixels.']
+ ,[/^Output previsto (\d+) × (\d+) px\. $/,'Expected output $1 × $2 px. ']
 ];
 const I18N_SKIP_SELECTOR='script,style,template,textarea,input,[contenteditable="true"],[data-i18n-ignore],#projectTabs,#pageSelect,#customPageName,#pageCaption,#customPageChips,#previewGrid,#fontResults,#emojiGrid,#clipartResults,#promptLibraryItems,#promptEntryPrompt,#promptEntryTitle,#promptEntryDescription,#promptEntryTags,#aiPrompt,#textInput,#specialText';
 const i18nOriginalText=new WeakMap(),i18nLastText=new WeakMap(),i18nOriginalAttrs=new WeakMap(),i18nLastAttrs=new WeakMap();
@@ -559,17 +892,21 @@ function localizedCopySuffix(){return appLanguage==='it'?' copia':' copy'}
 function localizedRecoveredProjectName(){return appLanguage==='it'?'Progetto recuperato':'Recovered project'}
 function localizedSpecialProjectName(explicit,text){return(appLanguage==='it'?(explicit?'Gruppi':'Lettere'):(explicit?'Groups':'Letters'))+' · '+text.slice(0,35)}
 function t(value){if(appLanguage!=='en'||value===null||value===undefined)return String(value??'');const source=String(value),exact=I18N_EN[source];if(exact!==undefined)return exact;for(const[pattern,replacement]of I18N_PATTERNS)if(pattern.test(source))return source.replace(pattern,replacement);return source}
+function setLocalizedText(element,italianSource){if(!element)return;const source=String(italianSource??''),next=appLanguage==='en'?t(source):source;i18nApplying=true;element.textContent=next;i18nApplying=false;const node=element.firstChild;if(node?.nodeType===Node.TEXT_NODE){i18nOriginalText.set(node,source);i18nLastText.set(node,next)}return next}
+function setLocalizedTextParts(element,...italianParts){if(!element)return;const parts=italianParts.map(part=>String(part??'')),source=parts.join(''),next=appLanguage==='en'?parts.map(t).join(''):source;i18nApplying=true;element.textContent=next;i18nApplying=false;const node=element.firstChild;if(node?.nodeType===Node.TEXT_NODE){i18nOriginalText.set(node,source);i18nLastText.set(node,next)}return next}
+function setLocalizedAttribute(element,name,italianSource){if(!element)return;const source=String(italianSource??''),next=appLanguage==='en'?t(source):source;let originals=i18nOriginalAttrs.get(element),last=i18nLastAttrs.get(element);if(!originals){originals={};i18nOriginalAttrs.set(element,originals)}if(!last){last={};i18nLastAttrs.set(element,last)}originals[name]=source;last[name]=next;i18nApplying=true;element.setAttribute(name,next);i18nApplying=false;return next}
+function localizedAttributeSource(element,name){return i18nOriginalAttrs.get(element)?.[name]??element?.getAttribute(name)??''}
 function i18nSkipped(node){return node.parentElement?.closest(I18N_SKIP_SELECTOR)}
 function translateTextNode(node){if(!node?.parentElement||i18nSkipped(node))return;const current=node.nodeValue;if(!i18nForce&&i18nLastText.get(node)===current)return;let source=i18nOriginalText.get(node);if(source===undefined||(!i18nForce&&current!==i18nLastText.get(node))){source=current;i18nOriginalText.set(node,source)}const leading=source.match(/^\s*/)?.[0]||'',trailing=source.match(/\s*$/)?.[0]||'',core=source.trim();if(!core)return;const next=appLanguage==='it'?source:leading+t(core)+trailing;i18nApplying=true;node.nodeValue=next;i18nLastText.set(node,next);i18nApplying=false}
-function translateAttributes(element){if(element.matches?.(I18N_SKIP_SELECTOR))return;const names=['title','aria-label','placeholder','alt','data-tip'];let originals=i18nOriginalAttrs.get(element),last=i18nLastAttrs.get(element);if(!originals){originals={};i18nOriginalAttrs.set(element,originals)}if(!last){last={};i18nLastAttrs.set(element,last)}for(const name of names){const current=element.getAttribute?.(name);if(current===null)continue;if(!(name in originals)||current!==last[name])originals[name]=current;const next=appLanguage==='it'?originals[name]:t(originals[name]);if(current!==next){i18nApplying=true;element.setAttribute(name,next);i18nApplying=false}last[name]=next}}
+function translateAttributes(element){if(element.closest?.('[data-i18n-ignore]'))return;const names=['title','aria-label','placeholder','alt','data-tip'];let originals=i18nOriginalAttrs.get(element),last=i18nLastAttrs.get(element);if(!originals){originals={};i18nOriginalAttrs.set(element,originals)}if(!last){last={};i18nLastAttrs.set(element,last)}for(const name of names){const current=element.getAttribute?.(name);if(current===null)continue;if(!(name in originals)||current!==last[name])originals[name]=current;const next=appLanguage==='it'?originals[name]:t(originals[name]);if(current!==next){i18nApplying=true;element.setAttribute(name,next);i18nApplying=false}last[name]=next}}
 function translateSubtree(root=document.body){if(!root)return;if(root.nodeType===Node.TEXT_NODE){translateTextNode(root);return}if(root.nodeType!==Node.ELEMENT_NODE&&root!==document.body)return;if(root!==document.body)translateAttributes(root);for(const element of root.querySelectorAll?.('*')||[])translateAttributes(element);const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode())translateTextNode(node)}
 function syncLanguagePickers(){for(const picker of document.querySelectorAll('[data-language-picker]')){const flag=picker.querySelector('[data-language-flag]');flag.classList.toggle('flag-it',appLanguage==='it');flag.classList.toggle('flag-gb',appLanguage==='en');const name=picker.querySelector('[data-language-name]');if(name)name.textContent=appLanguage==='it'?'Italiano':'English';for(const button of picker.querySelectorAll('[data-language]'))button.setAttribute('aria-checked',String(button.dataset.language===appLanguage))}}
 function swapLocalizedGuide(){const content=$('helpLayer')?.querySelector('.help-content');if(!content)return;if(!globalThis.CHICCANVA_HELP_IT)globalThis.CHICCANVA_HELP_IT=content.innerHTML;const html=appLanguage==='en'?globalThis.CHICCANVA_HELP_EN:globalThis.CHICCANVA_HELP_IT;if(html&&content.innerHTML!==html){i18nApplying=true;content.innerHTML=html;i18nApplying=false}}
 function syncSearchTranslationLanguage(){const italian=appLanguage==='it',saved=localStorage.getItem(TRANSLATION_PREFERENCE_KEY),preferred=saved===null?true:saved==='true';for(const id of ['emojiTranslate','clipartTranslate']){const input=$(id);if(!input)continue;input.closest('label')?.classList.toggle('hidden',!italian);input.disabled=!italian;input.checked=italian&&preferred}for(const node of document.querySelectorAll('[data-puter-translation-hint],[data-translation-cache-control]'))node.classList.toggle('language-hidden',!italian);if(typeof syncEmojiSearchMode==='function')syncEmojiSearchMode()}
-function applyLanguage(language,{persist=true,syncFeatures=true,reveal=true}={}){appLanguage=SUPPORTED_LANGUAGES.includes(language)?language:'en';if(persist)localStorage.setItem(LANGUAGE_STORAGE_KEY,appLanguage);document.documentElement.lang=appLanguage;document.title=appLanguage==='it'?'chicCanva · Piccole idee, grandi progetti':'chicCanva · Small ideas, big projects';const manifest=document.querySelector('link[rel="manifest"]');if(manifest){const version=new URL(manifest.href,location.href).search;manifest.href=(appLanguage==='en'?'./chicCanva-en.webmanifest':'./chicCanva.webmanifest')+version}swapLocalizedGuide();i18nForce=true;translateSubtree(document.body);i18nForce=false;syncLanguagePickers();if(syncFeatures)syncSearchTranslationLanguage();if(reveal){document.documentElement.classList.remove('i18n-boot');document.documentElement.style.removeProperty('visibility')}document.dispatchEvent(new CustomEvent('chiccanva:languagechange',{detail:{language:appLanguage,locale:appLocale()}}));return appLanguage}
+function applyLanguage(language,{persist=true,syncFeatures=true,reveal=true}={}){appLanguage=SUPPORTED_LANGUAGES.includes(language)?language:'en';if(persist)localStorage.setItem(LANGUAGE_STORAGE_KEY,appLanguage);document.documentElement.lang=appLanguage;document.title=appLanguage==='it'?'chicCanva · Piccole idee, grandi progetti':'chicCanva · Small ideas, big projects';const manifest=document.querySelector('link[rel="manifest"]');if(manifest){const version=new URL(manifest.href,location.href).search;manifest.href=(appLanguage==='en'?'./chicCanva-en.webmanifest':'./chicCanva.webmanifest')+version}swapLocalizedGuide();i18nForce=true;translateSubtree(document.body);i18nForce=false;syncLanguagePickers();if(syncFeatures)syncSearchTranslationLanguage();if(typeof workspaceReady!=='undefined'&&workspaceReady){renderProjectTabs?.();localizeWorkspaceQuickJump?.();renderFontCategories?.();renderEmojiGrid?.();syncReferenceUI?.();updateAiOutputHelp?.();refreshPuterUsage?.(true);updateAiEstimate?.();renderPromptLibrary?.()}if(reveal){document.documentElement.classList.remove('i18n-boot');document.documentElement.style.removeProperty('visibility')}document.dispatchEvent(new CustomEvent('chiccanva:languagechange',{detail:{language:appLanguage,locale:appLocale()}}));return appLanguage}
 function closeLanguageMenus(){for(const menu of document.querySelectorAll('.language-menu'))menu.classList.add('hidden');for(const button of document.querySelectorAll('[data-language-trigger]'))button.setAttribute('aria-expanded','false')}
 function setupLanguagePicker(){if(i18nPickerReady)return;i18nPickerReady=true;for(const button of document.querySelectorAll('.quick-jump button'))button.dataset.i18nKey=button.textContent.trim();for(const picker of document.querySelectorAll('[data-language-picker]')){const trigger=picker.querySelector('[data-language-trigger]'),menu=picker.querySelector('.language-menu');trigger.onclick=event=>{event.stopPropagation();const opening=menu.classList.contains('hidden');closeLanguageMenus();menu.classList.toggle('hidden',!opening);trigger.setAttribute('aria-expanded',String(opening))};for(const button of menu.querySelectorAll('[data-language]'))button.onclick=()=>{applyLanguage(button.dataset.language);closeLanguageMenus();toast(appLanguage==='it'?'Lingua impostata: Italiano':'Language set: English')}}document.addEventListener('pointerdown',event=>{if(!event.target.closest('[data-language-picker]'))closeLanguageMenus()});for(const id of ['emojiTranslate','clipartTranslate'])$(id)?.addEventListener('change',event=>{if(appLanguage==='it')localStorage.setItem(TRANSLATION_PREFERENCE_KEY,String(event.currentTarget.checked))});i18nObserver=new MutationObserver(records=>{if(i18nApplying)return;for(const record of records){if(record.type==='characterData')translateTextNode(record.target);else if(record.type==='attributes')translateAttributes(record.target);else for(const node of record.addedNodes)translateSubtree(node)}});i18nObserver.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder','alt','data-tip']});syncLanguagePickers()}
 function preferredInitialLanguage(){let saved=null;try{saved=localStorage.getItem(LANGUAGE_STORAGE_KEY)}catch(error){}if(SUPPORTED_LANGUAGES.includes(saved))return saved;let intlLocale='';try{intlLocale=Intl.DateTimeFormat().resolvedOptions().locale}catch(error){}return browserPrefersItalian(navigator.languages,navigator.language,intlLocale)?'it':'en'}
 const i18nBaseInit=init;init=async function(){appLanguage=preferredInitialLanguage();setupLanguagePicker();applyLanguage(appLanguage,{persist:true,syncFeatures:false,reveal:true});await i18nBaseInit();applyLanguage(appLanguage,{persist:false,syncFeatures:true,reveal:true})};
 const i18nBaseClearAllMemory=clearAllMemory;clearAllMemory=async function(){await i18nBaseClearAllMemory();localStorage.removeItem(LANGUAGE_STORAGE_KEY);localStorage.removeItem(TRANSLATION_PREFERENCE_KEY)};
-globalThis.t=t;globalThis.appLocale=appLocale;globalThis.applyLanguage=applyLanguage;globalThis.browserPrefersItalian=browserPrefersItalian;globalThis.localizedProjectName=localizedProjectName;globalThis.localizedPageName=localizedPageName;
+globalThis.t=t;globalThis.setLocalizedText=setLocalizedText;globalThis.setLocalizedTextParts=setLocalizedTextParts;globalThis.setLocalizedAttribute=setLocalizedAttribute;globalThis.localizedAttributeSource=localizedAttributeSource;globalThis.appLocale=appLocale;globalThis.applyLanguage=applyLanguage;globalThis.browserPrefersItalian=browserPrefersItalian;globalThis.localizedProjectName=localizedProjectName;globalThis.localizedPageName=localizedPageName;

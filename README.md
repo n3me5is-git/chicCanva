@@ -59,7 +59,7 @@ La build pubblicabile include nome applicazione, descrizione, metadati Open Grap
 
 La build incorpora Fabric.js, jsPDF, PDF.js con worker, cataloghi font/OpenMoji e runtime IMG.LY/ONNX nell'HTML. I file grandi o variabili, come font scelti, SVG OpenMoji, modelli di segmentazione e servizi Puter/Openclipart, vengono richiesti quando servono. Lo stato modificabile usa descrittori di pagina e oggetto più un registro asset serializzato come Data URL. Il Colorizer mantiene nel canvas una sola immagine derivata e conserva la sorgente come descrittori e dipendenze degli asset, incluse nella raccolta degli asset raggiungibili.
 
-Il flusso runtime è descritto nei dettagli in [Architettura tecnica](docs/TECHNICAL_ARCHITECTURE.md) e [Funzioni e processi](docs/FEATURES_AND_PROCESSES.md).
+Il flusso runtime è descritto nei dettagli in [Architettura tecnica](docs/TECHNICAL_ARCHITECTURE.md) e [Funzioni e processi](docs/FEATURES_AND_PROCESSES.md). Agenti e contributori automatizzati devono partire da [Agent development guidelines](AGENTS.md), che raccoglie regole operative, soglie di approvazione umana e verifiche per tipologia di modifica.
 
 ## Modificare e generare le build
 
@@ -76,7 +76,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera entrambe le guide interne e le due guide HTML autonome, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica e incorpora entrambe le lingue. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali; ogni riferimento locale riceve l'ID della build per impedire che cache HTTP e service worker mescolino revisioni diverse. La release corrente è **1.12.5**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera entrambe le guide interne e le due guide HTML autonome, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica e incorpora entrambe le lingue. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali; ogni riferimento locale riceve l'ID della build per impedire che cache HTTP e service worker mescolino revisioni diverse. La release corrente è **1.12.13**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -128,7 +128,7 @@ Con Gruppi espliciti, `^` definisce la suddivisione. `questa^è una^prova` crea 
 ## Immagini e AI
 
 - Upload da file, appunti o URL, crop non distruttivo con anteprima traslucida dell’intera sorgente, reset senza deformazioni, ridimensionamento, rotazione e asset serializzati nel JSON.
-- Il riquadro dell’immagine selezionata mostra pixel originali/visibili, peso compresso, RAM bitmap stimata, dimensione sul foglio e DPI effettivi. Può copiare il sorgente completo o, se presente, il crop visibile alla sua risoluzione nativa. **Cambia risoluzione** sostituisce quell’oggetto a ¼×, ⅓×, ½×, 2×, 3× o 4×, mantenendo dimensione fisica, posizione e crop; le riduzioni usano più passaggi di ricampionamento ad alta qualità.
+- Il riquadro dell’immagine selezionata mostra pixel originali/visibili, peso compresso, RAM bitmap stimata, dimensione sul foglio e DPI effettivi. Può copiare il sorgente completo o, se presente, il crop visibile alla sua risoluzione nativa. **Cambia qualità** sostituisce quell’oggetto con un fattore da ¼× a 4×, incluso 1×, mantenendo dimensione fisica, posizione e crop; le riduzioni usano più passaggi di ricampionamento ad alta qualità e l’ottimizzazione PNG viene applicata separatamente dopo il ridimensionamento.
 - Importazione PDF completamente locale: pagina specifica o tutte, nuovo progetto o append, pagine A4 con orientamento automatico/verticale/orizzontale e PNG a qualità 1×–3×.
 - Il dialogo URL usa il fetch diretto per impostazione predefinita. **Usa Puter per scaricare l’immagine** abilita esplicitamente `puter.net.fetch()` per i siti che bloccano CORS; il traffico usa banda/quota dell’account Puter secondo il modello user-pays. Se il relay WebSocket Puter non risponde su localhost, il BAT aggiornato ripiega sul proprio downloader PowerShell, limitato alle immagini pubbliche e a 12 MB. La stessa scelta vale per i riferimenti AI.
 - Le immagini copiate da browser o altre applicazioni possono essere incollate dal widget Immagini, dal widget Riferimento AI, dalla toolbar Incolla speciale o con Ctrl+V quando il browser consente l’accesso agli appunti.

@@ -126,7 +126,7 @@ Root and local-server HTML must be byte-identical and monolithic. The PWA is gen
 
 ## Last validated state
 
-The current release line is 1.12.3. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
+The current release line is 1.12.13. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
 
 - Puter fetch checkboxes remain disabled and unchecked until the AI section reports an active Puter session. Login links navigate to that section; they must never open nested dialogs.
 

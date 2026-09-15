@@ -26,9 +26,13 @@ An inline bootstrap in the document head selects `html[lang]` before the body ca
 t('Pagina corrente'); // "Current page" when English is active
 appLocale();          // "it-IT" or "en-GB"
 applyLanguage('en');  // UI, guide, manifest, and persisted preference
+
+setLocalizedText(status, 'Operazione completata');
+setLocalizedTextParts(counter, 'Pagina', ' ', pageNumber);
+setLocalizedAttribute(button, 'data-tip', 'Incolla oggetti · Ctrl+V');
 ```
 
-The exact catalogue is in `I18N_EN`. Narrow patterns cover values such as page counts, credits, timestamps, and generated labels. Original and translated text are tracked in `WeakMap` instances so an `en → it` switch restores the source. Editable and user-owned regions are excluded.
+The exact catalogue is in `I18N_EN`. Narrow patterns cover values such as page counts, credits, timestamps, and generated labels. `setLocalizedText()`, `setLocalizedTextParts()`, and `setLocalizedAttribute()` bind rerendered content to its canonical Italian source instead of treating the currently displayed language as the source. Original and translated text are tracked in `WeakMap` instances so an `en → it` switch restores the source. Editable and user-owned regions are excluded.
 
 ## Selection and persistence
 
@@ -59,12 +63,14 @@ The desktop/server artifact remains one HTML file with both catalogues and guide
 
 1. Design and review the Italian source text.
 2. Add its English equivalent to `I18N_EN`.
-3. Use a narrow pattern or `t()` for dynamic text.
+3. Use the element helpers for rerendered content and attributes; use a narrow pattern or `t()` for composed values.
 4. Keep user-controlled elements in `I18N_SKIP_SELECTOR`.
 5. Update both guide generators and relevant technical docs.
 6. Rebuild and test `it → en → it`.
 
 Do not use visible text as an internal identifier. Use IDs, option values, `data-*` attributes, or stable object keys so translation cannot change behavior.
+
+Do not hardcode a feature-level language conditional for visible UI. Dynamic controls must retain the canonical source and pass through the same catalog as static controls. Language-specific AI prompt material is the intentional exception described above because it is request content rather than an interface identifier.
 
 ## Validation checklist
 

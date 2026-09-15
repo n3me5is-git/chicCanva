@@ -10,7 +10,7 @@
     <div><dt>Risoluzione di stampa</dt><dd id="imagePrintDpi">—</dd></div>
   </dl>
   <div class="row image-inspector-actions hidden" id="imageInspectorActions">
-    <button class="btn grow" id="changeResolutionBtn">Cambia risoluzione</button>
+    <button class="btn grow" id="changeResolutionBtn">Cambia qualità</button>
     <div class="image-copy-control grow" id="imageCopyControl">
       <button class="btn image-copy-trigger" id="imageCopyMenuBtn" type="button" aria-haspopup="menu" aria-expanded="false">Copia immagine <span aria-hidden="true">⌄</span></button>
       <div class="image-copy-actions hidden" id="imageCopyActions" role="menu">
@@ -22,13 +22,17 @@
 </section>
 
 <dialog id="resolutionDialog" class="chic-dialog resolution-dialog">
-  <h2>Cambia risoluzione</h2>
+  <h2>Cambia qualità</h2>
   <p id="resolutionInfo" class="help"></p>
   <label>Fattore di scala
-    <input id="resolutionScale" type="range" min="0" max="5" step="1" value="2" list="resolutionScaleTicks">
+    <input id="resolutionScale" type="range" min="0" max="11" step="1" value="4" list="resolutionScaleTicks">
   </label>
-  <datalist id="resolutionScaleTicks"><option value="0" label="¼×"></option><option value="1" label="⅓×"></option><option value="2" label="½×"></option><option value="3" label="2×"></option><option value="4" label="3×"></option><option value="5" label="4×"></option></datalist>
-  <div class="resolution-choice"><strong id="resolutionScaleLabel">½×</strong><span id="resolutionPreview">—</span></div>
-  <p class="help">La dimensione sulla pagina non cambia. L’upscaling tradizionale aumenta i pixel ma non crea nuovi dettagli.</p>
+  <datalist id="resolutionScaleTicks"><option value="0" label="¼×"></option><option value="2" label="½×"></option><option value="4" label="1×"></option><option value="6" label="1½×"></option><option value="7" label="2×"></option><option value="9" label="3×"></option><option value="11" label="4×"></option></datalist>
+  <div class="resolution-choice"><strong id="resolutionScaleLabel">1×</strong><span id="resolutionPreview">—</span></div>
+  <label>Qualità / compressione PNG
+    <input id="resolutionPngQuality" type="range" min="50" max="100" step="5" value="100">
+  </label>
+  <div class="resolution-choice"><strong id="resolutionPngQualityLabel">100%</strong><span id="resolutionCompressionHint">Colori originali</span></div>
+  <p class="help">La dimensione sulla pagina non cambia. L’upscaling tradizionale aumenta i pixel ma non crea nuovi dettagli. A 100% i colori restano invariati; valori inferiori riducono gradualmente la precisione cromatica per alleggerire il PNG, mantenendo la trasparenza.</p>
   <div class="dialog-actions"><button class="btn" id="resolutionCancel">Annulla</button><button class="btn accent" id="resolutionConfirm">Sostituisci immagine</button></div>
 </dialog>

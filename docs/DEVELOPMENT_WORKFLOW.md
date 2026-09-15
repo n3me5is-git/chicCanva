@@ -1,5 +1,7 @@
 # Development workflow
 
+Coding agents must first read the repository-level [`AGENTS.md`](../AGENTS.md). It turns the architecture and workflow described here into feature-specific implementation rules, risk and approval gates, bilingual UI requirements, canvas safeguards, and a validation matrix.
+
 ## 1. Prerequisites
 
 The shipped application has no install-time dependencies. Maintainers should have:
@@ -43,7 +45,7 @@ The historical baseline contains the integrated v6 implementation and vendored d
 
 ```mermaid
 flowchart TD
-    A[Read CONTEXT.md and affected docs] --> B[Locate source with rg]
+    A[Read AGENTS.md, CONTEXT.md and affected docs] --> B[Locate source with rg]
     B --> C[Edit modular source]
     C --> D[Update build-guide.py and technical docs]
     D --> E[Add or update meaningful browser/static check]

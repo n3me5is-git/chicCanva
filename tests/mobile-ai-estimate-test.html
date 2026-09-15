@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Mobile AI estimate layout</title>
+  <style>
+    body{margin:0;padding:16px;background:#eef4f1;font-family:Arial,sans-serif}
+    iframe{display:block;width:390px;height:500px;border:0;background:#fff}
+    pre{white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <iframe id="mobile" title="Mobile layout test"></iframe>
+  <pre id="result">RUNNING</pre>
+  <script>
+    const frame=document.getElementById('mobile');
+    frame.srcdoc=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../development/ai-generation.css"><style>body{margin:0;padding:12px;font:16px Arial;color:#173d36}.ai-cost-estimate{box-sizing:border-box;width:100%;padding:16px;border:1px solid #cbdcd5;border-radius:16px}.ai-last-generation{display:block}.ai-pricing-meta{margin-top:12px}</style></head><body><div class="ai-cost-estimate"><div class="ai-cost-main"><strong>Stima Consumo</strong><span id="value"><span class="ai-estimate-mainline">Ultima Gen: 18 crediti</span><span class="ai-estimate-usd">US$ 0,009</span></span></div><small class="ai-last-generation">Stima Listino: ~ 14 crediti · US$ 0,007</small><small class="estimate-detail" id="detail">output ~12 crediti · testo ~1 crediti · riferimento ~2 crediti<br>output ~1024 × 1024 px · prompt complessivo ~67 token · riferimento 442 × 191 px · confidenza medium<br>Output OpenAI: formula ufficiale basata su griglia qualità e dimensioni.</small><div class="ai-pricing-meta">Prezzi Puter salvati</div></div></body></html>`;
+    frame.addEventListener('load',()=>{
+      const d=frame.contentDocument,heading=d.querySelector('.ai-cost-main strong'),value=d.getElementById('value'),main=d.querySelector('.ai-estimate-mainline'),usd=d.querySelector('.ai-estimate-usd'),detail=d.getElementById('detail'),mainBox=d.querySelector('.ai-cost-main');
+      const h=heading.getBoundingClientRect(),v=value.getBoundingClientRect(),m=main.getBoundingClientRect(),u=usd.getBoundingClientRect(),x=detail.getBoundingClientRect(),b=mainBox.getBoundingClientRect(),style=d.defaultView.getComputedStyle(value);
+      const checks={aligned:Math.abs(h.top-v.top)<1,usdOnNextLine:u.top>=m.bottom-0.5,usdRightAligned:Math.abs(u.right-v.right)<1,noOverlap:x.top>=b.bottom,rightJustified:style.textAlign==='right'};
+      const passed=Object.values(checks).every(Boolean);document.getElementById('result').textContent=JSON.stringify({passed,checks,rects:{heading:h.toJSON(),value:v.toJSON(),main:m.toJSON(),usd:u.toJSON(),detail:x.toJSON(),mainBox:b.toJSON()}},null,2);document.title=passed?'MOBILE AI LAYOUT COMPLETE':'MOBILE AI LAYOUT ERROR';
+    });
+  </script>
+</body>
+</html>
