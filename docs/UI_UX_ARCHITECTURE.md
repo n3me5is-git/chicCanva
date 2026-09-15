@@ -1,5 +1,7 @@
 # UI and UX architecture
 
+The complete project strip, including the trailing New Project action, scrolls horizontally as one unit on narrow screens. Project labels have a bounded visual width and use ellipsis on desktop and mobile while preserving the full stored name and tooltip.
+
 ## 1. Audience and interaction goals
 
 The primary user is a teacher preparing printable material, often without design-software training and sometimes on a phone or tablet. The interface therefore favors recognizable actions, reversible editing, preserved originals, contextual widgets, and print-oriented terminology. Advanced capabilities remain available without requiring the user to understand the internal object or asset model.
@@ -9,7 +11,7 @@ Core UX principles:
 1. **The page is the center of attention.** Controls should not cover a fitted page.
 2. **One visible task at a time.** Sidebar sections start collapsed and “expand one section” is the default.
 3. **Operations are explicit.** Puter generation, assisted download, project replacement, and destructive actions require a clear user action.
-4. **Touch navigation is direct.** Two fingers zoom around their midpoint and pan in the same gesture while object editing is temporarily suspended.
+4. **Touch navigation is direct.** Two fingers zoom around their midpoint and pan in the same gesture while object editing is temporarily suspended. Pinch start rolls back any transform or temporary action begun by the first finger and blocks Colorizer, shape drawing, export-region drawing, and eyedropper sampling until every touch is released.
 4. **Derived image workflows preserve the source.** Crop is reversible; grayscale, outline, and background removal create copies.
 5. **View and output are separate.** Zoom, pan, grid, guides, and selection boxes never alter physical output.
 6. **Mobile uses the same document model.** Layout changes, while projects and exports remain compatible.

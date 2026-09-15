@@ -157,6 +157,16 @@ Porta avanti\tBring forward
 Porta indietro\tSend backward
 Porta davanti ↑\tBring to front ↑
 Porta dietro ↓\tSend to back ↓
+Sposta sopra\tMove above
+Sposta sotto\tMove below
+Sposta in cima\tMove to top
+Sposta in fondo\tMove to bottom
+Sposta in cima ↑\tMove to top ↑
+Sposta in fondo ↓\tMove to bottom ↓
+Opzioni sposta sopra\tMove above options
+Opzioni sposta sotto\tMove below options
+Sposta la selezione avanti di un livello. Clic destro o pressione prolungata per altre opzioni.\tMove the selection forward by one level. Right-click or long-press for more options.
+Sposta la selezione indietro di un livello. Clic destro o pressione prolungata per altre opzioni.\tMove the selection backward by one level. Right-click or long-press for more options.
 Rotazione e riflessione\tRotation and flip
 Azzera rotazione\tReset rotation
 Ruota 90° a destra\tRotate 90° right

@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Puter GPT-Image 2.5 Sunburst — Annotation & Extra Params Probe</title>
+  <script src="https://js.puter.com/v2/"></script>
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg:#0c1016;
+      --panel:#141a23;
+      --panel2:#0f141c;
+      --border:#293242;
+      --text:#e8edf6;
+      --muted:#9da9ba;
+      --accent:#7aa2ff;
+      --danger:#ff6b6b;
+      --ok:#58d68d;
+      --warn:#f6c85f;
+      --shadow:0 14px 40px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{padding:14px}
+    button,input,select,textarea{font:inherit}
+    button{
+      border:1px solid var(--border);background:#1b2430;color:var(--text);
+      border-radius:9px;padding:8px 11px;cursor:pointer
+    }
+    button:hover{background:#232e3c}
+    button.primary{background:#315fd3;border-color:#4773dd}
+    button.primary:hover{background:#3a68dd}
+    button.danger{color:#ffdede;border-color:#6f3434}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    input,select,textarea{
+      width:100%;border:1px solid var(--border);background:#0d131b;color:var(--text);
+      border-radius:8px;padding:8px
+    }
+    textarea{resize:vertical;min-height:68px}
+    code,kbd{background:#0a0f15;border:1px solid #202837;border-radius:5px;padding:1px 5px}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:19px;margin-bottom:3px}
+    h2{font-size:15px;margin-bottom:10px}
+    h3{font-size:13px;margin-bottom:7px;color:#ced8e8}
+    .app{max-width:1680px;margin:0 auto}
+    .topbar{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:11px 13px;background:var(--panel);border:1px solid var(--border);
+      border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow)
+    }
+    .topbar .sub{color:var(--muted);font-size:12px}
+    .top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .badge{border:1px solid var(--border);background:#0e141c;border-radius:999px;padding:5px 9px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:300px minmax(420px,1fr) 390px;gap:12px;align-items:start}
+    .panel{
+      background:var(--panel);border:1px solid var(--border);border-radius:12px;
+      padding:12px;box-shadow:var(--shadow)
+    }
+    .sticky{position:sticky;top:12px}
+    .row{display:flex;gap:8px;align-items:center}
+    .row>*{min-width:0}
+    .stack{display:grid;gap:8px}
+    .small{font-size:12px;color:var(--muted)}
+    .toolbar{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+    .toolbar button.active{outline:2px solid var(--accent);background:#263653}
+    .dropzone{
+      border:1px dashed #48566a;border-radius:10px;padding:10px;text-align:center;color:var(--muted);
+      background:#0d131b
+    }
+    .canvas-shell{
+      position:relative;overflow:auto;min-height:560px;max-height:75vh;
+      background:
+        linear-gradient(45deg,#171d25 25%,transparent 25%) 0 0/20px 20px,
+        linear-gradient(45deg,transparent 75%,#171d25 75%) 0 0/20px 20px,
+        linear-gradient(45deg,transparent 75%,#171d25 75%) 10px -10px/20px 20px,
+        linear-gradient(45deg,#171d25 25%,#0f141b 25%) 10px -10px/20px 20px;
+      border:1px solid var(--border);border-radius:10px
+    }
+    .canvas-stage{position:relative;display:inline-block;transform-origin:0 0;line-height:0}
+    canvas{display:block;touch-action:none;user-select:none}
+    #editorCanvas{cursor:crosshair}
+    .empty{
+      position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);
+      pointer-events:none;padding:30px;text-align:center;line-height:1.5
+    }
+    .ann-list{display:grid;gap:8px;max-height:38vh;overflow:auto;padding-right:2px}
+    .ann-card{
+      border:1px solid var(--border);background:var(--panel2);border-radius:9px;padding:8px;
+    }
+    .ann-card.selected{outline:2px solid var(--accent)}
+    .ann-head{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+    .dot{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:white;border:2px solid rgba(255,255,255,.85);font-size:10px}
+    .ann-title{flex:1;font-weight:650}
+    .ann-actions{display:flex;gap:5px}
+    .ann-actions button{padding:3px 7px;border-radius:6px}
+    .split{border-top:1px solid var(--border);margin:11px 0}
+    details{border:1px solid var(--border);border-radius:9px;background:var(--panel2);padding:8px}
+    details+details{margin-top:8px}
+    summary{cursor:pointer;font-weight:650}
+    pre{
+      white-space:pre-wrap;word-break:break-word;background:#091018;border:1px solid #222c3b;
+      padding:9px;border-radius:8px;max-height:240px;overflow:auto;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace
+    }
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .preview{
+      min-height:145px;border:1px solid var(--border);border-radius:9px;background:#0b1118;
+      display:grid;place-items:center;overflow:hidden;position:relative
+    }
+    .preview img,.preview canvas{max-width:100%;max-height:360px;object-fit:contain}
+    .preview .label{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.65);padding:3px 6px;border-radius:5px;font-size:11px}
+    .status-ok{color:var(--ok)} .status-err{color:var(--danger)} .status-warn{color:var(--warn)}
+    .tabs{display:flex;gap:6px;margin-bottom:10px}
+    .tabs button.active{background:#294b9c}
+    .tabpane{display:none}.tabpane.active{display:block}
+    .kv{display:grid;grid-template-columns:105px 1fr;gap:6px 8px;align-items:center}
+    .checkrow{display:flex;gap:8px;align-items:flex-start}
+    .checkrow input{width:auto;margin-top:3px}
+    .footer-note{margin-top:10px;color:var(--muted);font-size:11px}
+    @media(max-width:1180px){
+      .grid{grid-template-columns:270px 1fr}
+      .rightcol{grid-column:1/-1}
+      .sticky{position:static}
+    }
+    @media(max-width:760px){
+      body{padding:7px}.grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}
+      .canvas-shell{min-height:430px}.result-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div>
+      <h1>Puter / GPT‑Image 2.5 Sunburst — Annotation Editor + Extra Params Probe</h1>
+      <div class="sub">Single-file demo. Incolla un'immagine, annotala, genera prompt+overlay+mask e prova parametri Puter documentati/non documentati.</div>
+    </div>
+    <div class="top-actions">
+      <span id="authBadge" class="badge">Puter: verifica…</span>
+      <button id="signInBtn">Sign in Puter</button>
+      <button id="pasteBtn">Leggi clipboard</button>
+      <label>
+        <button type="button" id="fileProxyBtn">Apri file</button>
+        <input id="fileInput" type="file" accept="image/*" hidden>
+      </label>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <aside class="panel sticky">
+      <h2>1. Immagine & annotazioni</h2>
+      <div class="dropzone" id="dropzone">
+        <b>Ctrl/Cmd+V</b> per incollare un'immagine<br>
+        oppure trascina un file qui.
+      </div>
+
+      <div class="split"></div>
+
+      <h3>Strumento</h3>
+      <div class="toolbar" id="toolbar">
+        <button data-tool="select" class="active">↖ Seleziona</button>
+        <button data-tool="circle">● Target</button>
+        <button data-tool="rect">▭ Rettangolo</button>
+        <button data-tool="oval">⬭ Ovale</button>
+      </div>
+      <div class="small" style="margin-top:7px">
+        Trascina per creare. Un click crea la dimensione minima. Seleziona un marker e trascinalo; usa il quadratino sul bordo per ridimensionarlo.
+      </div>
+
+      <div class="split"></div>
+
+      <div class="row">
+        <button id="deleteBtn" class="danger" disabled>Elimina selezionato</button>
+        <button id="clearBtn">Pulisci marker</button>
+      </div>
+
+      <div class="split"></div>
+
+      <h3>Marker</h3>
+      <div id="annList" class="ann-list">
+        <div class="small">Nessuna annotazione.</div>
+      </div>
+
+      <div class="split"></div>
+
+      <div class="stack">
+        <button id="exportAnnotatedBtn">Scarica annotated.png</button>
+        <button id="exportMaskBtn">Scarica mask.png</button>
+        <button id="copyPromptBtn">Copia prompt</button>
+      </div>
+      <div class="footer-note">
+        La mask generata è opaca fuori dai marker e trasparente nelle aree target, cioè nel formato tipico degli image edits OpenAI.
+      </div>
+    </aside>
+
+    <!-- CENTER -->
+    <main class="panel">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <div>
+          <h2 style="margin-bottom:2px">2. Editor</h2>
+          <div id="imageInfo" class="small">Nessuna immagine caricata.</div>
+        </div>
+        <div class="row" style="width:auto">
+          <label class="small">Zoom</label>
+          <select id="zoomSelect" style="width:100px">
+            <option value="auto">Auto min</option>
+            <option value="0.5">50%</option>
+            <option value="0.75">75%</option>
+            <option value="1">100%</option>
+            <option value="1.5">150%</option>
+            <option value="2">200%</option>
+            <option value="3">300%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="canvas-shell" id="canvasShell">
+        <div id="canvasStage" class="canvas-stage">
+          <canvas id="editorCanvas" width="1" height="1"></canvas>
+        </div>
+        <div id="emptyMsg" class="empty">Incolla un'immagine dalla clipboard per iniziare.</div>
+      </div>
+
+      <div class="split"></div>
+
+      <div class="tabs">
+        <button class="active" data-tab="promptTab">Prompt</button>
+        <button data-tab="assetsTab">Asset tecnici</button>
+      </div>
+
+      <section id="promptTab" class="tabpane active">
+        <textarea id="baseInstruction" rows="5">Edit the original image according to the numbered annotations. Image 1 is the clean original. Image 2 is the same image with numbered visual annotations. The visual markers are instructions only and MUST NOT appear in the result. Preserve all unmentioned content, camera, composition, geometry, lighting and identity unless an annotation explicitly requests otherwise.</textarea>
+        <pre id="promptPreview">Carica un'immagine per generare il prompt.</pre>
+      </section>
+
+      <section id="assetsTab" class="tabpane">
+        <div class="result-grid">
+          <div>
+            <h3>Annotated image</h3>
+            <div class="preview"><canvas id="annotatedPreview" width="1" height="1"></canvas></div>
+          </div>
+          <div>
+            <h3>Native-style mask</h3>
+            <div class="preview"><canvas id="maskPreview" width="1" height="1"></canvas></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- RIGHT -->
+    <aside class="panel rightcol">
+      <h2>3. Puter test / editing</h2>
+
+      <div class="kv">
+        <label>Modello</label>
+        <input id="modelInput" value="gpt-image-2.5-sunburst">
+        <label>Qualità</label>
+        <select id="qualitySelect">
+          <option selected>low</option>
+          <option>medium</option>
+          <option>high</option>
+          <option>xhigh</option>
+          <option>max</option>
+          <option>auto</option>
+        </select>
+        <label>Call shape</label>
+        <select id="callShape">
+          <option value="twoargs">txt2img(prompt, options)</option>
+          <option value="object">txt2img({ prompt, ...options })</option>
+        </select>
+        <label>Input mode</label>
+        <select id="inputMode">
+          <option value="semantic" selected>original + annotated overlay</option>
+          <option value="originalOnly">solo original</option>
+          <option value="maskAsThird">original + annotated + mask come 3ª image</option>
+        </select>
+      </div>
+
+      <div class="split"></div>
+
+      <h3>Preset parametri extra</h3>
+      <select id="probePreset">
+        <option value="baseline">Baseline — solo parametri documentati</option>
+        <option value="transparent">background:"transparent" + output_format:"png"</option>
+        <option value="openaiMask">mask:dataURI + background + input_fidelity</option>
+        <option value="maskVariants">mask_image / mask_image_base64 / input_mask</option>
+        <option value="nestedOpenAI">openai:{ background, mask, output_format, input_fidelity }</option>
+        <option value="sizeVariants">width/height + size + ratio</option>
+        <option value="kitchenSink">Kitchen sink — tutte le varianti principali</option>
+      </select>
+
+      <details style="margin-top:8px" open>
+        <summary>Extra JSON personalizzato</summary>
+        <div class="small" style="margin:6px 0">Viene fuso sopra il preset. Usa valori JSON semplici; per la mask usa il token <code>"$MASK_DATA_URL"</code> o <code>"$MASK_BASE64"</code>.</div>
+        <textarea id="customExtras" rows="7">{}</textarea>
+      </details>
+
+      <div class="split"></div>
+
+      <div class="checkrow">
+        <input id="forceTransparentPrompt" type="checkbox">
+        <label for="forceTransparentPrompt">Aggiungi al prompt: “output background must be genuinely transparent, not checkerboard”.</label>
+      </div>
+      <div class="checkrow" style="margin-top:7px">
+        <input id="includeRatio" type="checkbox" checked>
+        <label for="includeRatio">Passa anche <code>ratio:{w,h}</code> con le dimensioni originali.</label>
+      </div>
+
+      <div class="split"></div>
+
+      <div class="stack">
+        <button id="runEditBtn" class="primary">Esegui edit semantico</button>
+        <button id="runProbeBtn">Esegui probe selezionato</button>
+        <button id="runSuiteBtn">Esegui mini-suite (4 chiamate)</button>
+      </div>
+      <div class="small" style="margin-top:7px">
+        Attenzione: i probe reali possono consumare crediti. <code>test_mode</code> non è usato perché non permetterebbe di verificare l'inoltro al provider upstream.
+      </div>
+
+      <div class="split"></div>
+
+      <h3>Risultato</h3>
+      <div id="resultPreview" class="preview">
+        <div class="small">Nessun risultato.</div>
+      </div>
+      <div id="alphaStatus" class="small" style="margin-top:7px">Alpha: —</div>
+      <div class="row" style="margin-top:7px">
+        <button id="downloadResultBtn" disabled>Scarica risultato</button>
+        <button id="clearLogBtn">Pulisci log</button>
+      </div>
+
+      <details style="margin-top:9px" open>
+        <summary>Probe log</summary>
+        <pre id="probeLog">Pronto.</pre>
+      </details>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- DOM ----------
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+  const canvas = $("#editorCanvas");
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  const stage = $("#canvasStage");
+  const shell = $("#canvasShell");
+  const emptyMsg = $("#emptyMsg");
+  const annList = $("#annList");
+  const promptPreview = $("#promptPreview");
+  const annotatedPreview = $("#annotatedPreview");
+  const maskPreview = $("#maskPreview");
+  const probeLog = $("#probeLog");
+  const resultPreview = $("#resultPreview");
+  const alphaStatus = $("#alphaStatus");
+
+  // ---------- State ----------
+  const state = {
+    source: null,          // HTMLImageElement
+    sourceDataURL: null,
+    width: 0,
+    height: 0,
+    annotations: [],
+    selectedId: null,
+    tool: "select",
+    zoom: 1,
+    gesture: null,
+    nextId: 1,
+    lastResultDataURL: null,
+  };
+
+  const palette = [
+    "#ff3b30", "#34c759", "#0a84ff", "#ff9f0a",
+    "#bf5af2", "#32ade6", "#ff2d55", "#64d2ff",
+    "#ffd60a", "#30d158", "#5e5ce6", "#ff453a"
+  ];
+
+  const MIN_SCREEN = {
+    circleDiameter: 54,
+    rectW: 110,
+    rectH: 72,
+    ovalW: 110,
+    ovalH: 72
+  };
+
+  // ---------- Utilities ----------
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  function round(v, n=5){ return Number(v.toFixed(n)); }
+  function normX(x){ return round(x / state.width); }
+  function normY(y){ return round(y / state.height); }
+
+  function safeError(err){
+    if (!err) return "Unknown error";
+    try {
+      if (typeof err === "string") return err;
+      const plain = {};
+      ["message","code","errorCode","status","msg","error"].forEach(k => {
+        if (err[k] !== undefined) plain[k] = err[k];
+      });
+      return Object.keys(plain).length ? JSON.stringify(plain, null, 2) : String(err);
+    } catch { return String(err); }
+  }
+
+  function log(message, kind="info"){
+    const time = new Date().toLocaleTimeString();
+    probeLog.textContent += `\n[${time}] ${kind.toUpperCase()}: ${message}`;
+    probeLog.scrollTop = probeLog.scrollHeight;
+  }
+
+  function downloadDataURL(dataURL, filename){
+    const a = document.createElement("a");
+    a.href = dataURL;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function rawBase64(dataURL){
+    return (dataURL || "").split(",")[1] || "";
+  }
+
+  function deepReplaceTokens(value, maskDataURL){
+    if (Array.isArray(value)) return value.map(v => deepReplaceTokens(v, maskDataURL));
+    if (value && typeof value === "object"){
+      const out = {};
+      for (const [k,v] of Object.entries(value)) out[k] = deepReplaceTokens(v, maskDataURL);
+      return out;
+    }
+    if (value === "$MASK_DATA_URL") return maskDataURL;
+    if (value === "$MASK_BASE64") return rawBase64(maskDataURL);
+    if (value === "$ORIGINAL_DATA_URL") return state.sourceDataURL;
+    return value;
+  }
+
+  function sanitizedForLog(obj){
+    const walk = (v) => {
+      if (typeof v === "string" && v.startsWith("data:image/")){
+        return `[data-url ${Math.round(v.length/1024)} KB]`;
+      }
+      if (typeof v === "string" && v.length > 1200) return `[string ${v.length} chars]`;
+      if (Array.isArray(v)) return v.map(walk);
+      if (v && typeof v === "object"){
+        const o={}; for(const [k,x] of Object.entries(v)) o[k]=walk(x); return o;
+      }
+      return v;
+    };
+    return walk(obj);
+  }
+
+  // ---------- Auth ----------
+  function refreshAuth(){
+    try{
+      const signed = !!(window.puter && puter.auth && puter.auth.isSignedIn());
+      $("#authBadge").textContent = signed ? "Puter: signed in" : "Puter: non autenticato";
+      $("#authBadge").className = "badge " + (signed ? "status-ok" : "status-warn");
+    }catch{
+      $("#authBadge").textContent = "Puter SDK non pronto";
+      $("#authBadge").className = "badge status-err";
+    }
+  }
+  setTimeout(refreshAuth, 600);
+  $("#signInBtn").addEventListener("click", async () => {
+    try{
+      await puter.auth.signIn();
+      refreshAuth();
+      log("Sign-in Puter completato.");
+    }catch(e){
+      log("Sign-in fallito: " + safeError(e), "error");
+    }
+  });
+
+  // ---------- Image load ----------
+  async function loadImageBlob(blob){
+    if (!blob || !blob.type.startsWith("image/")) return;
+    const dataURL = await blobToDataURL(blob);
+    await loadImageDataURL(dataURL);
+  }
+
+  function blobToDataURL(blob){
+    return new Promise((resolve,reject)=>{
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(blob);
+    });
+  }
+
+  function loadImageDataURL(dataURL){
+    return new Promise((resolve,reject)=>{
+      const img = new Image();
+      img.onload = () => {
+        state.source = img;
+        state.sourceDataURL = dataURL;
+        state.width = img.naturalWidth;
+        state.height = img.naturalHeight;
+        state.annotations = [];
+        state.selectedId = null;
+        state.nextId = 1;
+
+        canvas.width = state.width;
+        canvas.height = state.height;
+        annotatedPreview.width = state.width;
+        annotatedPreview.height = state.height;
+        maskPreview.width = state.width;
+        maskPreview.height = state.height;
+
+        emptyMsg.style.display = "none";
+        $("#imageInfo").textContent = `${state.width} × ${state.height}px`;
+        setAutoZoom();
+        redraw();
+        renderList();
+        updateDerived();
+        log(`Immagine caricata: ${state.width}×${state.height}px.`);
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = dataURL;
+    });
+  }
+
+  function setAutoZoom(){
+    const sel = $("#zoomSelect");
+    if (sel.value !== "auto"){
+      state.zoom = Number(sel.value);
+    }else{
+      // Enlarge small source images so minimum annotation controls remain comfortable.
+      const targetW = 850, targetH = 620;
+      const z = Math.max(1, Math.min(3, Math.max(
+        state.width ? targetW/state.width : 1,
+        state.height ? targetH/state.height : 1
+      )));
+      state.zoom = z;
+    }
+    stage.style.width = `${state.width * state.zoom}px`;
+    stage.style.height = `${state.height * state.zoom}px`;
+    canvas.style.width = `${state.width * state.zoom}px`;
+    canvas.style.height = `${state.height * state.zoom}px`;
+  }
+
+  $("#zoomSelect").addEventListener("change", () => {
+    if (!state.source) return;
+    setAutoZoom();
+    redraw();
+  });
+
+  window.addEventListener("paste", async (e) => {
+    const items = [...(e.clipboardData?.items || [])];
+    const item = items.find(i => i.type.startsWith("image/"));
+    if (item){
+      e.preventDefault();
+      await loadImageBlob(item.getAsFile());
+    }
+  });
+
+  $("#pasteBtn").addEventListener("click", async () => {
+    try{
+      if (!navigator.clipboard?.read) throw new Error("Clipboard API read() non disponibile: usa Ctrl/Cmd+V.");
+      const items = await navigator.clipboard.read();
+      for (const item of items){
+        const type = item.types.find(t => t.startsWith("image/"));
+        if (type){
+          await loadImageBlob(await item.getType(type));
+          return;
+        }
+      }
+      throw new Error("La clipboard non contiene un'immagine.");
+    }catch(e){
+      log("Clipboard: " + safeError(e), "error");
+      alert("Impossibile leggere direttamente la clipboard. Prova Ctrl/Cmd+V nella pagina.\n\n" + safeError(e));
+    }
+  });
+
+  $("#fileProxyBtn").addEventListener("click", () => $("#fileInput").click());
+  $("#fileInput").addEventListener("change", async (e) => {
+    if (e.target.files?.[0]) await loadImageBlob(e.target.files[0]);
+  });
+
+  const dz = $("#dropzone");
+  ["dragenter","dragover"].forEach(ev => dz.addEventListener(ev, e => {e.preventDefault(); dz.style.borderColor="#7aa2ff";}));
+  ["dragleave","drop"].forEach(ev => dz.addEventListener(ev, e => {e.preventDefault(); dz.style.borderColor="";}));
+  dz.addEventListener("drop", async e => {
+    const f = [...e.dataTransfer.files].find(x => x.type.startsWith("image/"));
+    if (f) await loadImageBlob(f);
+  });
+
+  // ---------- Annotation geometry ----------
+  function getPointer(e){
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: clamp((e.clientX-r.left) * (canvas.width/r.width), 0, state.width),
+      y: clamp((e.clientY-r.top) * (canvas.height/r.height), 0, state.height)
+    };
+  }
+
+  function minSourcePx(screenPx){ return screenPx / state.zoom; }
+
+  function newAnnotation(type, p){
+    const color = palette[(state.nextId-1) % palette.length];
+    const a = {
+      id: state.nextId++,
+      type,
+      color,
+      comment: "",
+    };
+    if (type === "circle"){
+      a.cx=p.x; a.cy=p.y; a.r=minSourcePx(MIN_SCREEN.circleDiameter)/2;
+    }else{
+      const mw=minSourcePx(type==="rect"?MIN_SCREEN.rectW:MIN_SCREEN.ovalW);
+      const mh=minSourcePx(type==="rect"?MIN_SCREEN.rectH:MIN_SCREEN.ovalH);
+      a.x=p.x-mw/2; a.y=p.y-mh/2; a.w=mw; a.h=mh;
+      constrainBox(a);
+    }
+    return a;
+  }
+
+  function constrainBox(a){
+    const minW=minSourcePx(a.type==="rect"?MIN_SCREEN.rectW:MIN_SCREEN.ovalW);
+    const minH=minSourcePx(a.type==="rect"?MIN_SCREEN.rectH:MIN_SCREEN.ovalH);
+    a.w=Math.max(minW,a.w); a.h=Math.max(minH,a.h);
+    a.x=clamp(a.x,0,Math.max(0,state.width-a.w));
+    a.y=clamp(a.y,0,Math.max(0,state.height-a.h));
+    a.w=Math.min(a.w,state.width-a.x);
+    a.h=Math.min(a.h,state.height-a.y);
+  }
+
+  function hitAnnotation(p){
+    const tol=minSourcePx(12);
+    for (let i=state.annotations.length-1;i>=0;i--){
+      const a=state.annotations[i];
+      if (a.type==="circle"){
+        const d=Math.hypot(p.x-a.cx,p.y-a.cy);
+        const handleDist=Math.hypot(p.x-(a.cx+a.r),p.y-a.cy);
+        if (handleDist<=tol) return {a,part:"resize"};
+        if (d<=a.r+tol) return {a,part:"move"};
+      }else{
+        const hx=a.x+a.w, hy=a.y+a.h;
+        if (Math.hypot(p.x-hx,p.y-hy)<=tol) return {a,part:"resize"};
+        if (a.type==="rect"){
+          if (p.x>=a.x-tol&&p.x<=a.x+a.w+tol&&p.y>=a.y-tol&&p.y<=a.y+a.h+tol) return {a,part:"move"};
+        }else{
+          const rx=a.w/2, ry=a.h/2, cx=a.x+rx, cy=a.y+ry;
+          const v=((p.x-cx)**2)/(rx+tol)**2+((p.y-cy)**2)/(ry+tol)**2;
+          if(v<=1) return {a,part:"move"};
+        }
+      }
+    }
+    return null;
+  }
+
+  function selected(){ return state.annotations.find(a=>a.id===state.selectedId) || null; }
+
+  // ---------- Canvas interaction ----------
+  $$("#toolbar button").forEach(btn => btn.addEventListener("click", () => {
+    state.tool=btn.dataset.tool;
+    $$("#toolbar button").forEach(b=>b.classList.toggle("active",b===btn));
+    canvas.style.cursor = state.tool==="select" ? "default" : "crosshair";
+  }));
+
+  canvas.addEventListener("pointerdown", e => {
+    if (!state.source) return;
+    canvas.setPointerCapture(e.pointerId);
+    const p=getPointer(e);
+
+    const hit=hitAnnotation(p);
+    if (state.tool==="select" || hit){
+      if(hit){
+        state.selectedId=hit.a.id;
+        const snapshot=JSON.parse(JSON.stringify(hit.a));
+        state.gesture={mode:hit.part,id:hit.a.id,start:p,snapshot};
+      }else{
+        state.selectedId=null; state.gesture=null;
+      }
+      renderList(); redraw(); return;
+    }
+
+    const a=newAnnotation(state.tool,p);
+    state.annotations.push(a);
+    state.selectedId=a.id;
+    state.gesture={mode:"create",id:a.id,start:p,snapshot:JSON.parse(JSON.stringify(a))};
+    renderList(); redraw();
+  });
+
+  canvas.addEventListener("pointermove", e => {
+    if (!state.gesture) return;
+    const p=getPointer(e);
+    const a=state.annotations.find(x=>x.id===state.gesture.id);
+    if(!a) return;
+    const s=state.gesture.snapshot;
+    const dx=p.x-state.gesture.start.x, dy=p.y-state.gesture.start.y;
+
+    if(state.gesture.mode==="move"){
+      if(a.type==="circle"){
+        a.cx=clamp(s.cx+dx,a.r,state.width-a.r);
+        a.cy=clamp(s.cy+dy,a.r,state.height-a.r);
+      }else{
+        a.x=clamp(s.x+dx,0,state.width-a.w);
+        a.y=clamp(s.y+dy,0,state.height-a.h);
+      }
+    }else if(state.gesture.mode==="resize"){
+      if(a.type==="circle"){
+        const minR=minSourcePx(MIN_SCREEN.circleDiameter)/2;
+        a.r=clamp(Math.hypot(p.x-a.cx,p.y-a.cy),minR,Math.min(state.width,state.height));
+        a.r=Math.min(a.r,a.cx,state.width-a.cx,a.cy,state.height-a.cy);
+      }else{
+        a.w=Math.max(minSourcePx(a.type==="rect"?MIN_SCREEN.rectW:MIN_SCREEN.ovalW),p.x-a.x);
+        a.h=Math.max(minSourcePx(a.type==="rect"?MIN_SCREEN.rectH:MIN_SCREEN.ovalH),p.y-a.y);
+        a.w=Math.min(a.w,state.width-a.x);
+        a.h=Math.min(a.h,state.height-a.y);
+      }
+    }else if(state.gesture.mode==="create"){
+      if(a.type==="circle"){
+        const minR=minSourcePx(MIN_SCREEN.circleDiameter)/2;
+        a.r=Math.max(minR,Math.hypot(dx,dy));
+        a.r=Math.min(a.r,a.cx,state.width-a.cx,a.cy,state.height-a.cy);
+      }else{
+        const minW=minSourcePx(a.type==="rect"?MIN_SCREEN.rectW:MIN_SCREEN.ovalW);
+        const minH=minSourcePx(a.type==="rect"?MIN_SCREEN.rectH:MIN_SCREEN.ovalH);
+        a.x=Math.min(state.gesture.start.x,p.x);
+        a.y=Math.min(state.gesture.start.y,p.y);
+        a.w=Math.max(minW,Math.abs(p.x-state.gesture.start.x));
+        a.h=Math.max(minH,Math.abs(p.y-state.gesture.start.y));
+        if(a.x+a.w>state.width) a.w=state.width-a.x;
+        if(a.y+a.h>state.height) a.h=state.height-a.y;
+      }
+    }
+    redraw();
+  });
+
+  function finishGesture(){
+    if(!state.gesture) return;
+    state.gesture=null;
+    renderList();
+    updateDerived();
+  }
+  canvas.addEventListener("pointerup",finishGesture);
+  canvas.addEventListener("pointercancel",finishGesture);
+
+  window.addEventListener("keydown", e => {
+    if((e.key==="Delete"||e.key==="Backspace") && state.selectedId && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)){
+      e.preventDefault(); deleteSelected();
+    }
+  });
+
+  // ---------- Drawing ----------
+  function rgba(hex, alpha){
+    const h=hex.replace("#","");
+    const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function drawMarker(g,a,{selected=false,forExport=false}={}){
+    const line=Math.max(2, state.width/650);
+    g.save();
+    g.lineWidth=line*(selected?1.65:1);
+    g.strokeStyle=a.color;
+    g.fillStyle=rgba(a.color, .24);
+
+    g.beginPath();
+    if(a.type==="circle"){
+      g.arc(a.cx,a.cy,a.r,0,Math.PI*2);
+    }else if(a.type==="rect"){
+      g.rect(a.x,a.y,a.w,a.h);
+    }else{
+      g.ellipse(a.x+a.w/2,a.y+a.h/2,a.w/2,a.h/2,0,0,Math.PI*2);
+    }
+    g.fill(); g.stroke();
+
+    // Label: always readable, sized relative to source, but with a sensible floor.
+    let lx,ly;
+    if(a.type==="circle"){lx=a.cx;ly=a.cy;}
+    else{lx=a.x+Math.min(a.w*0.22,36/state.zoom);ly=a.y+Math.min(a.h*0.25,30/state.zoom);}
+    const labelR=Math.max(12/state.zoom, Math.min(24/state.zoom, (a.type==="circle"?a.r:Math.min(a.w,a.h)/2)*.42));
+    g.beginPath(); g.arc(lx,ly,labelR,0,Math.PI*2);
+    g.fillStyle=a.color; g.fill();
+    g.strokeStyle="rgba(255,255,255,.92)"; g.lineWidth=Math.max(1.5,state.width/1000); g.stroke();
+    g.fillStyle="#fff"; g.font=`700 ${Math.max(12/state.zoom,labelR*1.05)}px system-ui`;
+    g.textAlign="center"; g.textBaseline="middle"; g.fillText(String(a.id),lx,ly+.5);
+
+    if(selected && !forExport){
+      g.fillStyle="#fff"; g.strokeStyle=a.color; g.lineWidth=Math.max(1.5,state.width/1000);
+      const hs=7/state.zoom;
+      let hx,hy;
+      if(a.type==="circle"){hx=a.cx+a.r;hy=a.cy;}
+      else{hx=a.x+a.w;hy=a.y+a.h;}
+      g.fillRect(hx-hs,hy-hs,hs*2,hs*2);
+      g.strokeRect(hx-hs,hy-hs,hs*2,hs*2);
+    }
+    g.restore();
+  }
+
+  function redraw(){
+    if(!state.source){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      return;
+    }
+    ctx.clearRect(0,0,state.width,state.height);
+    ctx.drawImage(state.source,0,0,state.width,state.height);
+    for(const a of state.annotations) drawMarker(ctx,a,{selected:a.id===state.selectedId});
+    $("#deleteBtn").disabled=!state.selectedId;
+  }
+
+  function buildAnnotatedCanvas(targetCanvas=null){
+    const c=targetCanvas || document.createElement("canvas");
+    c.width=state.width; c.height=state.height;
+    const g=c.getContext("2d");
+    g.drawImage(state.source,0,0,state.width,state.height);
+    for(const a of state.annotations) drawMarker(g,a,{forExport:true});
+    return c;
+  }
+
+  function drawShapePath(g,a){
+    g.beginPath();
+    if(a.type==="circle") g.arc(a.cx,a.cy,a.r,0,Math.PI*2);
+    else if(a.type==="rect") g.rect(a.x,a.y,a.w,a.h);
+    else g.ellipse(a.x+a.w/2,a.y+a.h/2,a.w/2,a.h/2,0,0,Math.PI*2);
+  }
+
+  function buildMaskCanvas(targetCanvas=null){
+    const c=targetCanvas || document.createElement("canvas");
+    c.width=state.width; c.height=state.height;
+    const g=c.getContext("2d");
+    // Opaque outside: preserve. Transparent inside annotations: editable area.
+    g.globalCompositeOperation="source-over";
+    g.fillStyle="#000";
+    g.fillRect(0,0,c.width,c.height);
+    g.globalCompositeOperation="destination-out";
+    for(const a of state.annotations){
+      drawShapePath(g,a);
+      g.fill();
+    }
+    g.globalCompositeOperation="source-over";
+    return c;
+  }
+
+  function updateDerived(){
+    if(!state.source){
+      promptPreview.textContent="Carica un'immagine per generare il prompt.";
+      return;
+    }
+    buildAnnotatedCanvas(annotatedPreview);
+    buildMaskCanvas(maskPreview);
+    promptPreview.textContent=buildPrompt(false);
+  }
+
+  // ---------- Annotation list ----------
+  function renderList(){
+    if(!state.annotations.length){
+      annList.innerHTML='<div class="small">Nessuna annotazione.</div>';
+      redraw(); updateDerived(); return;
+    }
+    annList.innerHTML="";
+    for(const a of state.annotations){
+      const card=document.createElement("div");
+      card.className="ann-card"+(a.id===state.selectedId?" selected":"");
+      card.innerHTML=`
+        <div class="ann-head">
+          <span class="dot" style="background:${a.color}">${a.id}</span>
+          <span class="ann-title">${a.type.toUpperCase()} #${a.id}</span>
+          <span class="ann-actions"><button data-del="${a.id}">×</button></span>
+        </div>
+        <textarea data-comment="${a.id}" placeholder="Commento / modifica per questa zona…"></textarea>
+        <div class="small" data-geo="${a.id}" style="margin-top:5px"></div>
+      `;
+      card.querySelector("textarea").value=a.comment;
+      card.addEventListener("click",e=>{
+        if(e.target.closest("textarea,button")) return;
+        state.selectedId=a.id; renderList(); redraw();
+      });
+      card.querySelector(`[data-del="${a.id}"]`).addEventListener("click",()=>deleteById(a.id));
+      card.querySelector("textarea").addEventListener("input",e=>{
+        a.comment=e.target.value;
+        updateDerived();
+      });
+      annList.appendChild(card);
+      card.querySelector(`[data-geo="${a.id}"]`).textContent=shortGeometry(a);
+    }
+    $("#deleteBtn").disabled=!state.selectedId;
+    updateDerived();
+  }
+
+  function shortGeometry(a){
+    if(a.type==="circle") return `center ${normX(a.cx)}, ${normY(a.cy)}`;
+    return `bbox ${normX(a.x)}, ${normY(a.y)} → ${normX(a.x+a.w)}, ${normY(a.y+a.h)}`;
+  }
+
+  function deleteById(id){
+    state.annotations=state.annotations.filter(a=>a.id!==id);
+    if(state.selectedId===id) state.selectedId=null;
+    renderList(); redraw(); updateDerived();
+  }
+  function deleteSelected(){ if(state.selectedId) deleteById(state.selectedId); }
+  $("#deleteBtn").addEventListener("click",deleteSelected);
+  $("#clearBtn").addEventListener("click",()=>{
+    state.annotations=[];state.selectedId=null;renderList();redraw();updateDerived();
+  });
+
+  // ---------- Prompt ----------
+  function geometryText(a){
+    if(a.type==="circle"){
+      const rx=a.r/state.width, ry=a.r/state.height;
+      return [
+        `type: circle`,
+        `center_normalized: (${normX(a.cx)}, ${normY(a.cy)})`,
+        `radius_normalized_xy: (${round(rx)}, ${round(ry)})`,
+        `bbox_normalized: (${normX(a.cx-a.r)}, ${normY(a.cy-a.r)}) -> (${normX(a.cx+a.r)}, ${normY(a.cy+a.r)})`
+      ].join("\n");
+    }
+    if(a.type==="rect"){
+      return [
+        `type: rect`,
+        `top_left_normalized: (${normX(a.x)}, ${normY(a.y)})`,
+        `bottom_right_normalized: (${normX(a.x+a.w)}, ${normY(a.y+a.h)})`,
+        `center_normalized: (${normX(a.x+a.w/2)}, ${normY(a.y+a.h/2)})`
+      ].join("\n");
+    }
+
+    // Ellipse foci are computed in SOURCE-PIXEL geometry first, then normalized.
+    const cx=a.x+a.w/2, cy=a.y+a.h/2, rx=a.w/2, ry=a.h/2;
+    const c=Math.sqrt(Math.max(0,Math.abs(rx*rx-ry*ry)));
+    let f1,f2,major;
+    if(rx>=ry){
+      major="horizontal";
+      f1=[cx-c,cy]; f2=[cx+c,cy];
+    }else{
+      major="vertical";
+      f1=[cx,cy-c]; f2=[cx,cy+c];
+    }
+    return [
+      `type: oval`,
+      `center_normalized: (${normX(cx)}, ${normY(cy)})`,
+      `radius_normalized_xy: (${round(rx/state.width)}, ${round(ry/state.height)})`,
+      `major_axis: ${major}`,
+      `focus_1_normalized: (${normX(f1[0])}, ${normY(f1[1])})`,
+      `focus_2_normalized: (${normX(f2[0])}, ${normY(f2[1])})`,
+      `bbox_normalized: (${normX(a.x)}, ${normY(a.y)}) -> (${normX(a.x+a.w)}, ${normY(a.y+a.h)})`
+    ].join("\n");
+  }
+
+  function buildPrompt(forceTransparent){
+    if(!state.source) return "";
+    const base=$("#baseInstruction").value.trim();
+    const parts=[
+      base,
+      ``,
+      `Coordinate system: normalized coordinates in [0,1], origin at the TOP-LEFT of Image 1; x grows rightward and y grows downward.`,
+      `Original image dimensions: ${state.width} x ${state.height} pixels.`,
+      `Use the numbered shapes in Image 2 primarily as semantic localization hints. Coordinates below are redundant localization metadata. Do not render markers, borders, fills, labels or annotation colors in the output.`,
+      ``
+    ];
+    if(!state.annotations.length){
+      parts.push(`No numbered target regions are currently defined.`);
+    }else{
+      for(const a of state.annotations){
+        parts.push(
+          `ANNOTATION #${a.id}`,
+          geometryText(a),
+          `user_comment: ${a.comment.trim() ? JSON.stringify(a.comment.trim()) : '"(no comment supplied)"'}`,
+          ``
+        );
+      }
+    }
+    if(forceTransparent){
+      parts.push(`OUTPUT REQUIREMENT: The output background must be genuinely transparent with an alpha channel. Do NOT simulate transparency with a checkerboard or solid color.`);
+    }
+    return parts.join("\n").trim();
+  }
+
+  $("#baseInstruction").addEventListener("input",updateDerived);
+  $("#copyPromptBtn").addEventListener("click",async()=>{
+    if(!state.source) return alert("Carica prima un'immagine.");
+    await navigator.clipboard.writeText(buildPrompt($("#forceTransparentPrompt").checked));
+    log("Prompt copiato negli appunti.");
+  });
+
+  $("#exportAnnotatedBtn").addEventListener("click",()=>{
+    if(!state.source) return alert("Carica prima un'immagine.");
+    downloadDataURL(buildAnnotatedCanvas().toDataURL("image/png"),"annotated.png");
+  });
+  $("#exportMaskBtn").addEventListener("click",()=>{
+    if(!state.source) return alert("Carica prima un'immagine.");
+    downloadDataURL(buildMaskCanvas().toDataURL("image/png"),"mask.png");
+  });
+
+  // ---------- Tabs ----------
+  $$(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+    $$(".tabs button").forEach(x=>x.classList.toggle("active",x===b));
+    $$(".tabpane").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));
+    if(b.dataset.tab==="assetsTab") updateDerived();
+  }));
+
+  // ---------- Probe options ----------
+  function presetExtras(name, maskDataURL){
+    const W=state.width,H=state.height;
+    switch(name){
+      case "transparent":
+        return {background:"transparent",output_format:"png"};
+      case "openaiMask":
+        return {background:"transparent",output_format:"png",input_fidelity:"high",mask:maskDataURL};
+      case "maskVariants":
+        return {
+          mask:maskDataURL,
+          mask_image:maskDataURL,
+          mask_image_base64:rawBase64(maskDataURL),
+          input_mask:maskDataURL
+        };
+      case "nestedOpenAI":
+        return {openai:{background:"transparent",output_format:"png",input_fidelity:"high",mask:maskDataURL}};
+      case "sizeVariants":
+        return {width:W,height:H,size:`${W}x${H}`,ratio:{w:W,h:H}};
+      case "kitchenSink":
+        return {
+          background:"transparent",
+          transparent:true,
+          background_transparent:true,
+          output_format:"png",
+          format:"png",
+          input_fidelity:"high",
+          mask:maskDataURL,
+          mask_image:maskDataURL,
+          mask_image_base64:rawBase64(maskDataURL),
+          input_mask:maskDataURL,
+          width:W,height:H,size:`${W}x${H}`,
+          openai:{background:"transparent",output_format:"png",input_fidelity:"high",mask:maskDataURL}
+        };
+      default:
+        return {};
+    }
+  }
+
+  function parseCustomExtras(maskDataURL){
+    const txt=$("#customExtras").value.trim();
+    if(!txt) return {};
+    const parsed=JSON.parse(txt);
+    return deepReplaceTokens(parsed,maskDataURL);
+  }
+
+  function buildOptions(presetName){
+    if(!state.source) throw new Error("Carica prima un'immagine.");
+    const annotatedURL=buildAnnotatedCanvas().toDataURL("image/png");
+    const maskURL=buildMaskCanvas().toDataURL("image/png");
+
+    const options={
+      provider:"openai-image-generation",
+      model:$("#modelInput").value.trim() || "gpt-image-2.5-sunburst",
+      quality:$("#qualitySelect").value,
+      input_image_mime_type:"image/png"
+    };
+
+    const inputMode=$("#inputMode").value;
+    if(inputMode==="semantic") options.input_images=[state.sourceDataURL,annotatedURL];
+    else if(inputMode==="originalOnly") options.input_image=state.sourceDataURL;
+    else if(inputMode==="maskAsThird") options.input_images=[state.sourceDataURL,annotatedURL,maskURL];
+
+    if($("#includeRatio").checked) options.ratio={w:state.width,h:state.height};
+
+    Object.assign(options,presetExtras(presetName,maskURL));
+    Object.assign(options,parseCustomExtras(maskURL));
+    return {options,maskURL,annotatedURL};
+  }
+
+  async function callPuter(prompt,options){
+    if($("#callShape").value==="object"){
+      return await puter.ai.txt2img({prompt,...options});
+    }
+    return await puter.ai.txt2img(prompt,options);
+  }
+
+  function getResultDataURL(result){
+    if(!result) throw new Error("Puter ha restituito un risultato vuoto.");
+    if(typeof result==="string" && result.startsWith("data:image/")) return result;
+    if(result instanceof HTMLImageElement) return result.src;
+    if(result.src) return result.src;
+    throw new Error("Formato risultato non riconosciuto: "+Object.prototype.toString.call(result));
+  }
+
+  async function analyzeAlpha(dataURL){
+    return new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>{
+        const c=document.createElement("canvas");
+        c.width=img.naturalWidth;c.height=img.naturalHeight;
+        const g=c.getContext("2d",{willReadFrequently:true});
+        g.drawImage(img,0,0);
+        const d=g.getImageData(0,0,c.width,c.height).data;
+        let transparent=0,partial=0,opaque=0,minA=255,maxA=0;
+        for(let i=3;i<d.length;i+=4){
+          const a=d[i]; minA=Math.min(minA,a);maxA=Math.max(maxA,a);
+          if(a===0) transparent++; else if(a<255) partial++; else opaque++;
+        }
+        const total=transparent+partial+opaque;
+        resolve({
+          width:c.width,height:c.height,minAlpha:minA,maxAlpha:maxA,
+          transparentPixels:transparent,partialAlphaPixels:partial,opaquePixels:opaque,
+          nonOpaquePct:round(((transparent+partial)/total)*100,3)
+        });
+      };
+      img.onerror=reject;img.src=dataURL;
+    });
+  }
+
+  async function runOne({preset, label, semanticEdit=false}){
+    if(!state.source) return alert("Carica prima un'immagine.");
+    const forceTrans=$("#forceTransparentPrompt").checked;
+    const prompt=buildPrompt(forceTrans);
+    const {options}=buildOptions(preset);
+
+    if(semanticEdit){
+      // For normal editing, keep only documented options + chosen input mode.
+      const allowed=["provider","model","quality","input_image_mime_type","input_image","input_images","ratio"];
+      for(const k of Object.keys(options)) if(!allowed.includes(k)) delete options[k];
+    }
+
+    log(`${label}\nCALL=${$("#callShape").value}\nOPTIONS=${JSON.stringify(sanitizedForLog(options),null,2)}`);
+    setBusy(true);
+    try{
+      const result=await callPuter(prompt,options);
+      const dataURL=getResultDataURL(result);
+      state.lastResultDataURL=dataURL;
+
+      resultPreview.innerHTML="";
+      const img=new Image();img.src=dataURL;resultPreview.appendChild(img);
+      $("#downloadResultBtn").disabled=false;
+
+      const alpha=await analyzeAlpha(dataURL);
+      alphaStatus.innerHTML = alpha.nonOpaquePct>0
+        ? `<span class="status-ok">Alpha presente</span> — ${alpha.nonOpaquePct}% pixel non opachi, min α=${alpha.minAlpha}, ${alpha.width}×${alpha.height}`
+        : `<span class="status-warn">Nessuna trasparenza rilevata</span> — tutti i pixel α=255, ${alpha.width}×${alpha.height}`;
+      log(`${label} OK\nALPHA=${JSON.stringify(alpha,null,2)}`,"ok");
+      return {ok:true,alpha,dataURL};
+    }catch(e){
+      alphaStatus.innerHTML='<span class="status-err">Richiesta fallita</span>';
+      log(`${label} FAILED\n${safeError(e)}`,"error");
+      return {ok:false,error:e};
+    }finally{
+      setBusy(false);
+    }
+  }
+
+  function setBusy(b){
+    ["#runEditBtn","#runProbeBtn","#runSuiteBtn"].forEach(s=>$(s).disabled=b);
+  }
+
+  $("#runEditBtn").addEventListener("click",()=>runOne({preset:"baseline",label:"SEMANTIC EDIT",semanticEdit:true}));
+  $("#runProbeBtn").addEventListener("click",()=>runOne({preset:$("#probePreset").value,label:`PROBE ${$("#probePreset").value}`}));
+
+  $("#runSuiteBtn").addEventListener("click",async()=>{
+    if(!state.source) return alert("Carica prima un'immagine.");
+    if(!confirm("La mini-suite esegue 4 generazioni reali e può consumare crediti Puter. Continuare?")) return;
+    const originalCustom=$("#customExtras").value;
+    const originalPreset=$("#probePreset").value;
+    const tests=[
+      ["baseline","BASELINE"],
+      ["transparent","TRANSPARENT"],
+      ["openaiMask","OPENAI-MASK STYLE"],
+      ["maskVariants","MASK NAME VARIANTS"]
+    ];
+    // Suite should isolate presets: temporarily suppress custom extras.
+    $("#customExtras").value="{}";
+    for(const [preset,label] of tests){
+      $("#probePreset").value=preset;
+      await runOne({preset,label:`SUITE / ${label}`});
+    }
+    $("#customExtras").value=originalCustom;
+    $("#probePreset").value=originalPreset;
+    log("Mini-suite completata.");
+  });
+
+  $("#downloadResultBtn").addEventListener("click",()=>{
+    if(state.lastResultDataURL) downloadDataURL(state.lastResultDataURL,"puter-result.png");
+  });
+  $("#clearLogBtn").addEventListener("click",()=>probeLog.textContent="Pronto.");
+
+  // ---------- Keep prompt in sync ----------
+  $("#forceTransparentPrompt").addEventListener("change",()=>promptPreview.textContent=buildPrompt($("#forceTransparentPrompt").checked));
+
+  // ---------- Init ----------
+  refreshAuth();
+})();
+</script>
+</body>
+</html>

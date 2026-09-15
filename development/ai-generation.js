@@ -16,15 +16,11 @@ if(!DOCUMENT_FIELDS.includes('aiCustomWidth'))DOCUMENT_FIELDS.push('aiCustomWidt
 if(!DOCUMENT_FIELDS.includes('aiCustomHeight'))DOCUMENT_FIELDS.push('aiCustomHeight');
 function aiProfile(){return AI_IMAGE_PROFILES.find(p=>p.id===$('aiModel')?.value)||AI_IMAGE_PROFILES[0]}
 function aiReferenceFactor(){return AI_REFERENCE_FACTORS[clamp(Number($('aiReferenceScale')?.value??3),0,3)]||1}
-const AI_TEXT_LANGUAGE_INSTRUCTION_IT='Se nell’immagine compaiono parole o frasi, usa la lingua del prompt scritto dall’utente, salvo una sua indicazione esplicita diversa.';
-const AI_TEXT_LANGUAGE_INSTRUCTION_EN='If the image contains words or sentences, use the language of the user-written prompt unless the user explicitly requests another language.';
 const AI_STYLES_IT={'Da prompt':'','Pagina da colorare':'Semplice pagina da colorare, contorni neri su fondo bianco, forme chiuse, nessun riempimento né ombreggiatura, ampie aree da colorare.','Contorni spessi':'Illustrazione con contorni neri spessi, forme molto semplici, interno bianco, adatta a una pagina da colorare per bambini.','Contorni delicati':'Contorni neri sottili e puliti, illustrazione semplice su fondo bianco, nessuna ombreggiatura, interni vuoti da colorare.','Fumetto a colori':'Fumetto semplice e colorato, contorni netti e marcati, colori piatti, pochi dettagli, fondo bianco.','Clipart educativa':'Clipart educativa, forme chiare e riconoscibili, colori piatti e allegri, fondo bianco pulito.','Pastello':'Illustrazione semplice dai colori pastello, forme arrotondate, dettagli minimi, fondo bianco.','Bianco e nero':'Illustrazione minimale in bianco e nero, contrasto deciso, forme pulite, nessun gradiente in scala di grigi.','Sticker':'Adesivo semplice, grazioso e colorato, bordo marcato, soggetto isolato, fondo bianco.','Geometrico':'Illustrazione geometrica semplice, grandi forme piatte e colorate, linee pulite, dettagli minimi.','Acquerello semplice':'Illustrazione ad acquerello semplice e delicata, palette luminosa limitata, soggetto isolato su fondo bianco, pochi dettagli.'};
 function aiStyleInstruction(){const key=$('aiStyle')?.value;return (appLanguage==='en'?AI_STYLES:AI_STYLES_IT)[key]||''}
-function aiTextLanguageInstruction(){return appLanguage==='en'?AI_TEXT_LANGUAGE_INSTRUCTION_EN:AI_TEXT_LANGUAGE_INSTRUCTION_IT}
 function aiFullPrompt(forEstimate=false){
  let prompt=$('aiPrompt')?.value.trim()||'',style=aiStyleInstruction();
  if(style)prompt=[prompt,style].filter(Boolean).join('\n\n');
- const languageInstruction=aiTextLanguageInstruction();if(languageInstruction)prompt=[prompt,languageInstruction].filter(Boolean).join('\n\n');
  if(forEstimate&&$('aiChromaKey')?.checked&&typeof aiChromaInstruction==='function'&&!prompt.includes(aiChromaInstruction()))prompt=[prompt,aiChromaInstruction()].filter(Boolean).join('\n\n');
  return prompt
 }

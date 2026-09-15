@@ -51,7 +51,7 @@ Both contain the same complete set of feature sections, workflows, FAQs, a table
 
 ## AI prompt localization
 
-The user prompt stays unchanged. The application then appends the selected style preset in the active UI language, any active chroma-key instruction in that language, and a final instruction requiring visible generated text to use the language of the user prompt unless the user explicitly asks otherwise. Italian presets live in `AI_STYLES_IT`; the original `AI_STYLES` catalogue supplies English. **Show full prompt sent** displays the exact composition.
+The user prompt stays unchanged. The application appends the selected style preset in the active UI language and any active chroma-key instruction in that language. It does not inject a language instruction for visible text. When generated text is required, the user should state the exact wording and language in the prompt; reusable wording can be stored in Prompt Library. Italian presets live in `AI_STYLES_IT`; the original `AI_STYLES` catalogue supplies English. **Show full prompt sent** displays the exact composition.
 
 Search translation is separate: Emoji/Openclipart may convert Italian keywords to English through the compact dictionary and optional Puter/Gemma fallback. Parenthesized text supplies meaning context to Gemma but is removed from the actual search term and from local fallback output. Only the searchable phrase forms the translation-cache key, so `suora (quella dei preti)` stores the reusable mapping `suora → nun`. A small **Delete saved translations** link appears under both Italian search controls and clears only this shared cache. In English UI the checkbox, Puter hint, and cache command are hidden and disabled; returning to Italian restores the saved preference.
 
@@ -80,6 +80,6 @@ Do not hardcode a feature-level language conditional for visible UI. Dynamic con
 - `html[lang]`, title, controls, tooltips, placeholders, dialogs, statuses, credits, and guide change together.
 - Switching back restores Italian source text.
 - Canvas objects, names, prompts, filenames, and imported data remain unchanged.
-- AI style, chroma, and text-language instructions follow the active UI language.
+- AI style and chroma instructions follow the active UI language; no automatic visible-text language instruction is added.
 - Both standalone guides regenerate with matching structural coverage.
 - Monolithic syntax, PWA inventory/cache ID, and editor regression tests pass.

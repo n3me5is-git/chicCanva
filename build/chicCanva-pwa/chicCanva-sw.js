@@ -1,7 +1,7 @@
-const BUILD_ID='e7cb934cd2a4bdc4';
+const BUILD_ID='66b69a1b7ba0f1ae';
 const SHELL_CACHE='chiccanva-shell-'+BUILD_ID;
 const REMOTE_CACHE='chiccanva-remote-v8';
-const SHELL=['./','./index.html','./chiccanva.css?v=e7cb934cd2a4bdc4','./fabric.js?v=e7cb934cd2a4bdc4','./jspdf.js?v=e7cb934cd2a4bdc4','./chiccanva-pdf.js?v=e7cb934cd2a4bdc4','./chiccanva-app.js?v=e7cb934cd2a4bdc4','./chicCanva.webmanifest?v=e7cb934cd2a4bdc4','./chicCanva-en.webmanifest?v=e7cb934cd2a4bdc4','./chiccanva-192.png','./chiccanva-512.png','./chiccanva-share.png','./chiccanva-share.jpg','./robots.txt'];
+const SHELL=['./','./index.html','./chiccanva.css?v=66b69a1b7ba0f1ae','./fabric.js?v=66b69a1b7ba0f1ae','./jspdf.js?v=66b69a1b7ba0f1ae','./chiccanva-pdf.js?v=66b69a1b7ba0f1ae','./chiccanva-app.js?v=66b69a1b7ba0f1ae','./chicCanva.webmanifest?v=66b69a1b7ba0f1ae','./chicCanva-en.webmanifest?v=66b69a1b7ba0f1ae','./chiccanva-192.png','./chiccanva-512.png','./chiccanva-share.png','./chiccanva-share.jpg','./robots.txt'];
 const CACHEABLE_REMOTE=new Set(['fonts.googleapis.com','fonts.gstatic.com','cdn.jsdelivr.net']);
 self.addEventListener('install',event=>event.waitUntil(caches.open(SHELL_CACHE).then(cache=>cache.addAll(SHELL))));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const current=new Set([SHELL_CACHE,REMOTE_CACHE]);for(const name of await caches.keys())if(name.startsWith('chiccanva-')&&!current.has(name))await caches.delete(name);await self.clients.claim()})()));
