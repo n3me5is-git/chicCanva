@@ -21,6 +21,7 @@ Esporta JSON\tExport JSON
 Importa JSON\tImport JSON
 Esporta PDF\tExport PDF
 Chiudi pannello\tClose panel
+Chiudi anteprima\tClose preview
 Apri pannello\tOpen panel
 Installa\tInstall
 Installa chicCanva\tInstall chicCanva
@@ -858,6 +859,44 @@ Codette\tSprinkles
 Stelline\tLittle stars
 Scaglie\tScales
 Tessuto\tFabric
+Annota immagine di riferimento\tAnnotate reference image
+Modifica annotazioni\tEdit annotations
+Disponibile con i modelli GPT Image 2.5. Consigliato Sunburst, più preciso per modifiche mirate.\tAvailable with GPT Image 2.5 models. Sunburst is recommended for more precise targeted edits.
+Passa a Sunburst\tSwitch to Sunburst
+Indica le aree da modificare e descrivi ogni intervento.\tMark the areas to edit and describe each change.
+Strumenti di annotazione\tAnnotation tools
+Seleziona\tSelect
+Rettangolo\tRectangle
+Ovale\tOval
+Punto\tPoint
+Trascina per creare un marker. Con Seleziona puoi spostarlo o ridimensionarlo dalla maniglia.\tDrag to create a marker. With Select you can move it or resize it from the handle.
+Nessuna annotazione.\tNo annotations.
+Descrivi la modifica per questa area…\tDescribe the change for this area…
+Elimina marker\tDelete marker
+Riduci zoom\tZoom out
+Aumenta zoom\tZoom in
+Adatta\tFit
+Elimina annotazioni\tDelete annotations
+Salva annotazioni\tSave annotations
+Chiudi senza salvare\tClose without saving
+Apri l’editor delle annotazioni\tOpen the annotation editor
+Le annotazioni sono disponibili solo con i modelli GPT Image 2.5.\tAnnotations are available only with GPT Image 2.5 models.
+Seleziona marker\tSelect marker
+Marker rettangolare\tRectangle marker
+Marker ovale\tOval marker
+Spot numerato\tNumbered spot
+Elimina annotazione selezionata; clic destro o pressione lunga per eliminarle tutte\tDelete selected annotation; right-click or long-press to delete all
+Elimina annotazione selezionata\tDelete selected annotation
+Commenti annotazioni\tAnnotation comments
+Commenti\tComments
+Chiudi pannello commenti\tClose comments panel
+Apri o chiudi i commenti\tOpen or close comments
+Tutte le annotazioni\tAll annotations
+Nessun commento\tNo comment
+Elimina tutte le annotazioni\tDelete all annotations
+2 riferimenti\t2 references
+Annotazioni salvate\tAnnotations saved
+Annotazioni eliminate\tAnnotations deleted
 CANC\tDelete
 `.trim().split('\n').filter(Boolean).map(line=>{const i=line.indexOf('\t');return[line.slice(0,i),line.slice(i+1)]}));
 
@@ -890,6 +929,12 @@ const I18N_PATTERNS=[
  ,[/^Rimuovi tag (.+)$/,'Remove tag $1']
  ,[/^Output previsto (\d+) × (\d+) px\. Qualità e risoluzione sono indipendenti; i lati sono multipli di 16, rapporto massimo 3:1 e limite 3840 px \/ 8\.294\.400 pixel\.$/,'Expected output $1 × $2 px. Quality and resolution are independent; sides are multiples of 16, the maximum aspect ratio is 3:1, with limits of 3840 px / 8,294,400 pixels.']
  ,[/^Output previsto (\d+) × (\d+) px\. $/,'Expected output $1 × $2 px. ']
+ ,[/^Invio: (\d+) × (\d+) px\. L’originale resta invariato; la copia scalata esiste solo durante la richiesta\.$/,'Sent: $1 × $2 px. The original remains unchanged; the scaled copy exists only during the request.']
+ ,[/^Preparazione della copia ingrandita del riferimento…$/,'Preparing the enlarged reference copy…']
+ ,[/^2 riferimenti (.+)$/,'2 references $1']
+ ,[/^Commento #(\d+)$/,'Comment #$1']
+ ,[/^Commento annotazione #(\d+)$/,'Annotation #$1 comment']
+ ,[/^Commenti · (\d+)$/,'Comments · $1']
 ];
 const I18N_SKIP_SELECTOR='script,style,template,textarea,input,[contenteditable="true"],[data-i18n-ignore],#projectTabs,#pageSelect,#customPageName,#pageCaption,#customPageChips,#previewGrid,#fontResults,#emojiGrid,#clipartResults,#promptLibraryItems,#promptEntryPrompt,#promptEntryTitle,#promptEntryDescription,#promptEntryTags,#aiPrompt,#textInput,#specialText';
 const i18nOriginalText=new WeakMap(),i18nLastText=new WeakMap(),i18nOriginalAttrs=new WeakMap(),i18nLastAttrs=new WeakMap();

@@ -1,0 +1,52 @@
+.ai-annotation-controls{margin:10px 0;padding:11px 12px;border:1px solid #c7ddd5;border-radius:12px;background:linear-gradient(135deg,#f7fbf9,#f0f7f4)}
+.ai-annotation-open{width:100%}
+.ai-annotation-controls .help{margin:7px 0 0}
+.ai-annotation-controls .text-link{font-size:inherit}
+.ai-annotation-dialog{width:calc(100vw - 36px);max-width:none;height:calc(100dvh - 36px);max-height:none;margin:18px;padding:0;border:0;border-radius:18px;background:var(--panel,#fff);box-shadow:0 20px 70px #08171399;overflow:hidden}
+.ai-annotation-dialog::backdrop{background:#10231fb8}
+.ai-annotation-shell{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%;overflow:hidden}
+.ai-annotation-head,.ai-annotation-actions{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel,#fff)}
+.ai-annotation-title{min-width:220px}
+.ai-annotation-title h2{margin:0;font-size:20px}
+.ai-annotation-title p{margin:2px 0 0}
+.ai-annotation-toolbar{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;margin-left:auto}
+.ai-annotation-toolbar .iconbtn{display:grid;place-items:center;font-size:19px}
+.ai-annotation-toolbar .active{color:#fff;background:var(--accent);border-color:var(--accent)}
+.ai-annotation-toolbar .selection-empty{opacity:.55}
+.ai-annotation-toolbar #aiAnnotationZoomLabel{min-width:44px;text-align:center;font-size:11px;font-weight:750}
+.ai-annotation-divider{width:1px;height:26px;margin:0 3px;background:var(--line)}
+.ai-annotation-close{margin-left:4px}
+.ai-annotation-workspace{position:relative;min-width:0;min-height:0;overflow:hidden;background:#d8d8d6}
+.ai-annotation-stage{position:absolute;left:0;top:0;transform-origin:0 0;box-shadow:0 8px 28px #0008;touch-action:none;user-select:none}
+.ai-annotation-stage canvas{display:block;max-width:none;touch-action:none}
+.ai-annotation-actions{justify-content:flex-end;border-top:1px solid var(--line);border-bottom:0}
+.ai-annotation-actions .accent{min-width:160px}
+.ai-annotation-comment-panel{position:absolute;z-index:4;left:50%;bottom:0;width:min(640px,calc(100% - 24px));height:min(44vh,390px);transform:translate3d(-50%,calc(100% + 1px),0);border:1px solid #bcd4cc;border-bottom:0;border-radius:16px 16px 0 0;background:#fffffff7;box-shadow:0 -8px 30px #0005;transition:transform .24s cubic-bezier(.2,.8,.2,1);will-change:transform;backface-visibility:hidden;contain:layout paint}
+.ai-annotation-comment-panel.open{transform:translate3d(-50%,0,0)}
+.ai-annotation-comment-handle{position:absolute;left:50%;top:-36px;display:flex;align-items:center;gap:7px;height:37px;padding:0 17px;transform:translateX(-50%);border:1px solid #bcd4cc;border-bottom:0;border-radius:15px 15px 0 0;background:#fffffff7;color:var(--ink);cursor:pointer}
+.ai-annotation-comment-handle span{font-size:18px}
+.ai-annotation-comment-content{display:grid;grid-template-rows:auto minmax(0,1fr);height:100%;padding:12px}
+.ai-annotation-comment-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ai-annotation-comment-head .iconbtn{margin-left:auto}
+.ai-annotation-comment-body{min-height:0;overflow:auto}
+.ai-annotation-comment-body textarea{width:100%;min-height:110px;resize:vertical}
+.ai-annotation-comment-list{display:grid;gap:7px;max-height:100%;overflow:auto}
+.ai-annotation-comment-item{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:8px;width:100%;padding:8px;border:1px solid var(--line);border-radius:9px;background:#fff;text-align:left;cursor:pointer}
+.ai-annotation-badge{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:850}
+.ai-annotation-empty{padding:14px;color:var(--muted);text-align:center}
+.ai-annotation-delete-menu{position:absolute;z-index:7;top:8px;right:8px;padding:7px;border-radius:11px;background:#fff;box-shadow:0 5px 22px #0006}
+.ai-annotation-delete-menu .btn{white-space:nowrap}
+.ai-annotation-delete-menu button{color:var(--danger)!important}
+@media(max-width:720px){
+ .ai-annotation-dialog{width:100vw;height:100dvh;margin:0;border-radius:0}
+ .ai-annotation-head{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:7px 9px}
+ .ai-annotation-title h2{font-size:16px}
+ .ai-annotation-title .help{display:none}
+ .ai-annotation-toolbar{grid-column:1/-1;grid-row:2;width:100%;margin:0;overflow-x:auto;justify-content:flex-start;padding-top:4px}
+ .ai-annotation-toolbar .iconbtn{flex:0 0 38px}
+ .ai-annotation-close{grid-column:2;grid-row:1}
+ .ai-annotation-actions{padding:8px}
+ .ai-annotation-actions .btn{flex:1;min-width:0}
+ .ai-annotation-comment-panel{width:calc(100% - 12px);height:min(46vh,360px)}
+ .ai-annotation-comment-body textarea{min-height:90px}
+}

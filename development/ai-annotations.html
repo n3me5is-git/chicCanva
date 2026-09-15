@@ -1,0 +1,28 @@
+<dialog id="aiAnnotationDialog" class="ai-annotation-dialog">
+  <div class="ai-annotation-shell">
+    <header class="ai-annotation-head">
+      <div class="ai-annotation-title"><h2>Annota immagine di riferimento</h2><p class="help">Indica le aree da modificare e descrivi ogni intervento.</p></div>
+      <div class="ai-annotation-toolbar" role="toolbar" aria-label="Strumenti di annotazione">
+        <button type="button" class="iconbtn active" data-ai-annotation-tool="select" data-tip="Seleziona marker" aria-label="Seleziona marker">↖</button>
+        <button type="button" class="iconbtn" data-ai-annotation-tool="rect" data-tip="Marker rettangolare" aria-label="Marker rettangolare">▭</button>
+        <button type="button" class="iconbtn" data-ai-annotation-tool="oval" data-tip="Marker ovale" aria-label="Marker ovale">⬭</button>
+        <button type="button" class="iconbtn" data-ai-annotation-tool="point" data-tip="Spot numerato" aria-label="Spot numerato">●</button>
+        <span class="ai-annotation-divider"></span>
+        <button type="button" class="iconbtn" id="deleteSelectedAiAnnotation" data-tip="Elimina annotazione selezionata; clic destro o pressione lunga per eliminarle tutte" aria-label="Elimina annotazione selezionata">⌫</button>
+        <span class="ai-annotation-divider"></span>
+        <button type="button" class="iconbtn" id="aiAnnotationZoomOut" data-tip="Riduci zoom" aria-label="Riduci zoom">−</button><span id="aiAnnotationZoomLabel">100%</span><button type="button" class="iconbtn" id="aiAnnotationZoomIn" data-tip="Aumenta zoom" aria-label="Aumenta zoom">＋</button>
+        <button type="button" class="btn" id="aiAnnotationFit" data-tip="Adatta">Adatta</button>
+      </div>
+      <button type="button" class="iconbtn ai-annotation-close" id="closeAiAnnotation" data-tip="Chiudi senza salvare" aria-label="Chiudi senza salvare">×</button>
+    </header>
+    <main class="ai-annotation-workspace" id="aiAnnotationWorkspace">
+      <div class="ai-annotation-stage" id="aiAnnotationStage"><canvas id="aiAnnotationCanvas"></canvas></div>
+      <section id="aiAnnotationCommentPanel" class="ai-annotation-comment-panel" aria-label="Commenti annotazioni">
+        <button type="button" id="aiAnnotationCommentHandle" class="ai-annotation-comment-handle" data-tip="Apri o chiudi i commenti" aria-label="Apri o chiudi i commenti" aria-expanded="false"><span>✎</span><strong id="aiAnnotationCommentHandleLabel">Commenti</strong></button>
+        <div class="ai-annotation-comment-content"><div class="ai-annotation-comment-head"><strong id="aiAnnotationCommentTitle">Commenti</strong><button type="button" class="iconbtn" id="closeAiAnnotationComment" data-tip="Chiudi pannello commenti" aria-label="Chiudi pannello commenti">×</button></div><div id="aiAnnotationCommentBody" class="ai-annotation-comment-body"></div></div>
+      </section>
+      <div id="aiAnnotationDeleteMenu" class="tool-context-menu ai-annotation-delete-menu hidden" role="menu" aria-label="Azioni annotazioni"><button type="button" id="deleteAllAiAnnotations" role="menuitem">Elimina tutte le annotazioni</button></div>
+    </main>
+    <footer class="ai-annotation-actions"><button type="button" class="btn" id="cancelAiAnnotations">Chiudi senza salvare</button><button type="button" class="btn accent" id="saveAiAnnotations">Salva annotazioni</button></footer>
+  </div>
+</dialog>

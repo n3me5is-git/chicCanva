@@ -72,6 +72,8 @@ Do not use visible text as an internal identifier. Use IDs, option values, `data
 
 Do not hardcode a feature-level language conditional for visible UI. Dynamic controls must retain the canonical source and pass through the same catalog as static controls. Language-specific AI prompt material is the intentional exception described above because it is request content rather than an interface identifier.
 
+Semantic reference annotations follow that exception narrowly: the structural instruction that explains Image 1, Image 2, normalized coordinates, and preservation rules is authored in Italian and English and selected from the active application locale. Marker type keys and coordinate field names remain stable technical values. The user's marker comments are appended verbatim and are never translated. The raw-prompt view must show the exact localized structural block that will be submitted.
+
 ## Validation checklist
 
 - First load follows the complete browser locale list before first paint; later loads use the saved setting.
