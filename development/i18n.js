@@ -891,6 +891,9 @@ Commenti annotazioni\tAnnotation comments
 Commenti\tComments
 Chiudi pannello commenti\tClose comments panel
 Apri o chiudi i commenti\tOpen or close comments
+Usa sfondo nero\tUse black background
+Usa sfondo bianco\tUse white background
+L’immagine non contiene trasparenze\tThe image has no transparency
 Tutte le annotazioni\tAll annotations
 Nessun commento\tNo comment
 Elimina tutte le annotazioni\tDelete all annotations

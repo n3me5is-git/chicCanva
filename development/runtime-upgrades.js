@@ -79,6 +79,14 @@ function applySettledCanvasRaster(logicalWidth,logicalHeight,force=false){
  canvas.__chicRenderScale=scale;
  if(force||changed||canvas.getWidth()!==logicalWidth||canvas.getHeight()!==logicalHeight){canvas.setDimensions({width:logicalWidth,height:logicalHeight});const expectedWidth=Math.round(logicalWidth*scale),expectedHeight=Math.round(logicalHeight*scale);if((canvas.lowerCanvasEl.width!==expectedWidth||canvas.lowerCanvasEl.height!==expectedHeight)&&canvas._initRetinaScaling)canvas._initRetinaScaling()}
 }
+let sidebarViewportFrame=0,sidebarViewportOptions=null,sidebarResizeZoomMode=null;
+function canvasFitZoom(){
+ if(!currentPage)return null;const wrap=$('stageWrap'),logicalWidth=currentPage.widthMm*PX_PER_MM,logicalHeight=currentPage.heightMm*PX_PER_MM;
+ return zoomMode==='fit'?Math.min((wrap.clientWidth-48)/logicalWidth,(wrap.clientHeight-64)/logicalHeight):Number(zoomMode)
+}
+function applySidebarViewportPreview(){
+ sidebarViewportFrame=0;if(!sidebarViewportOptions||!currentPage)return;const options=sidebarViewportOptions;sidebarViewportOptions=null;layoutCanvasViewport(canvasFitZoom(),options)
+}
 function layoutCanvasViewport(nextZoom,{light=false,preserve=true,forceRaster=false}={}){
  if(!currentPage)return;const wrap=$('stageWrap'),space=$('stageSpace'),shell=$('canvasShell'),logicalWidth=Math.round(currentPage.widthMm*PX_PER_MM),logicalHeight=Math.round(currentPage.heightMm*PX_PER_MM),anchor=preserve&&zoomMode!=='fit'?canvasViewportAnchor():null;
  viewZoom=clamp(nextZoom,.05,6);const displayWidth=logicalWidth*viewZoom,displayHeight=logicalHeight*viewZoom,isFit=zoomMode==='fit',padX=isFit?24:Math.max(96,wrap.clientWidth),padY=isFit?32:Math.max(96,wrap.clientHeight),spaceWidth=isFit?Math.max(wrap.clientWidth,displayWidth+padX*2):displayWidth+padX*2,spaceHeight=isFit?Math.max(wrap.clientHeight,displayHeight+padY*2):displayHeight+padY*2,left=isFit?(spaceWidth-displayWidth)/2:padX,top=isFit?(spaceHeight-displayHeight)/2:padY;
@@ -88,8 +96,19 @@ function layoutCanvasViewport(nextZoom,{light=false,preserve=true,forceRaster=fa
  if(!light){canvas.calcOffset();canvas.getObjects().forEach(object=>object.setCoords?.());exportRegion?.setCoords?.();cropSession?.rect?.setCoords?.();canvas.requestRenderAll()}
 }
 fitStageZoom=function(options={}){
- if(!currentPage)return;const wrap=$('stageWrap'),logicalWidth=currentPage.widthMm*PX_PER_MM,logicalHeight=currentPage.heightMm*PX_PER_MM,nextZoom=zoomMode==='fit'?Math.min((wrap.clientWidth-48)/logicalWidth,(wrap.clientHeight-64)/logicalHeight):Number(zoomMode);layoutCanvasViewport(nextZoom,options)
+ if(!currentPage)return;
+ if(resizingSidebar&&!options.forceRaster){sidebarViewportOptions={...options,light:true,preserve:false};if(!sidebarViewportFrame)sidebarViewportFrame=requestAnimationFrame(applySidebarViewportPreview);return}
+ layoutCanvasViewport(canvasFitZoom(),options)
 };
+function bindStableSidebarResize(){
+ const resizer=$('resizer'),wrap=$('stageWrap'),toolbar=document.querySelector('.workspace>.toolbar'),sidebarToggle=$('toggleSidebarBtn');if(!resizer||!wrap)return;
+ if(sidebarToggle?.onclick){const toggleSidebar=sidebarToggle.onclick;sidebarToggle.onclick=function(...args){const preservedZoomMode=zoomMode,result=toggleSidebar.apply(this,args);zoomMode=preservedZoomMode;updateZoomControl();return result}}
+ resizer.addEventListener('pointerdown',()=>{sidebarResizeZoomMode=zoomMode;wrap.classList.add('sidebar-resizing')});
+ window.addEventListener('pointermove',()=>{if(!wrap.classList.contains('sidebar-resizing')||sidebarResizeZoomMode===null)return;zoomMode=sidebarResizeZoomMode;fitStageZoom()});
+ const settle=()=>{if(!wrap.classList.contains('sidebar-resizing'))return;resizingSidebar=false;wrap.classList.remove('sidebar-resizing');if(sidebarViewportFrame){cancelAnimationFrame(sidebarViewportFrame);sidebarViewportFrame=0}sidebarViewportOptions=null;if(sidebarResizeZoomMode!==null)zoomMode=sidebarResizeZoomMode;sidebarResizeZoomMode=null;fitStageZoom({forceRaster:true,preserve:false})};
+ window.addEventListener('pointerup',settle);window.addEventListener('pointercancel',settle);window.addEventListener('blur',settle);resizer.addEventListener('lostpointercapture',settle);
+ toolbar?.addEventListener('wheel',event=>{if(event.ctrlKey||event.metaKey||toolbar.scrollWidth<=toolbar.clientWidth)return;const delta=Math.abs(event.deltaY)>=Math.abs(event.deltaX)?event.deltaY:event.deltaX;if(!delta)return;const before=toolbar.scrollLeft;toolbar.scrollLeft+=delta;if(toolbar.scrollLeft!==before)event.preventDefault()},{passive:false})
+}
 function pinchViewport(start,pointA,pointB){const distance=Math.max(1,Math.hypot(pointB.x-pointA.x,pointB.y-pointA.y)),mid={x:(pointA.x+pointB.x)/2,y:(pointA.y+pointB.y)/2};return{zoom:clamp(start.zoom*distance/start.distance,.05,6),mid}}
 function bindPinchZoom(){
  const wrap=$('stageWrap'),touches=new Map();let pinch=null,raf=0,latest=null,blocked=false,previousInteraction=null;
@@ -102,4 +121,4 @@ function bindPinchZoom(){
  const finish=event=>{if(event.pointerType!=='touch')return;touches.delete(event.pointerId);if(pinch&&touches.size<2){if(raf){cancelAnimationFrame(raf);apply()}pinch=null}if(blocked&&touches.size===0){blocked=false;wrap.classList.remove('pinching');canvas.skipTargetFind=previousInteraction?.skip??panMode;canvas.selection=previousInteraction?.selection??(!panMode&&state.selectionMode);previousInteraction=null;fitStageZoom({forceRaster:true});canvasTouchGestureBlockedState=false;document.dispatchEvent(new CustomEvent('chiccanvas:pinchend'))}if(blocked){event.preventDefault();event.stopPropagation()}};
  wrap.addEventListener('pointerup',finish,true);wrap.addEventListener('pointercancel',finish,true);wrap.style.touchAction='none'
 }
-const runtimeBaseInit=init;init=async function(){await runtimeBaseInit();setupTouchCanvasControls();bindPuterAuth();bindPinchZoom()};
+const runtimeBaseInit=init;init=async function(){await runtimeBaseInit();setupTouchCanvasControls();bindPuterAuth();bindPinchZoom();bindStableSidebarResize()};

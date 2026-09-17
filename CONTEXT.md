@@ -32,6 +32,7 @@ Active modular sources:
 - `development/runtime-upgrades*` — two-finger canvas navigation and Puter authentication/account gates;
 - `development/search-translation.js` — compact Italian search dictionary and default-enabled Gemma/Puter fallback; normalized responses keep reasoning separate and tag stripping handles native fallbacks;
 - `development/puter-billing.js` — Puter balance/account snapshot, unit-aware USD conversion, 30-day image-price cache and local quote formulas;
+- `development/ai-annotations*` — GPT Image 2.5 reference-marker editor, normalized marker persistence, temporary annotated request raster, localized technical prompt append and overlay comment panel;
 - `development/colorizer*` — non-destructive raster coloring UI and engine: flood fill, gradients, procedural textures, smart brush, source restoration and clipboard output;
 - `development/shapes*` — vector shape sidebar, isolated drawing mode, point editing and shape serialization;
 - `development/alignment-guides*` — magnetic page-center/page-edge/object/equal-spacing guides, temporary Fabric overlays, transform aspect constraints, modifier-key inversion and the Snap toolbar context menu;
@@ -126,7 +127,11 @@ Root and local-server HTML must be byte-identical and monolithic. The PWA is gen
 
 ## Last validated state
 
-The current release line is 1.12.13. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
+The current release line is 1.12.16. Re-run the pipeline rather than trusting historical DOM/test counts after any subsequent change.
+
+- GPT Image 2.5 Flare and Sunburst can send one clean reference plus one temporary annotated copy. Persist only normalized marker geometry/comments; point markers store a center, while rectangles and ovals store bounds. The localized technical append uses `user_comment: {…}`, appears unchanged in the raw-prompt preview, and doubles only the reference-input portion of the estimate. The annotation editor caps its decoded working preview at a 2048 px long edge, releases that bitmap/canvas when closed, and keeps its comment panel as a transform-only overlay so it cannot resize the main workspace. The panel handle protrudes above the closed panel, so never apply paint containment to that panel. Its gray workspace contains a white image stage; the optional black transparency-preview background is session-only CSS, enabled only after alpha detection, and never enters saved state or submitted pixels. The modal temporarily hosts the shared localized tooltip inside the browser top layer and restores it on close.
+
+- Sidebar divider movement preserves its starting zoom mode, uses a coalesced CSS-transform canvas preview, and performs the full Fabric raster update only on release. Opening and closing the sidebar also preserves Fit or the selected explicit zoom on desktop and mobile. The toolbar retains its native horizontal scrollbar with extra lower clearance and also maps an ordinary vertical wheel gesture to horizontal scrolling while hovered.
 
 - Puter fetch checkboxes remain disabled and unchecked until the AI section reports an active Puter session. Login links navigate to that section; they must never open nested dialogs.
 
