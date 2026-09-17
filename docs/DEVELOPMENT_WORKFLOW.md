@@ -33,7 +33,10 @@ The most important rule is to avoid hand-editing `chicCanva.html`. It is generat
 | Vector shapes and drawing | `development/shapes.js`, `shapes-ui.html`, `shapes.css` |
 | Context transforms and touch selection | `development/interaction-upgrades.js`, `interaction-ui.html`, `interaction-upgrades.css` |
 | PWA | `development/pwa.js`, `pwa-ui.html`, `pwa.css`, `development/pwa/*` |
-| End-user guide | `development/build-guide.py` |
+| End-user guide content | `development/guide_content.py` |
+| Guide renderer and embedded illustrations | `development/guide_manual.py` |
+| Guide responsive styles | `development/guide-manual.css` |
+| Localized guide entry points | `development/build-guide.py`, `development/build-guide-en.py` |
 | Main composition | `development/build-workspace.py` |
 | Browser regression suite | `tests/v7-tests.js` |
 | Static/release checks | `tests/check-chic-build.py` |
@@ -176,7 +179,21 @@ When changing the service worker:
 
 ## 10. Guide and documentation changes
 
-The guide source is structured data in `build-guide.py`. Add or amend sections there, then build. Do not edit `development/help-v7.html` or `docs/user-guide.html` directly.
+The guide source is bilingual structured data in `guide_content.py`; `guide_manual.py` owns rendering and embedded UI illustrations, while `guide-manual.css` owns internal and standalone presentation. Add or amend both language forms in the shared entry, then build. Keep stable topic IDs and verify every internal link. Do not edit `development/help-v7.html`, `development/help-v7-en.html`, or the standalone files directly.
+
+When product UI changes, audit the guide representation in the same patch. Use the final runtime element as the source of truth. Run `node development/capture-guide-assets.js` against the current built application to regenerate the affected Italian and English screenshots under `development/guide-assets/`. The renderer embeds those PNG files in both internal and standalone guides. Every functional topic must include at least one current localized screenshot of the section where the action is performed; a combined topic includes each distinct panel it teaches. Reuse is acceptable only when the reused image is the actual UI for that topic. Do not redraw, reorder, simplify, or restyle a product panel in a screenshot-like guide block. Diagrams are reserved for concepts that are not screen representations. The icon atlas uses the actual SVG path or Unicode glyph, visible IT/EN name, tooltip, and accessible label. Shape marks come from `shapes-ui.html` and `shapes.js`; annotation marks come from `ai-annotations.html`; enhanced toolbar SVGs come from `enhancements.js`; baseline toolbar order comes from `v6-ui.html` plus the insertions in `build-workspace.py`. Document normal click/tap separately from right-click or press-and-hold actions. Keep the full context-menu catalogue in its dedicated indexed guide section and link to it from relevant feature topics. Short procedures should also receive an arrow workflow using the real command names.
+
+The monolithic HTML and standalone guides embed the PNG files as Data URLs. The PWA build replaces those exact Data URLs with files under `build/chicCanva-pwa/guide-assets/` and adds them to the service-worker shell cache. This keeps the PWA index small while preserving the same guide offline.
+
+Guide validation must cover:
+
+- matching topic IDs and anchors in Italian and English;
+- the expected real-control glyphs or SVG fragments;
+- embedded localized screenshot, icon-atlas, context-action, and arrow-flow presence for the changed feature;
+- at least one real localized UI screenshot in every functional topic, with all panels represented when a topic combines features;
+- desktop width, mobile overflow, sticky contents, and long translated labels;
+- IT → EN → IT rendering without altering stable internal values;
+- regenerated embedded fragments, standalone single-file guides, application builds, and PWA.
 
 For every material feature, document:
 

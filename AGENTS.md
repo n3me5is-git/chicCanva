@@ -348,6 +348,26 @@ Do not rewrite a test to accept a regression. If an intentional behavior change 
 
 A material feature is incomplete until its documentation matches the generated application.
 
+### User-guide integration playbook
+
+Treat the illustrated guide as part of the feature, not as a later editorial task. When a visible control, workflow, icon, glyph, menu, or option changes:
+
+1. locate the final runtime control and its active wrapper; do not copy an obsolete generated artifact;
+2. record the stable control ID, actual Italian label, English catalogue entry, `aria-label`, tooltip, displayed glyph, and SVG path where present;
+3. update the matching entry in `development/guide_content.py`, the screenshot map, and the icon atlas in `development/guide_manual.py`;
+4. reuse the exact mark from the source control. For SVG controls, copy the current `viewBox` and paths; for textual glyphs, copy the Unicode character; for shape buttons, use `development/shapes-ui.html` and `development/shapes.js` as sources of truth;
+5. regenerate the relevant localized screenshot with `development/capture-guide-assets.js`. Store the PNG under `development/guide-assets/`; the guide embeds it as a Data URL and never depends on an external request;
+6. add or revise an arrow workflow when the feature has a short sequence of meaningful choices, using the actual visible command names in each language;
+7. keep chapter/category emoji editorial only. Do not use emoji as internal routing keys or replacements for accessible labels;
+8. update both language forms in the same semantic entry. Stable topic IDs and internal anchors remain language-neutral;
+9. never artistically rearrange, simplify, or invent a screenshot-like product panel. A diagram may explain a concept, but anything presented as UI must be a current localized screenshot or an exact DOM/CSS reproduction with the same order, labels, spacing, and icons;
+10. use source glyphs and SVG paths directly in the icon atlas so each tool remains legible at small size; document normal click/tap and right-click/press-and-hold behavior separately;
+11. update guide assertions so renamed controls, icon counts, screenshot coverage, links, and IT→EN→IT parity fail when stale.
+12. give every functional topic at least one current localized screenshot of the relevant application section. A topic may reuse a screenshot only when that same visible section is genuinely where the feature is operated; combined topics should show each distinct panel they teach.
+13. keep the contextual-menu reference as its own guide section and index destination. Feature chapters may link to it, but must not absorb the complete menu catalogue under one unrelated feature such as grouping.
+
+Before completion, compare the rendered guide against the current application at desktop and mobile widths. Check the icon shape, order, label, enabled/disabled meaning, context-menu relationship, long translated text, horizontal overflow, and keyboard/touch description. A feature with stale guide graphics or only one updated language is incomplete.
+
 - Update the Italian guide source in `development/build-guide.py`.
 - Update the English guide source in `development/build-guide-en.py`.
 - Update `docs/FEATURES_AND_PROCESSES.md` for behavior/data flow.

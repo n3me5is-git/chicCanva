@@ -81,6 +81,7 @@ function bindFinalUpgrades(){
  $('pasteImageTool').innerHTML=pasteImageIcon;$('pasteImageTool').onclick=()=>pasteClipboardImage('canvas');
  $('pasteImageCanvasBtn').onclick=()=>pasteClipboardImage('canvas');$('pasteAiReferenceBtn').onclick=()=>pasteClipboardImage('reference');$('useCanvasReference').onclick=useCroppedCanvasImageAsReference;
  if(location.protocol==='file:'){$('imageUrlUsePuter').disabled=true;$('imageUrlUsePuter').closest('label').title='Per usare Puter apri l’app tramite webserver'}
- $('exportScope').onchange=syncExportCenter;$('exportFormat').onchange=syncExportCenter;$('exportQuality').oninput=syncExportCenter;$('exportPdfPanel').onclick=runUnifiedExport;$('exportClipboardBtn').onclick=exportImageToClipboard;$('drawExportRegion').onclick=()=>setRegionMode(true);$('exportRegionTool').onclick=()=>{if(state.regionMode)setRegionMode(false);else openExportForSelection(true)};syncExportCenter()
+ $('exportScope').onchange=syncExportCenter;$('exportFormat').onchange=syncExportCenter;$('exportQuality').oninput=syncExportCenter;$('exportPdfPanel').onclick=runUnifiedExport;$('exportClipboardBtn').onclick=exportImageToClipboard;$('drawExportRegion').onclick=()=>setRegionMode(true);$('exportRegionTool').onclick=()=>{if(state.regionMode)setRegionMode(false);else openExportForSelection(true)};syncExportCenter();
+ $('helpLayer')?.addEventListener('click',event=>{const guideToc=event.target.closest('.guide-toc');if(innerWidth<=720&&guideToc&&event.target.closest('a'))requestAnimationFrame(()=>{guideToc.open=false})})
 }
 const baseInitFinalUpgrades=init;init=async function(){await baseInitFinalUpgrades();bindFinalUpgrades()};

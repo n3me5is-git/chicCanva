@@ -70,6 +70,7 @@ def before(id,markup):
  s=s[:m.start()]+markup+s[m.start():]
 rep('\n</style>','\n'+(dev/'workspace.css').read_text(encoding='utf-8')+'\n'+(dev/'enhancements.css').read_text(encoding='utf-8')+'\n'+(dev/'image-effects.css').read_text(encoding='utf-8')+'\n'+(dev/'ai-generation.css').read_text(encoding='utf-8')+'\n'+(dev/'ai-annotations.css').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.css').read_text(encoding='utf-8')+'\n'+(dev/'final-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'clipart.css').read_text(encoding='utf-8')+'\n'+(dev/'shapes.css').read_text(encoding='utf-8')+'\n'+(dev/'interaction-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'colorizer.css').read_text(encoding='utf-8')+'\n'+(dev/'pwa.css').read_text(encoding='utf-8')+'\n'+(dev/'runtime-upgrades.css').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.css').read_text(encoding='utf-8')+'\n'+(dev/'memory-optimizations.css').read_text(encoding='utf-8')+'\n</style>')
 rep('\n</style>','\n'+(dev/'alignment-guides.css').read_text(encoding='utf-8')+'\n</style>')
+rep('\n</style>','\n'+(dev/'guide-manual.css').read_text(encoding='utf-8')+'\n</style>')
 rep('\n</style>','\n'+(dev/'text-editing.css').read_text(encoding='utf-8')+'\n</style>')
 rep('\n</style>','\n'+(dev/'i18n.css').read_text(encoding='utf-8')+'\n</style>')
 rep('\n<body>','\n<body>\n'+(dev/'workspace-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pwa-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'pdf-import.html').read_text(encoding='utf-8')+'\n'+(dev/'interaction-ui.html').read_text(encoding='utf-8')+'\n'+(dev/'prompt-library.html').read_text(encoding='utf-8')+'\n'+(dev/'raw-ai-prompt.html').read_text(encoding='utf-8')+'\n'+(dev/'ai-result-fallback.html').read_text(encoding='utf-8')+'\n'+(dev/'ai-annotations.html').read_text(encoding='utf-8'))
@@ -197,6 +198,18 @@ pwa_build=root/'build/chicCanva-pwa';pwa_build.mkdir(parents=True,exist_ok=True)
 # large inline payloads. Crawlers receive the title and Open Graph metadata in a
 # small initial document, while the desktop/server distribution remains monolithic.
 pwa_html=s
+# Keep the monolithic download self-contained. In the hosted PWA, use the same
+# generated guide screenshots as cacheable files so the crawler-facing index
+# remains small and the illustrated guide is still available offline.
+guide_asset_names=sorted(path.name for path in (dev/'guide-assets').glob('*.png'))
+for name in guide_asset_names:
+ image_bytes=(dev/'guide-assets'/name).read_bytes()
+ embedded='data:image/png;base64,'+base64.b64encode(image_bytes).decode('ascii')
+ pwa_html=pwa_html.replace(embedded,'guide-assets/'+name)
+guide_asset_build=pwa_build/'guide-assets'
+if guide_asset_build.exists():shutil.rmtree(guide_asset_build)
+guide_asset_build.mkdir(parents=True)
+for name in guide_asset_names:shutil.copy2(dev/'guide-assets'/name,guide_asset_build/name)
 # Keep the monolithic distribution self-contained, while the hosted PWA can use
 # its same-origin icon. This shortens the crawler-facing head and avoids making a
 # social crawler scan an embedded base64 icon before reaching the body.
@@ -222,7 +235,7 @@ assert len(style_blocks)==1, f'Atteso un blocco CSS inline, trovati {len(style_b
 for name in ['chicCanva.webmanifest','chicCanva-en.webmanifest','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg']:shutil.copy2(dev/'pwa'/name,pwa_build/name)
 (pwa_build/'robots.txt').write_text('User-agent: TelegramBot\nAllow: /\n\nUser-agent: WhatsApp\nAllow: /\n\nUser-agent: facebookexternalhit\nAllow: /\n\nUser-agent: Facebot\nAllow: /\n\nUser-agent: Twitterbot\nAllow: /\n\nUser-agent: LinkedInBot\nAllow: /\n\nUser-agent: Slackbot\nAllow: /\n\nUser-agent: Discordbot\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: *\nDisallow: /\n',encoding='utf-8')
 (pwa_build/'_headers').write_text('/chiccanva-share.jpg\n  Cache-Control: public, max-age=86400\n',encoding='utf-8')
-build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])
+build_material=pwa_html.encode('utf-8')+b''.join((pwa_build/name).read_bytes() for name in ['chiccanva.css',*script_names])+b''.join((guide_asset_build/name).read_bytes() for name in guide_asset_names)
 build_id=hashlib.sha256(build_material).hexdigest()[:16]
 # Stable filenames make manual uploads simple, while the per-build query keeps a
 # newly uploaded index from executing JavaScript retained by the HTTP cache or by
@@ -233,6 +246,7 @@ for name in versioned_assets:
  pwa_html=pwa_html.replace('="'+name+'"','="'+name+'?v='+build_id+'"')
 (pwa_build/'index.html').write_text(pwa_html,encoding='utf-8')
 sw=(dev/'pwa'/'chicCanva-sw.js').read_text(encoding='utf-8').replace('__BUILD_ID__',build_id)
+sw=sw.replace("'./robots.txt']","'./robots.txt',"+','.join(repr('./guide-assets/'+name) for name in guide_asset_names)+']')
 for name in versioned_assets:
  sw=sw.replace("'./"+name+"'","'./"+name+"?v="+build_id+"'")
 assert '__BUILD_ID__' not in sw

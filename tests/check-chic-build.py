@@ -29,7 +29,7 @@ assert 'translateEmojiKeyword' in s and 'updateEmojiSearch' in s
 assert {'clearEmojiTranslations','clearClipartTranslations'}.issubset(ids) and 'searchTranslationCacheKey' in s
 assert 'OPENCLIPART_REMOTE_PAGE_SIZE=32' in s and 'clipartPageCache' in s and 'clipartItemsForPage' in s
 pwa=root/'build/chicCanva-pwa'
-expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-en.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg','robots.txt','_headers'}
+expected={'index.html','chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js','chicCanva.webmanifest','chicCanva-en.webmanifest','chicCanva-sw.js','chiccanva-192.png','chiccanva-512.png','chiccanva-share.png','chiccanva-share.jpg','robots.txt','_headers','guide-assets'}
 assert {p.name for p in pwa.iterdir()}==expected
 pwa_html=(pwa/'index.html').read_text(encoding='utf-8')
 assert len(pwa_html.encode('utf-8'))<500000 and '<style' not in pwa_html
@@ -38,6 +38,7 @@ assert 'href="chiccanva.css?v=' in pwa_html
 sw=(pwa/'chicCanva-sw.js').read_text(encoding='utf-8')
 build_id=re.search(r"const BUILD_ID='([a-f0-9]{16})'",sw).group(1)
 assert '__BUILD_ID__' not in sw and all('?v='+build_id in value for value in re.findall(r'(?:src|href)="([^"]+\?v=[a-f0-9]{16})"',pwa_html) if any(name in value for name in ['chiccanva.css','fabric.js','jspdf.js','chiccanva-pdf.js','chiccanva-app.js']))
+assert 'data:image/png;base64,' not in pwa_html and all(f"'./guide-assets/{path.name}'" in sw for path in (pwa/'guide-assets').glob('*.png'))
 assert 'shellNavigation(request)' in sw and "fetch(request,{cache:'no-store'" in sw and 'event.waitUntil(refreshNavigation(request))' not in sw
 manifest=json.loads((pwa/'chicCanva.webmanifest').read_text(encoding='utf-8'))
 assert manifest['start_url']=='./' and manifest['scope']=='./' and manifest['display']=='standalone'
@@ -103,6 +104,15 @@ expected_docs={'README.md','PROJECT.md','TECHNICAL_ARCHITECTURE.md','FEATURES_AN
 assert expected_docs.issubset({p.name for p in docs.iterdir()})
 guide=(root/'development/help-v7.html').read_text(encoding='utf-8')
 assert guide in (docs/'user-guide.html').read_text(encoding='utf-8')
+guide_en=(root/'development/help-v7-en.html').read_text(encoding='utf-8')
+assert guide.count('class="guide-visual guide-real-ui"')>=36 and guide_en.count('class="guide-visual guide-real-ui"')>=36
+assert guide.count('data:image/png;base64,')>=10 and guide_en.count('data:image/png;base64,')>=10
+assert '<figure class="guide-ui-sample' not in guide and 'guide-toolbar-table' in guide and 'guide-context-table' in guide
+assert 'id="context-menus-guide"' in guide and 'id="context-menus-guide"' in guide_en
+assert '<section class="guide-reference guide-icon-reference" id="icons"' in guide and '<section class="guide-reference guide-context-reference" id="context-menus-guide"' in guide
+assert all(section.count('class="guide-visual guide-real-ui"')>=1 for section in guide.split('<section class="guide-topic"')[1:])
+guide_assets=root/'development/guide-assets'
+assert all((guide_assets/f'{language}-{name}.png').stat().st_size>2000 for language in ('it','en') for name in ('workspace','mobile-workspace','toolbar','page-panel','special-panel','text-panel','font-panel','emoji-panel','clipart-panel','shapes-panel','images-panel','image-effects-panel','background-panel','colorizer-panel','canvas-panel','memory-dialog','ai-panel','annotations','context-menus','preview-panel','export-panel'))
 assert guide in s and 'build-docs.py' in (root/'development/build-workspace.py').read_text(encoding='utf-8')
 assert (root/'CONTEXT.md').is_file() and (root/'LICENSE').is_file()
 print(f'{len(ids)} unique IDs; all references present; local build, documentation and protected image proxy valid; PWA bundle and icons valid; no Fontsource API dependency.')

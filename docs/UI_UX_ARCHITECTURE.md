@@ -1,6 +1,6 @@
 # UI and UX architecture
 
-The complete project strip, including the trailing New Project action, scrolls horizontally as one unit on narrow screens. Project labels have a bounded visual width and use ellipsis on desktop and mobile while preserving the full stored name and tooltip.
+The complete project strip, including the trailing New Project action, scrolls horizontally as one unit on narrow screens. Project labels have a bounded visual width and use ellipsis on desktop and mobile while preserving the full stored name and tooltip. The strip reserves 5 px below its controls so the native scrollbar sits clear of project buttons at every width.
 
 ## 1. Audience and interaction goals
 
@@ -11,7 +11,7 @@ Core UX principles:
 1. **The page is the center of attention.** Controls should not cover a fitted page.
 2. **One visible task at a time.** Sidebar sections start collapsed and “expand one section” is the default.
 3. **Operations are explicit.** Puter generation, assisted download, project replacement, and destructive actions require a clear user action.
-4. **Touch navigation is direct.** Two fingers zoom around their midpoint and pan in the same gesture while object editing is temporarily suspended. Pinch start rolls back any transform or temporary action begun by the first finger and blocks Colorizer, shape drawing, export-region drawing, and eyedropper sampling until every touch is released.
+4. **Touch navigation is direct.** Two fingers zoom around their midpoint and pan in the same gesture while object editing is temporarily suspended. Pinch start rolls back any transform or temporary action begun by the first finger, clears target finding during the gesture, and restores the exact prior selection afterward. Colorizer, shape drawing, export-region drawing, and eyedropper sampling remain blocked through the final pointer release; a short compatibility-click guard prevents that release from becoming a delayed tool action.
 4. **Derived image workflows preserve the source.** Crop is reversible; grayscale, outline, and background removal create copies.
 5. **View and output are separate.** Zoom, pan, grid, guides, and selection boxes never alter physical output.
 6. **Mobile uses the same document model.** Layout changes, while projects and exports remain compatible.
@@ -158,7 +158,7 @@ In the chroma-key panel, the color/pipette and automatic detection are mutually 
 
 Italian is the editorial source for user-facing copy; the runtime also supplies a complete English interface. Both languages are task-oriented and aimed at teachers: they explain what to do and what will happen. Project content, names, filenames, user prompts and search results are never translated by the interface layer. Console errors, implementation stack names, and developer debugging procedures belong in technical documentation. Necessary service/license names may appear where they affect privacy, cost, or attribution. See [LOCALIZATION.md](LOCALIZATION.md) for selector behavior, language persistence, guide parity and AI prompt rules.
 
-The internal guide is intentionally much more detailed than tooltips. Tooltips answer “what is this button”; widget help answers “what happens here”; the guide supports complete workflows and recovery.
+The internal guide is an illustrated handbook for teachers and other non-technical users. Tooltips answer “what is this button”; widget help answers “what happens here”; the guide explains what is available, where to find it, how to use it, which option to choose, and what result to expect. Every feature topic includes a practical case with a goal, steps, expected result, creative follow-up, and at least one localized screenshot of the real section used for that feature. Localized screenshots reproduce the current interface exactly and are embedded in the standalone single-file guide without external image requests. The icon atlas reuses the application’s actual marks and explains direct toolbar actions. Context menus have a separate indexed reference with the object, project, page, image-copy, and annotation variants, linked from relevant feature chapters. AI chapters introduce Puter, prompts, model choice, usage estimates, references, and recovery in operational language. Developer internals remain in technical documentation. The desktop guide dialog uses most of the available viewport width for readable tables and visual references; its sticky contents column is capped to the dialog’s usable height and scrolls internally. Mobile retains the compact modal, where the grouped, expandable contents panel remains sticky below the dialog header and collapses after choosing a topic, so navigation stays reachable without returning to the beginning.
 
 ## 12. UX regression checklist
 
