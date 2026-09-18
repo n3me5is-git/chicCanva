@@ -808,7 +808,7 @@ Accesso Puter richiesto\tPuter sign-in required
 Fattore di scala\tScale factor
 Qualità / compressione PNG\tPNG quality / compression
 Tag\tTags
-Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0;\tFabric.js 5.1.0 and jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla and contributors. ONNX Runtime Web 1.21.0: MIT and related notices. IMG.LY background-removal 1.7.0: AGPL-3.0;
+Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. Trystero 0.23.1, @trystero-p2p/core 0.23.1, @trystero-p2p/nostr 0.23.1 e @noble/secp256k1 3.1.0: MIT. Nayuki QR Code Generator, commit 3c6d0b3: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0;\tFabric.js 5.1.0 and jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla and contributors. Trystero 0.23.1, @trystero-p2p/core 0.23.1, @trystero-p2p/nostr 0.23.1, and @noble/secp256k1 3.1.0: MIT. Nayuki QR Code Generator, commit 3c6d0b3: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT and related notices. IMG.LY background-removal 1.7.0: AGPL-3.0;
 sorgente e licenza\tsource and license
 . OpenMoji 17: grafica CC BY-SA 4.0, HfG Schwäbisch Gmünd e collaboratori; codice OpenMoji LGPL-3.0 dove applicabile. Le opere pubblicate su Openclipart sono indicate dal progetto come pubblico dominio/CC0 1.0. Puter.js e i servizi Puter, inclusa la traduzione opzionale con Gemma 4 31B, seguono le rispettive licenze e condizioni del servizio. Fontsource, Google Fonts e ogni famiglia tipografica conservano la propria licenza.\t. OpenMoji 17: artwork under CC BY-SA 4.0, HfG Schwäbisch Gmünd and contributors; OpenMoji code under LGPL-3.0 where applicable. Works published on Openclipart are identified by the project as public domain/CC0 1.0. Puter.js and Puter services, including optional translation with Gemma 4 31B, follow their respective licences and terms of service. Fontsource, Google Fonts, and each font family retain their own licence.
 Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare\tDirect loading is free, but some sites block it. Puter uses account bandwidth or allowance. You can also copy the image from the site and use
@@ -901,9 +901,108 @@ Elimina tutte le annotazioni\tDelete all annotations
 Annotazioni salvate\tAnnotations saved
 Annotazioni eliminate\tAnnotations deleted
 CANC\tDelete
+Condividi il file esportato\tShare the exported file
+Condividi il progetto JSON\tShare the JSON project
+Condividi Prompt Library\tShare Prompt Library
+Condivisione non disponibile\tSharing unavailable
+Questo browser non può condividere il file attraverso il menu di sistema.\tThis browser cannot share the file through the system menu.
+Scarica invece\tDownload instead
+File condiviso con chicCanva\tFile shared with chicCanva
+Annulla importazione\tCancel import
+Dove vuoi inserire l’immagine?\tWhere do you want to insert the image?
+Pagina corrente\tCurrent page
+Nuova pagina dopo quella corrente\tNew page after the current page
+Nuovo progetto\tNew project
+Annulla tutti\tCancel all
+Apri opzioni PDF\tOpen PDF options
+Scegli modalità\tChoose mode
+Importa immagine\tImport image
+Importa progetto\tImport project
+Condivisione Progetti P2P\tP2P Project Sharing
+Trasferisci progetti direttamente tra due dispositivi con chicCanva aperto.\tTransfer projects directly between two devices with chicCanva open.
+Chiudi condivisione P2P\tClose P2P sharing
+Invia progetti\tSend projects
+Scegli i progetti e crea un codice monouso.\tChoose projects and create a one-time code.
+Ricevi progetti\tReceive projects
+Inserisci un codice oppure scansiona il QR.\tEnter a code or scan the QR.
+I file passano direttamente tra i dispositivi. Il collegamento richiede Internet per il signaling e può non riuscire su reti molto restrittive.\tFiles pass directly between devices. The connection needs Internet for signaling and may fail on very restrictive networks.
+← Indietro\t← Back
+Che cosa vuoi inviare?\tWhat do you want to send?
+Progetto corrente\tCurrent project
+Prompt Library\tPrompt Library
+Crea codice e attendi\tCreate code and wait
+← Termina sessione\t← End session
+Codice monouso\tOne-time code
+Copia codice\tCopy code
+← Annulla ricezione\t← Cancel receiving
+Contenuti disponibili\tAvailable content
+Seleziona tutti\tSelect all
+Importazione Prompt Library\tPrompt Library import
+Aggiungi alla libreria\tAdd to library
+Sostituisci l’intera libreria\tReplace the entire library
+Sostituisci i prompt con lo stesso nome\tReplace prompts with the same name
+Ricevi gli elementi selezionati\tReceive selected items
+← Chiudi fotocamera\t← Close camera
+Inquadra il QR mostrato dall’altro dispositivo.\tPoint the camera at the QR shown on the other device.
+Importa Prompt Library\tImport Prompt Library
+Scegli come unire i prompt alla libreria del browser.\tChoose how to merge the prompts into the browser library.
+Modalità di importazione\tImport mode
+Aggiungi alla libreria esistente\tAdd to the existing library
+In modalità Aggiungi i prompt esistenti vengono conservati. La sostituzione completa equivale al ripristino di un backup.\tIn Add mode, existing prompts are preserved. Full replacement is equivalent to restoring a backup.
+Condividi\tShare
+File esportato da chicCanva\tFile exported from chicCanva
+Progetto chicCanva\tchicCanva project
+Tipo non dichiarato\tUndeclared type
+Vuoi importare questo PDF come immagini?\tDo you want to import this PDF as images?
+Vuoi importare e aprire questo progetto?\tDo you want to import and open this project?
+Vuoi importare questa Prompt Library?\tDo you want to import this Prompt Library?
+Questo formato non è supportato.\tThis format is not supported.
+Sessione scaduta per inattività.\tSession expired due to inactivity.
+Codice copiato\tCode copied
+Condivisione P2P non disponibile in questo browser\tP2P sharing is unavailable in this browser
+Workspace vuoto\tEmpty workspace
+File senza nome\tUnnamed file
+Preparazione…\tPreparing…
+Il file condiviso non è più disponibile.\tThe shared file is no longer available.
+File condiviso\tShared file
+La Prompt Library supera il limite consentito\tThe Prompt Library exceeds the allowed limit
+Seleziona almeno un progetto o la Prompt Library\tSelect at least one project or the Prompt Library
+Manifesto di trasferimento non valido\tInvalid transfer manifest
+Elemento di trasferimento non valido\tInvalid transfer item
+Trasferimento troppo grande\tTransfer is too large
+WebRTC o Trystero non sono disponibili in questo browser\tWebRTC or Trystero is unavailable in this browser
+In attesa del destinatario…\tWaiting for the recipient…
+Destinatario connesso · invio elenco…\tRecipient connected · sending list…
+Destinatario disconnesso.\tRecipient disconnected.
+Trasferimento completato.\tTransfer complete.
+errore\terror
+Il codice non è valido\tThe code is invalid
+Ricerca del dispositivo che invia…\tLooking for the sending device…
+Dispositivo trovato · attendo l’elenco…\tDevice found · waiting for the list…
+Dispositivo disconnesso.\tDevice disconnected.
+Importato\tImported
+Seleziona almeno un elemento.\tSelect at least one item.
+Richiesta dei file…\tRequesting files…
+QR letto. Premi Connetti per continuare.\tQR code read. Press Connect to continue.
+La fotocamera richiede HTTPS e un browser compatibile\tThe camera requires HTTPS and a compatible browser
+Richiesta accesso alla fotocamera…\tRequesting camera access…
+Codice ricevuto. Premi Connetti per continuare.\tCode received. Press Connect to continue.
+file\tfile
 `.trim().split('\n').filter(Boolean).map(line=>{const i=line.indexOf('\t');return[line.slice(0,i),line.slice(i+1)]}));
 
 const I18N_PATTERNS=[
+ [/^(\d+) prompt pronti per l’importazione\.$/,'$1 prompts ready to import.'],[/^1 prompt pronto per l’importazione\.$/,'1 prompt ready to import.'],
+ [/^(\d+) prompt importati$/,'$1 prompts imported'],[/^1 prompt importato$/,'1 prompt imported'],
+ [/^(\d+) elementi importati\.$/,'$1 items imported.'],[/^1 elemento importato\.$/,'1 item imported.'],
+ [/^1 di (\d+)$/,'1 of $1'],
+ [/^«(.+)» è pronto, ma questo browser non può inviarlo tramite il menu di sistema\.$/,'“$1” is ready, but this browser cannot send it through the system share menu.'],
+ [/^Condivisione non riuscita: (.+)$/,'Sharing failed: $1'],[/^Importazione non riuscita: (.+)$/,'Import failed: $1'],
+ [/^Connessione non riuscita: (.+)$/,'Connection failed: $1'],[/^Invio non riuscito: (.+)$/,'Sending failed: $1'],[/^Destinatario: (.+)$/,'Recipient: $1'],
+ [/^Il progetto «(.+)» supera il limite di (.+)$/,'Project “$1” exceeds the $2 limit'],
+ [/^Il trasferimento supera il limite complessivo di (.+)$/,'The transfer exceeds the total limit of $1'],
+ [/^Il file «(.+)» è incompleto$/,'File “$1” is incomplete'],[/^Verifica non riuscita per «(.+)»$/,'Verification failed for “$1”'],
+ [/^Ricezione (.+) · (\d+)%$/,'Receiving $1 · $2%'],[/^Invio (.+) · (\d+)%$/,'Sending $1 · $2%'],
+ [/^Rendering (\d+) \/ (\d+)…$/,'Rendering $1 / $2…'],[/^Rendering PDF (\d+) \/ (\d+)…$/,'Rendering PDF $1 / $2…'],
  [/^(\d[\d.,]*) crediti$/i,'$1 credits'],[/^Usati: (.+) · Residui: (.+)$/,'Used: $1 · Remaining: $2'],
  [/^Usato (.+)$/,'Used $1'],[/^Residuo (.+)$/,'Remaining $1'],[/^Disponibile (.+)$/,'Available $1'],
  [/^Pagina (\d+)(.*)$/,'Page $1$2'],[/^Progetto (\d+)(.*)$/,'Project $1$2'],

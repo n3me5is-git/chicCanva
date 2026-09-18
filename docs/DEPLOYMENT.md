@@ -186,3 +186,13 @@ To roll back, redeploy a complete earlier PWA set. Its service-worker cache ID m
 - [ ] PDF import works offline and its Blob worker is allowed by the deployed CSP.
 - [ ] Remote-provider privacy/cost information is visible.
 - [ ] License and attribution files are published with source distribution.
+
+## 12. Share-target and P2P deployment notes
+
+Outbound Web Share controls require a secure context and appear only when the running browser accepts the exact candidate file through `navigator.canShare({files})`. Do not infer this from the operating system or form factor: a Windows desktop browser can expose file sharing while rejecting JSON or ZIP even when PDF and images are accepted. Test each exported MIME type on the actual target browser; the ordinary Export buttons remain available in every case.
+
+The manifests register chicCanva as a file share target for JSON, PDF, and common image formats. This integration is available only to an installed PWA on operating systems and browsers that implement Web Share Target. An existing installation may need to accept the new manifest or be reinstalled before chicCanva appears in the system share sheet. The POST action must remain inside service-worker scope; proxies must not redirect or discard its multipart body.
+
+A restrictive CSP must add the Trystero Nostr `wss:` signaling relays to `connect-src`. WebRTC media/data permissions remain browser controlled. Signaling requires network connectivity even though project bytes travel peer to peer. Deployments should disclose that relay operators see signaling metadata and the paired browser may expose WebRTC network-address information.
+
+Release verification must include an installed-PWA share of an image, PDF, project JSON, and Prompt Library JSON; cancellation without workspace mutation; preservation of the multipart POST by the proxy; and a two-device P2P transfer with successful digest verification.

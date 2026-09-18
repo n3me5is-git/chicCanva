@@ -75,6 +75,7 @@ def flow_for(topic_id: str, language: str) -> str:
         "ai-annotazioni": [("plain", bi("Immagine di riferimento", "Reference image")), ("rect", bi("Annota", "Annotate")), ("plain", bi("Scrivi commento", "Write comment")), ("plain", bi("Salva annotazioni", "Save annotations"))],
         "preview": [("preview", bi("Preview", "Preview")), ("plain", bi("Controlla pagine", "Review pages")), ("plain", bi("Riordina", "Reorder")), ("plain", bi("Apri pagina", "Open page"))],
         "export": [("plain", bi("Export", "Export")), ("plain", bi("Cosa esportare", "What to export")), ("plain", bi("Formato", "Format")), ("export", bi("Esporta", "Export"))],
+        "sharing": [("plain", bi("Export", "Export")), ("export", bi("Condividi / P2P", "Share / P2P")), ("plain", bi("QR o codice", "QR or code")), ("plain", bi("Scegli e importa", "Choose and import"))],
     }
     items = flows.get(topic_id)
     if not items:
@@ -99,6 +100,11 @@ def exact_ui_sample(topic_id: str, language: str) -> str:
         "snap": [("canvas-panel", bi("Sezione Canvas con griglia, snap, guide e proporzioni", "Canvas section with grid, snap, guides, and proportions"))],
         "preview": [("preview-panel", bi("Finestra Preview di tutte le pagine", "All-pages Preview window"))],
         "export": [("export-panel", bi("Centro Esporta nella webapp", "Export center in the web app"))],
+        "sharing": [
+            ("export-panel", bi("Comandi Condividi e Condivisione Progetti P2P nel Centro Esporta", "Share and P2P Project Sharing controls in the Export centre")),
+            ("p2p-dialog", bi("Finestra per scegliere Invio o Ricezione P2P", "Window for choosing P2P Send or Receive")),
+            ("prompt-import", bi("Scelta Aggiungi o Sostituisci per la Prompt Library", "Append or Replace choice for the Prompt Library")),
+        ],
         "mobile": [("mobile-workspace", bi("Area di lavoro nella disposizione mobile", "Workspace in the mobile layout"))],
         "puter": [("ai-panel", bi("Sezione AI collegata all’account Puter", "AI section connected to the Puter account"))],
         "ai-prompt": [("ai-panel", bi("Prompt e parametri della generazione immagini AI", "Prompt and settings for AI image generation"))],

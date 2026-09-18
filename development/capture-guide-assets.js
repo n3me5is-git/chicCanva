@@ -29,7 +29,9 @@ async function prepare(page, language) {
 async function shot(page, selector, name) {
   const locator = page.locator(selector).first();
   await locator.scrollIntoViewIfNeeded();
-  await locator.screenshot({ path: path.join(output, name + '.png') });
+  const target = path.join(output, name + '.png');
+  if (fs.existsSync(target)) fs.unlinkSync(target);
+  await locator.screenshot({ path: target });
 }
 
 async function menuBoard(page, language) {
@@ -98,6 +100,12 @@ async function menuBoard(page, language) {
     });
     await shot(page, '#aiCard', `${language}-ai-panel`);
     await shot(page, '#exportCard', `${language}-export-panel`);
+    await page.evaluate(() => document.querySelector('#p2pTransferDialog').showModal());
+    await shot(page, '#p2pTransferDialog', `${language}-p2p-dialog`);
+    await page.evaluate(() => document.querySelector('#p2pTransferDialog').close());
+    await page.evaluate(() => { const dialog=document.querySelector('#promptLibraryImportDialog'); document.querySelector('#promptLibraryImportInfo').textContent=document.documentElement.lang==='en'?'prompt-library-example.json · 2 prompts ready to import.':'prompt-library-esempio.json · 2 prompt pronti per l’importazione.'; dialog.showModal(); });
+    await shot(page, '#promptLibraryImportDialog', `${language}-prompt-import`);
+    await page.click('#promptLibraryImportCancel');
     await menuBoard(page, language);
     await page.evaluate(() => document.querySelector('#settingsDialog').showModal());
     await shot(page, '#settingsDialog', `${language}-memory-dialog`);

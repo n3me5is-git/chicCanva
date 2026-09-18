@@ -1,0 +1,61 @@
+<dialog id="shareFallbackDialog" class="chic-dialog share-fallback-dialog">
+  <h2>Condivisione non disponibile</h2>
+  <p id="shareFallbackInfo">Questo browser non può condividere il file attraverso il menu di sistema.</p>
+  <div class="row"><button class="btn accent" id="shareFallbackDownload" type="button">Scarica invece</button><button class="btn" id="shareFallbackCancel" type="button">Annulla</button></div>
+</dialog>
+
+<dialog id="incomingShareDialog" class="chic-dialog incoming-share-dialog">
+  <div class="sharing-dialog-head"><div><h2 id="incomingShareTitle">File condiviso con chicCanva</h2><p id="incomingShareCounter" class="help"></p></div><button class="iconbtn" id="incomingShareClose" type="button" aria-label="Annulla importazione">×</button></div>
+  <div class="incoming-share-file"><strong id="incomingShareName"></strong><span id="incomingShareMeta"></span></div>
+  <p id="incomingShareQuestion"></p>
+  <fieldset id="incomingImageDestination" class="hidden"><legend>Dove vuoi inserire l’immagine?</legend>
+    <label class="check"><input type="radio" name="incomingImageDestination" value="current" checked>Pagina corrente</label>
+    <label class="check"><input type="radio" name="incomingImageDestination" value="page">Nuova pagina dopo quella corrente</label>
+    <label class="check"><input type="radio" name="incomingImageDestination" value="project">Nuovo progetto</label>
+  </fieldset>
+  <div class="row incoming-share-actions"><button class="btn accent" id="incomingShareConfirm" type="button">Continua</button><button class="btn" id="incomingShareSkip" type="button">Annulla</button><button class="btn" id="incomingShareCancelAll" type="button">Annulla tutti</button></div>
+  <div class="status" id="incomingShareStatus" aria-live="polite"></div>
+</dialog>
+
+<dialog id="p2pTransferDialog" class="chic-dialog p2p-transfer-dialog">
+  <div class="sharing-dialog-head"><div><h2>Condivisione Progetti P2P</h2><p class="help">Trasferisci progetti direttamente tra due dispositivi con chicCanva aperto.</p></div><button class="iconbtn" id="closeP2pTransferBtn" type="button" aria-label="Chiudi condivisione P2P">×</button></div>
+  <section id="p2pStartView" class="p2p-view">
+    <div class="p2p-choice-grid"><button class="p2p-choice" id="p2pChooseSend" type="button"><strong>Invia progetti</strong><span>Scegli i progetti e crea un codice monouso.</span></button><button class="p2p-choice" id="p2pChooseReceive" type="button"><strong>Ricevi progetti</strong><span>Inserisci un codice oppure scansiona il QR.</span></button></div>
+    <p class="help p2p-privacy">I file passano direttamente tra i dispositivi. Il collegamento richiede Internet per il signaling e può non riuscire su reti molto restrittive.</p>
+  </section>
+  <section id="p2pSendSetupView" class="p2p-view hidden">
+    <button class="btn p2p-back" data-p2p-back type="button">← Indietro</button>
+    <div class="p2p-select-head"><h3>Che cosa vuoi inviare?</h3><div class="row"><button class="btn" id="p2pSelectCurrent" type="button">Progetto corrente</button><button class="btn" id="p2pSelectAll" type="button">Tutti</button></div></div>
+    <div id="p2pSendProjectList" class="p2p-item-list"></div>
+    <label class="check p2p-library-choice"><input id="p2pSendPromptLibrary" type="checkbox">Prompt Library</label>
+    <button class="btn accent" id="p2pCreateSession" type="button">Crea codice e attendi</button>
+  </section>
+  <section id="p2pSendSessionView" class="p2p-view hidden">
+    <button class="btn p2p-back" data-p2p-stop type="button">← Termina sessione</button>
+    <div class="p2p-code-layout"><div id="p2pQrCode" class="p2p-qr" aria-label="Codice QR per il trasferimento"></div><div class="p2p-code-copy"><span>Codice monouso</span><strong id="p2pSessionCode"></strong><button class="btn" id="p2pCopyCode" type="button">Copia codice</button></div></div>
+    <p id="p2pSendStatus" class="status" aria-live="polite">In attesa del destinatario…</p>
+    <progress id="p2pSendProgress" max="1" value="0"></progress>
+  </section>
+  <section id="p2pReceiveCodeView" class="p2p-view hidden">
+    <button class="btn p2p-back" data-p2p-back type="button">← Indietro</button>
+    <label>Codice monouso<input class="field p2p-code-input" id="p2pReceiveCode" inputmode="text" autocomplete="one-time-code" maxlength="14" placeholder="K7MP-WQ9H-T2"></label>
+    <div class="row"><button class="btn accent grow" id="p2pConnect" type="button">Connetti</button><button class="btn" id="p2pScanQr" type="button">Scansiona QR</button></div>
+    <p id="p2pReceiveStatus" class="status" aria-live="polite"></p>
+  </section>
+  <section id="p2pReceiveItemsView" class="p2p-view hidden">
+    <button class="btn p2p-back" data-p2p-stop type="button">← Annulla ricezione</button>
+    <div class="p2p-select-head"><h3>Contenuti disponibili</h3><button class="btn" id="p2pReceiveSelectAll" type="button">Seleziona tutti</button></div>
+    <div id="p2pReceiveItemList" class="p2p-item-list"></div>
+    <div id="p2pReceiveLibraryOptions" class="p2p-library-options hidden">
+      <label>Importazione Prompt Library<select id="p2pReceiveLibraryMode"><option value="append">Aggiungi alla libreria</option><option value="replace">Sostituisci l’intera libreria</option></select></label>
+      <label class="check"><input id="p2pReceiveReplaceNames" type="checkbox">Sostituisci i prompt con lo stesso nome</label>
+    </div>
+    <button class="btn accent" id="p2pReceiveSelected" type="button">Ricevi gli elementi selezionati</button>
+    <progress id="p2pReceiveProgress" max="1" value="0"></progress><p id="p2pImportStatus" class="status" aria-live="polite"></p>
+  </section>
+  <section id="p2pScannerView" class="p2p-view hidden">
+    <button class="btn p2p-back" id="p2pCloseScanner" type="button">← Chiudi fotocamera</button>
+    <div class="p2p-camera-frame"><video id="p2pScannerVideo" playsinline muted></video><span class="p2p-camera-guide"></span></div>
+    <p id="p2pScannerStatus" class="status" aria-live="polite">Inquadra il QR mostrato dall’altro dispositivo.</p>
+  </section>
+</dialog>

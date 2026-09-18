@@ -87,3 +87,7 @@ Semantic reference annotations follow that exception narrowly: the structural in
 - AI style and chroma instructions follow the active UI language; no automatic visible-text language instruction is added.
 - Both standalone guides regenerate with matching structural coverage.
 - Monolithic syntax, PWA inventory/cache ID, and editor regression tests pass.
+
+## Sharing localization
+
+File type IDs, manifest message names, MIME types, checksums, room derivation, and JSON keys remain stable internal values. Visible button labels, tooltips, confirmations, progress, errors, imported-name suffixes, and unsupported-format messages have canonical Italian source strings and English catalog entries. User filenames, project names, prompt titles, tags, and prompt bodies are never translated. The Italian → English → Italian round trip covers the native-share fallback, PWA import dialogs, Prompt Library merge dialog, and every P2P view.

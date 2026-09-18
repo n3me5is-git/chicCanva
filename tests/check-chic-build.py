@@ -42,9 +42,11 @@ assert 'data:image/png;base64,' not in pwa_html and all(f"'./guide-assets/{path.
 assert 'shellNavigation(request)' in sw and "fetch(request,{cache:'no-store'" in sw and 'event.waitUntil(refreshNavigation(request))' not in sw
 manifest=json.loads((pwa/'chicCanva.webmanifest').read_text(encoding='utf-8'))
 assert manifest['start_url']=='./' and manifest['scope']=='./' and manifest['display']=='standalone'
+assert manifest['share_target']['action']=='./share-target' and manifest['share_target']['method']=='POST' and manifest['share_target']['enctype']=='multipart/form-data' and manifest['share_target']['params']['files'][0]['name']=='files'
 assert {'192x192','512x512'}=={icon['sizes'] for icon in manifest['icons']}
 manifest_en=json.loads((pwa/'chicCanva-en.webmanifest').read_text(encoding='utf-8'))
-assert manifest_en['lang']=='en' and 'Small ideas, big projects' in manifest_en['name'] and manifest_en['icons']==manifest['icons']
+assert manifest_en['lang']=='en' and 'Small ideas, big projects' in manifest_en['name'] and manifest_en['icons']==manifest['icons'] and manifest_en['share_target']==manifest['share_target']
+assert "request.method==='POST'" in sw and 'receiveSharedFiles(request)' in sw and "SHARE_INBOX_DB='chicCanva-share-inbox'" in sw
 for size in (192,512):
  data=(pwa/f'chiccanva-{size}.png').read_bytes();assert data[:8]==b'\x89PNG\r\n\x1a\n'
  width,height=struct.unpack('>II',data[16:24]);assert (width,height)==(size,size)
@@ -59,7 +61,7 @@ assert "$('installPwaBtn').onclick=showPwaInstructions" in s and 'id="pwaInstall
 assert {'deletePageDialog','pwaUpdateBar','bgAutoColor','aiChromaKey','resetCropActiveBtn','exportClipboardBtn','emojiTranslate','aiGeneratedFallback','aiGeneratedDialog','aiGeneratedRetryBtn','aiGeneratedDownloadBtn'}.issubset(ids)
 assert 'AUTOSAVE_CURRENT' in s and 'runMobileBackgroundWorker' in s and 'setupCanvasColorPickers' in s
 vendor=root/'development/vendor'
-assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt'])
+assert all((vendor/name).is_file() for name in ['pdf.min.js','pdf.worker.min.js','pdfjs-LICENSE.txt','chic-transfer-vendor.js','chic-transfer-vendor.NOTICE.md','trystero-LICENSE.txt','trystero-core-LICENSE.txt','trystero-nostr-LICENSE.txt','noble-secp256k1-LICENSE.txt','jsQR-LICENSE.txt','nayuki-qr-LICENSE.txt'])
 assert len((vendor/'pdf.min.js').read_bytes())>300000 and len((vendor/'pdf.worker.min.js').read_bytes())>1000000
 assert "PDFJS_VERSION='3.11.174'" in s and 'PDF_WORKER_BASE64' in s and {'importPdfBtn','pdfImportDialog','pdfImportQuality'}.issubset(ids)
 expected_version=json.loads((root/'development/version.json').read_text(encoding='utf-8'))['version']
@@ -72,6 +74,8 @@ assert 'https://github.com/n3me5is-git/chicCanva' in s and '</div><details class
 assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-puter-login-link' in s
 assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s
 assert 'exportImageToClipboard' in s and 'writeImageBlobToClipboard' in s
+assert 'canNativeShareFile' in s and 'syncFileShareAvailability' in s and 'navigation.canShare({files:' in s
+assert s.count('class="transfer-separator"')>=2 and 'class="btn import-compact" id="importJsonPanel"' in s and 'class="btn import-compact" id="importPromptLibraryBtn"' in s
 assert 'layoutCanvasViewport' in s and "fitStageZoom({light:true,preserve:false})" in s and "$('resetCropActiveBtn').onclick=resetActiveCrop" in s
 assert {'imageInspector','changeResolutionBtn','resolutionDialog','memoryFootprint','objectLockAction'}.issubset(ids)
 assert 'pruneUnreachableAssets' in s and 'projectSnapshotForWorkspace' in s and 'activeUsesRoot:true' in s

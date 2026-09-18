@@ -78,6 +78,10 @@ The repository root `LICENSE` licenses original chicCanva code under MIT and rec
 | Openclipart artwork | User-selected external clipart | Openclipart represents its artwork as public-domain/CC0; retain source information and verify an individual item if provenance matters |
 | Puter JavaScript service/API | Optional generation/network/account usage | Loaded remotely; the upstream Puter repository is AGPL-3.0-only, while hosted-service use is also governed by Puter's current terms and selected provider/service terms |
 | Gemma 4 31B through Puter | Optional translation for search text not covered locally | User-pays Puter service and selected model/provider terms |
+| Trystero 0.23.1 (`trystero`, `trystero/core`, `trystero/nostr`) | P2P room signaling and WebRTC data transfer | MIT; bundled notices in `development/vendor/trystero*-LICENSE.txt` |
+| `@noble/secp256k1` 3.1.0 | Nostr signing dependency bundled through Trystero | MIT; `development/vendor/noble-secp256k1-LICENSE.txt` |
+| jsQR 1.4.0 | Local decoding of camera QR frames | Apache-2.0; `development/vendor/jsQR-LICENSE.txt` |
+| QR Code generator by Project Nayuki, commit `3c6d0b3cefb4e049dc337e82237c9644399716a8` | Local SVG QR generation | MIT; `development/vendor/nayuki-qr-LICENSE.txt` |
 
 ### AGPL release implication
 
@@ -132,3 +136,12 @@ For each vendored update:
 - [ ] Dependency versions and notices match the shipped bundle.
 - [ ] OpenMoji attribution is present and modifications are identified.
 - [ ] AGPL-covered source and notices are made available with deployments.
+- [ ] Native sharing transfers only the artifact the user chose.
+- [ ] PWA inbox records expire and are deleted after import or cancel.
+- [ ] P2P manifests enforce item count, size, total size, type, and SHA-256 checks.
+- [ ] QR camera tracks stop on success, cancellation, error, and dialog close.
+- [ ] Trystero/Nostr/WebRTC privacy and dependency notices are visible in the shipped application.
+
+## 9. Sharing privacy boundaries
+
+Native sharing passes a user-selected generated file to the operating system's share sheet. The PWA share target stores received files temporarily in the application's origin until the user imports or cancels them. P2P transfer uses public Nostr relays for signaling and WebRTC for encrypted peer transport; relay operators can observe connection metadata, and a direct WebRTC peer may learn network-address information exposed by the browser. Project bytes are exchanged only after explicit actions on both devices. QR camera access begins only after the user presses Scan and its tracks are stopped when scanning ends.

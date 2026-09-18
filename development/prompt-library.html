@@ -8,11 +8,10 @@
       <input class="field" id="promptLibrarySearch" type="search" placeholder="Cerca per titolo, tag, descrizione o prompt…">
       <details class="prompt-tag-filter" id="promptLibraryTagFilter"><summary>Filtra per tag <span id="promptLibraryTagCount"></span></summary><div id="promptLibraryTagChoices" class="prompt-tag-choices"></div><button class="btn" id="promptLibraryTagReset" type="button">Azzera filtri</button></details>
     </div>
-    <div class="prompt-library-actions row">
-      <button class="btn accent" id="newPromptLibraryBtn" type="button">＋ Nuovo prompt</button>
-      <button class="btn" id="exportPromptLibraryBtn" type="button">Esporta JSON</button>
-      <button class="btn" id="importPromptLibraryBtn" type="button">Importa JSON</button>
-      <input id="importPromptLibraryFile" type="file" accept="application/json,.json" hidden>
+      <div class="prompt-library-actions row">
+        <button class="btn accent" id="newPromptLibraryBtn" type="button">＋ Nuovo prompt</button>
+        <span class="prompt-library-transfer-actions"><span class="prompt-library-export-group"><button class="btn" id="exportPromptLibraryBtn" type="button">Esporta JSON</button><button class="iconbtn share-file-button hidden" id="sharePromptLibraryBtn" type="button" aria-label="Condividi Prompt Library" data-tip="Condividi Prompt Library"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 10.8 7.4-4.4M8.3 13.2l7.4 4.4"/></svg></button></span><span class="transfer-separator" aria-hidden="true"></span><button class="btn import-compact" id="importPromptLibraryBtn" type="button">Importa JSON</button></span>
+        <input id="importPromptLibraryFile" type="file" accept="application/json,.json" hidden>
     </div>
     <div id="promptLibraryItems" class="prompt-library-items"></div>
     <p id="promptLibraryEmpty" class="status">La libreria è vuota.</p>
@@ -36,4 +35,16 @@
     </div>
     <div class="status" id="promptLibraryStatus"></div>
   </section>
+</dialog>
+<dialog id="promptLibraryImportDialog" class="chic-dialog prompt-library-import-dialog">
+  <h2>Importa Prompt Library</h2>
+  <p id="promptLibraryImportInfo">Scegli come unire i prompt alla libreria del browser.</p>
+  <fieldset><legend>Modalità di importazione</legend>
+    <label class="check"><input type="radio" name="promptLibraryImportMode" value="append" checked>Aggiungi alla libreria esistente</label>
+    <label class="check"><input type="radio" name="promptLibraryImportMode" value="replace">Sostituisci l’intera libreria</label>
+  </fieldset>
+  <label class="check" id="promptLibraryReplaceNamesRow"><input id="promptLibraryReplaceNames" type="checkbox">Sostituisci i prompt con lo stesso nome</label>
+  <p class="help" id="promptLibraryImportHelp">In modalità Aggiungi i prompt esistenti vengono conservati. La sostituzione completa equivale al ripristino di un backup.</p>
+  <div class="row"><button class="btn accent" id="promptLibraryImportConfirm" type="button">Importa</button><button class="btn" id="promptLibraryImportCancel" type="button">Annulla</button></div>
+  <div class="status" id="promptLibraryImportStatus" aria-live="polite"></div>
 </dialog>

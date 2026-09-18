@@ -397,3 +397,15 @@ asset.meta.colorizer = {
 ```
 
 The operation list is diagnostic and UI metadata; the flattened PNG is authoritative. This keeps reload deterministic and avoids replaying many masks during page load.
+
+## Sharing and transfer architecture
+
+`development/file-sharing.html`, `.css`, and `.js` own native file sharing, incoming PWA files, QR capture, and Trystero sessions. They depend on the existing export serializers and artifact builders instead of maintaining parallel formats. `development/vendor/chic-transfer-vendor.js` is the browser IIFE bundle for Trystero 0.23.1, jsQR 1.4.0, and the pinned Nayuki QR generator. The composer exposes it as `globalThis.ChicTransferVendor` before the feature module runs. It is embedded in the monolithic application and emitted into the generated PWA script, so there is no package-manager or CDN runtime dependency.
+
+The service worker handles the manifest `share_target` POST before ordinary GET/cache routing. It retains incoming `File` values temporarily in the dedicated `chicCanva-share-inbox` IndexedDB database and redirects with an opaque inbox ID. The application consumes that record only after saved-workspace recovery, classifies the file from MIME type, extension, and bounded content probes, and dispatches it through the established project, Prompt Library, PDF, or image importer. The main workspace database and project schema do not change.
+
+The P2P protocol uses `manifest`, `request`, `payload`, `done`, and `error` actions. Manifests carry stable item IDs, type, display name, byte length, and SHA-256. Receivers commit only a requested complete set after length and digest validation. Stable project JSON and Prompt Library JSON remain the interchange formats. WebRTC peers, camera streams, timers, receive buffers, and temporary inbox records never enter project state, history, or autosave.
+
+### Startup viewport stabilization
+
+Saved-workspace recovery is a viewport transition. From the moment the startup dialog closes until project tabs and the active page finish restoring, `fitStageZoom()` is restricted to CSS-only previews. `ResizeObserver` notifications are coalesced across two animation frames and one final forced raster update. This prevents alternating dialog and workspace measurements from repeatedly rebuilding the Fabric backing store. The transition captures and restores `zoomMode`, including numeric values produced by Ctrl+wheel or pinch.

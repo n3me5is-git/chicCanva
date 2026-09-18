@@ -79,7 +79,7 @@ function applySettledCanvasRaster(logicalWidth,logicalHeight,force=false){
  canvas.__chicRenderScale=scale;
  if(force||changed||canvas.getWidth()!==logicalWidth||canvas.getHeight()!==logicalHeight){canvas.setDimensions({width:logicalWidth,height:logicalHeight});const expectedWidth=Math.round(logicalWidth*scale),expectedHeight=Math.round(logicalHeight*scale);if((canvas.lowerCanvasEl.width!==expectedWidth||canvas.lowerCanvasEl.height!==expectedHeight)&&canvas._initRetinaScaling)canvas._initRetinaScaling()}
 }
-let sidebarViewportFrame=0,sidebarViewportOptions=null,sidebarResizeZoomMode=null;
+let sidebarViewportFrame=0,sidebarViewportOptions=null,sidebarResizeZoomMode=null,canvasViewportTransitionDepth=0,canvasViewportTransitionZoomMode=null,canvasViewportTransitionFrame=0,canvasViewportTransitionTimer=0;
 function canvasFitZoom(){
  if(!currentPage)return null;const wrap=$('stageWrap'),logicalWidth=currentPage.widthMm*PX_PER_MM,logicalHeight=currentPage.heightMm*PX_PER_MM;
  return zoomMode==='fit'?Math.min((wrap.clientWidth-48)/logicalWidth,(wrap.clientHeight-64)/logicalHeight):Number(zoomMode)
@@ -87,6 +87,22 @@ function canvasFitZoom(){
 function applySidebarViewportPreview(){
  sidebarViewportFrame=0;if(!sidebarViewportOptions||!currentPage)return;const options=sidebarViewportOptions;sidebarViewportOptions=null;layoutCanvasViewport(canvasFitZoom(),options)
 }
+function beginCanvasViewportTransition(){
+ if(canvasViewportTransitionDepth++===0){canvasViewportTransitionZoomMode=zoomMode;clearTimeout(canvasViewportTransitionTimer);canvasViewportTransitionTimer=0;if(canvasViewportTransitionFrame){cancelAnimationFrame(canvasViewportTransitionFrame);canvasViewportTransitionFrame=0}$('stageWrap')?.classList.add('viewport-settling')}
+}
+function settleCanvasViewportTransition(){
+ canvasViewportTransitionFrame=0;if(canvasViewportTransitionDepth||!currentPage)return;const preserved=canvasViewportTransitionZoomMode??zoomMode;canvasViewportTransitionZoomMode=null;zoomMode=preserved;$('stageWrap')?.classList.remove('viewport-settling');fitStageZoom({forceRaster:true,preserve:false})
+}
+function scheduleCanvasViewportLayout(){
+ if(!currentPage)return;if(canvasViewportTransitionZoomMode===null)canvasViewportTransitionZoomMode=zoomMode;zoomMode=canvasViewportTransitionZoomMode;
+ if(canvasViewportTransitionDepth){fitStageZoom({light:true,preserve:false});return}
+ if(canvasViewportTransitionFrame){cancelAnimationFrame(canvasViewportTransitionFrame);canvasViewportTransitionFrame=0}clearTimeout(canvasViewportTransitionTimer);
+ fitStageZoom({light:true,preserve:false});canvasViewportTransitionTimer=setTimeout(()=>{canvasViewportTransitionTimer=0;canvasViewportTransitionFrame=requestAnimationFrame(()=>{canvasViewportTransitionFrame=requestAnimationFrame(settleCanvasViewportTransition)})},50)
+}
+function finishCanvasViewportTransition(){
+ if(canvasViewportTransitionDepth<=0)return;canvasViewportTransitionDepth--;if(!canvasViewportTransitionDepth)scheduleCanvasViewportLayout()
+}
+const stableViewportSetZoom=setZoom;setZoom=function(value){canvasViewportTransitionZoomMode=value;const result=stableViewportSetZoom(value);if(!canvasViewportTransitionDepth)canvasViewportTransitionZoomMode=null;return result};
 function layoutCanvasViewport(nextZoom,{light=false,preserve=true,forceRaster=false}={}){
  if(!currentPage)return;const wrap=$('stageWrap'),space=$('stageSpace'),shell=$('canvasShell'),logicalWidth=Math.round(currentPage.widthMm*PX_PER_MM),logicalHeight=Math.round(currentPage.heightMm*PX_PER_MM),anchor=preserve&&zoomMode!=='fit'?canvasViewportAnchor():null;
  viewZoom=clamp(nextZoom,.05,6);const displayWidth=logicalWidth*viewZoom,displayHeight=logicalHeight*viewZoom,isFit=zoomMode==='fit',padX=isFit?24:Math.max(96,wrap.clientWidth),padY=isFit?32:Math.max(96,wrap.clientHeight),spaceWidth=isFit?Math.max(wrap.clientWidth,displayWidth+padX*2):displayWidth+padX*2,spaceHeight=isFit?Math.max(wrap.clientHeight,displayHeight+padY*2):displayHeight+padY*2,left=isFit?(spaceWidth-displayWidth)/2:padX,top=isFit?(spaceHeight-displayHeight)/2:padY;
@@ -97,6 +113,7 @@ function layoutCanvasViewport(nextZoom,{light=false,preserve=true,forceRaster=fa
 }
 fitStageZoom=function(options={}){
  if(!currentPage)return;
+ if(canvasViewportTransitionDepth&&!options.forceRaster){if(canvasViewportTransitionZoomMode!==null)zoomMode=canvasViewportTransitionZoomMode;layoutCanvasViewport(canvasFitZoom(),{...options,light:true,preserve:false});return}
  if(resizingSidebar&&!options.forceRaster){sidebarViewportOptions={...options,light:true,preserve:false};if(!sidebarViewportFrame)sidebarViewportFrame=requestAnimationFrame(applySidebarViewportPreview);return}
  layoutCanvasViewport(canvasFitZoom(),options)
 };

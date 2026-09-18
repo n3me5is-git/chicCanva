@@ -198,3 +198,11 @@ Undo and Redo preserve the active Colorizer tool when the destination snapshot s
 The Text widget is selection-aware. A single text object reveals **Modifica testo oggetto** above the shared text field. During editing, controls that create or split new content are disabled; uppercase conversion and Smart Emoji remain available. The primary action becomes **Aggiorna testo**, and dimension constraints explain their fixed top-left anchor.
 
 The Snap widget uses one vocabulary for movement, resize, and crop. Magenta overlays communicate page/object alignment, green overlays communicate equal spacing, and neither is printable. Modifier help uses increased line spacing on narrow sidebars.
+
+## Sharing interaction model
+
+Small share-icon buttons sit beside the corresponding large export buttons and use the same focus, disabled, tooltip, and localization patterns as the main application. They supplement the familiar download actions and appear only when the browser confirms that it can share that exact file type. The layout keeps Export as the wide primary action, places its optional share icon in the same group, separates Import with a thin vertical rule, and gives Import a compact but touch-safe width on desktop and mobile. Capability detection is used instead of hiding all desktop browsers because support varies by file type as well as browser and operating system. The P2P entry point exists only in the Export sidebar card.
+
+Incoming PWA content always opens a confirmation dialog after workspace recovery. Each file type presents only relevant decisions, and every route includes Cancel. Prompt Library append/replace is one shared dialog contract across manual import, PWA receipt, and P2P receipt; append can optionally replace entries with the same name.
+
+The P2P dialog changes views instead of stacking dialogs: choose Send/Receive, configure, wait/connect, select incoming content, and monitor progress. Mobile uses the standard full-viewport treatment; desktop preserves the modal margin and rounded surface. Camera preview stays visible while scanning, reports denial or decoding errors in place, and has an explicit close path. Long names remain inside the item row and cannot push actions beyond the viewport.

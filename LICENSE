@@ -105,6 +105,25 @@ Third-party software and content
    Individual source/provenance should be retained and checked where required.
    Site: https://openclipart.org/
 
+9. Trystero 0.23.1 transfer bundle
+   Purpose: explicit peer-to-peer project and Prompt Library transfer over
+            WebRTC, with Nostr-based signaling.
+   Components: trystero 0.23.1, @trystero-p2p/core 0.23.1,
+               @trystero-p2p/nostr 0.23.1, and @noble/secp256k1 3.1.0.
+   License: MIT.
+   Source: https://github.com/dmotz/trystero
+   Bundled license copies and provenance:
+   development/vendor/chic-transfer-vendor.NOTICE.md
+
+10. QR transfer helpers
+    Purpose: local generation and camera decoding of one-time transfer codes.
+    Project Nayuki QR Code Generator, commit 3c6d0b3: MIT.
+    Source: https://github.com/nayuki/QR-Code-generator
+    jsQR 1.4.0: Apache License 2.0.
+    Source: https://github.com/cozmo/jsQR
+    Bundled license copies: development/vendor/nayuki-qr-LICENSE.txt and
+    development/vendor/jsQR-LICENSE.txt
+
 Remote services
 ---------------
 

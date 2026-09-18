@@ -76,7 +76,7 @@ python tests/check-chic-build.py
 git diff --check
 ```
 
-`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera entrambe le guide interne e le due guide HTML autonome, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica e incorpora entrambe le lingue. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali; ogni riferimento locale riceve l'ID della build per impedire che cache HTTP e service worker mescolino revisioni diverse. La release corrente è **1.12.13**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
+`build-workspace.py` legge la versione da `development/version.json`, genera automaticamente la data della build, incorpora PDF.js e il worker nel singolo HTML, rigenera entrambe le guide interne e le due guide HTML autonome, compone l'app e controlla con Node ogni blocco JavaScript inline. La distribuzione desktop/server resta monolitica e incorpora entrambe le lingue. Per la sola PWA lo stesso output viene diviso automaticamente in HTML, CSS e quattro script locali; ogni riferimento locale riceve l'ID della build per impedire che cache HTTP e service worker mescolino revisioni diverse. La release corrente è **1.13.2**; per una nuova release modifica una sola volta `development/version.json` e ricostruisci.
 
 La suite browser è `tests/v7-test.html`: servila via HTTP e usa un parametro nuovo, per esempio `?run=14`, per evitare vecchie cache. Il risultato deve terminare con `ALL V7 CHECKS COMPLETE`. Il flusso completo è in [Development workflow](docs/DEVELOPMENT_WORKFLOW.md).
 
@@ -223,6 +223,6 @@ La cartella [`docs/`](docs/) contiene:
 
 ## Licenza
 
-Il codice e la documentazione originali di chicCanva sono distribuiti con licenza MIT. I componenti incorporati o richiamati mantengono le proprie licenze: in particolare Fabric.js, jsPDF e ONNX Runtime sono MIT; PDF.js è Apache-2.0; IMG.LY background removal è AGPL-3.0; la grafica OpenMoji è CC BY-SA 4.0; ogni font mantiene la licenza della propria famiglia.
+Il codice e la documentazione originali di chicCanva sono distribuiti con licenza MIT. I componenti incorporati o richiamati mantengono le proprie licenze: in particolare Fabric.js, jsPDF, ONNX Runtime, Trystero 0.23.1, `@noble/secp256k1` 3.1.0 e il generatore QR Project Nayuki sono MIT; PDF.js e jsQR 1.4.0 sono Apache-2.0; IMG.LY background removal è AGPL-3.0; la grafica OpenMoji è CC BY-SA 4.0; ogni font mantiene la licenza della propria famiglia.
 
 La licenza MIT non sostituisce gli obblighi AGPL o CC BY-SA delle relative parti. Chi pubblica o modifica una build deve conservare attribuzioni e sorgenti richiesti. Consulta [`LICENSE`](LICENSE) e [Sicurezza, privacy e licenze](docs/SECURITY_PRIVACY_LICENSING.md).
