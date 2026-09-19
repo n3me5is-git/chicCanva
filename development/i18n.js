@@ -808,7 +808,7 @@ Accesso Puter richiesto\tPuter sign-in required
 Fattore di scala\tScale factor
 Qualità / compressione PNG\tPNG quality / compression
 Tag\tTags
-Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. Trystero 0.23.1, @trystero-p2p/core 0.23.1, @trystero-p2p/nostr 0.23.1 e @noble/secp256k1 3.1.0: MIT. Nayuki QR Code Generator, commit 3c6d0b3: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0;\tFabric.js 5.1.0 and jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla and contributors. Trystero 0.23.1, @trystero-p2p/core 0.23.1, @trystero-p2p/nostr 0.23.1, and @noble/secp256k1 3.1.0: MIT. Nayuki QR Code Generator, commit 3c6d0b3: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT and related notices. IMG.LY background-removal 1.7.0: AGPL-3.0;
+Fabric.js 5.1.0 e jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla e contributori. MEGAJS 1.3.10: MIT, client non ufficiale per MEGA. Trystero 0.25.3, @trystero-p2p/core 0.25.3, @trystero-p2p/nostr 0.25.3 e @noble/secp256k1 3.2.0: MIT. Nayuki QR Code Generator 1.8.0: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT e relative notice. IMG.LY background-removal 1.7.0: AGPL-3.0;	Fabric.js 5.1.0 and jsPDF 2.5.1: MIT. PDF.js 3.11.174: Apache License 2.0, Mozilla and contributors. MEGAJS 1.3.10: MIT, unofficial client for MEGA. Trystero 0.25.3, @trystero-p2p/core 0.25.3, @trystero-p2p/nostr 0.25.3, and @noble/secp256k1 3.2.0: MIT. Nayuki QR Code Generator 1.8.0: MIT. jsQR 1.4.0: Apache License 2.0. ONNX Runtime Web 1.21.0: MIT and related notices. IMG.LY background-removal 1.7.0: AGPL-3.0;
 sorgente e licenza\tsource and license
 . OpenMoji 17: grafica CC BY-SA 4.0, HfG Schwäbisch Gmünd e collaboratori; codice OpenMoji LGPL-3.0 dove applicabile. Le opere pubblicate su Openclipart sono indicate dal progetto come pubblico dominio/CC0 1.0. Puter.js e i servizi Puter, inclusa la traduzione opzionale con Gemma 4 31B, seguono le rispettive licenze e condizioni del servizio. Fontsource, Google Fonts e ogni famiglia tipografica conservano la propria licenza.\t. OpenMoji 17: artwork under CC BY-SA 4.0, HfG Schwäbisch Gmünd and contributors; OpenMoji code under LGPL-3.0 where applicable. Works published on Openclipart are identified by the project as public domain/CC0 1.0. Puter.js and Puter services, including optional translation with Gemma 4 31B, follow their respective licences and terms of service. Fontsource, Google Fonts, and each font family retain their own licence.
 Il caricamento diretto è gratuito ma alcuni siti lo bloccano. Puter usa banda o quota dell’account. Puoi anche copiare l’immagine dal sito e usare\tDirect loading is free, but some sites block it. Puter uses account bandwidth or allowance. You can also copy the image from the site and use
@@ -960,6 +960,21 @@ Questo formato non è supportato.\tThis format is not supported.
 Sessione scaduta per inattività.\tSession expired due to inactivity.
 Codice copiato\tCode copied
 Condivisione P2P non disponibile in questo browser\tP2P sharing is unavailable in this browser
+Configura un relay personalizzato\tConfigure a custom relay
+Relay di signaling personalizzato\tCustom signaling relay
+Il relay personalizzato viene aggiunto ai relay interni. In questo modo due dispositivi mantengono sempre relay comuni anche se hanno impostazioni diverse.\tThe custom relay is added to the built-in relays. This ensures that two devices always keep relays in common even when their settings differ.
+Indirizzo relay WSS\tWSS relay address
+Salva relay\tSave relay
+Rimuovi relay personalizzato\tRemove custom relay
+Nessun relay di signaling è raggiungibile.\tNo signaling relay is reachable.
+Configura relay\tConfigure relay
+Inserisci un indirizzo relay valido che inizi con wss://\tEnter a valid relay address beginning with wss://
+Relay personalizzato salvato. Ripeti la connessione per applicarlo.\tCustom relay saved. Try the connection again to apply it.
+Relay personalizzato rimosso. Verranno usati i relay interni.\tCustom relay removed. The built-in relays will be used.
+Connessione ai relay di signaling…\tConnecting to signaling relays…
+Relay collegati · in attesa del destinatario…\tRelays connected · waiting for the recipient…
+Relay collegati · ricerca del dispositivo che invia…\tRelays connected · looking for the sending device…
+Nessun relay di signaling è raggiungibile. Controlla la rete oppure configura un relay personalizzato.\tNo signaling relay is reachable. Check your network or configure a custom relay.
 Workspace vuoto\tEmpty workspace
 File senza nome\tUnnamed file
 Preparazione…\tPreparing…
@@ -988,16 +1003,91 @@ La fotocamera richiede HTTPS e un browser compatibile\tThe camera requires HTTPS
 Richiesta accesso alla fotocamera…\tRequesting camera access…
 Codice ricevuto. Premi Connetti per continuare.\tCode received. Press Connect to continue.
 file\tfile
+Cloud\tCloud
+Apri Cloud\tOpen Cloud
+Cloud Storage\tCloud Storage
+Apri, salva e sincronizza progetti con MEGA.\tOpen, save, and synchronize projects with MEGA.
+Cloud Storage è disponibile solo quando chicCanva è pubblicata su HTTPS.	Cloud Storage is available only when chicCanva is hosted over HTTPS.
+Email MEGA\tMEGA email
+Usa autenticazione a due fattori\tUse two-factor authentication
+Codice 2FA\t2FA code
+Salva sessione nel browser\tSave session in this browser
+Password e codice 2FA non vengono salvati. La sessione è cifrata nel database di questo browser.\tPassword and 2FA code are never saved. The session is encrypted in this browser database.
+Accedi a MEGA\tSign in to MEGA
+Spazio MEGA\tMEGA storage
+Apri Cloud Storage\tOpen Cloud Storage
+Strumenti Cloud Storage\tCloud Storage tools
+Indietro\tBack
+Nuova cartella\tNew folder
+Modalità modifica\tEdit mode
+Duplica\tDuplicate
+Sposta\tMove
+Sposta nel cestino\tMove to trash
+Percorso Cloud Storage\tCloud Storage path
+Seleziona un file per visualizzarne i dettagli.\tSelect a file to view its details.
+Operazione in corso…\tOperation in progress…
+Salva qui\tSave here
+Importa selezionati\tImport selected
+Dove vuoi salvare?\tWhere do you want to save?
+Salva sul dispositivo\tSave to device
+Salva su Cloud\tSave to Cloud
+Conferma operazione\tConfirm operation
+Sposta in una cartella\tMove to a folder
+Sposta qui\tMove here
+Pulizia Cloud Storage\tCloud Storage cleanup
+Scegli quali dati spostare nel Cestino MEGA.\tChoose which data to move to the MEGA Trash.
+Backup di questa istanza\tBackups from this instance
+Tutti i backup\tAll backups
+Dati di sincronizzazione\tSynchronization data
+Sessione Cloud modificata\tCloud session changed
+Un altro dispositivo ha aggiornato questa sessione. Le modifiche correnti restano salvate soltanto in questo browser finché non scegli come continuare.\tAnother device updated this session. Current changes remain saved only in this browser until you choose how to continue.
+Ricarica dal Cloud\tReload from Cloud
+Continua solo localmente\tContinue locally only
+Sincronizzazione Cloud sospesa\tCloud synchronization paused
+Copie MEGA\tMEGA copies
+Nascondi l’indicatore di sincronizzazione sospesa\tHide the paused synchronization indicator
+Le impostazioni restano memorizzate quando MEGA è scollegato, ma diventano operative soltanto dopo la connessione.\tSettings are retained while MEGA is disconnected, but become active only after connection.
+Pulisci copie Cloud\tClean Cloud copies
+Cloud Storage non collegato.\tCloud Storage is not connected.
+Riprendi dal dispositivo\tResume from device
+Riprendi dal Cloud\tResume from Cloud
+Apri Cloud insieme ai progetti locali\tOpen Cloud alongside local projects
+Cloud Drive\tCloud Drive
+Cartella\tFolder
+Questa cartella è vuota.\tThis folder is empty.
+Caricamento anteprima…\tLoading preview…
+Anteprima non disponibile\tPreview unavailable
+Apri in chicCanva\tOpen in chicCanva
+Scegli una cartella dentro chicCanva Cloud.\tChoose a folder inside chicCanva Cloud.
+Fuori da chicCanva Cloud i file sono in sola lettura.\tFiles outside chicCanva Cloud are read-only.
+Nome della cartella\tFolder name
+Nome non valido\tInvalid name
+File salvato su Cloud\tFile saved to Cloud
+Accedi prima a MEGA\tSign in to MEGA first
+Formato non supportato\tUnsupported format
+Scegli dove salvare il file.\tChoose where to save the file.
+Il file verrà generato dopo la scelta della destinazione.\tThe file will be generated after choosing the destination.
+Progetto chicCanva modificabile.\tEditable chicCanva project.
+Backup della Prompt Library.\tPrompt Library backup.
+Ultimo backup\tLast backup
+Operazione Cloud non riuscita\tCloud operation failed
+Dati Cloud spostati nel Cestino MEGA\tCloud data moved to the MEGA Trash
 `.trim().split('\n').filter(Boolean).map(line=>{const i=line.indexOf('\t');return[line.slice(0,i),line.slice(i+1)]}));
 
 const I18N_PATTERNS=[
+ [/^Inserisci email e password MEGA\.$/,'Enter your MEGA email and password.'],[/^Accesso a MEGA…$/,'Signing in to MEGA…'],[/^Cloud Storage collegato\.$/,'Cloud Storage connected.'],
+ [/^Accesso non riuscito: (.+)$/,'Sign-in failed: $1'],[/^Spazio MEGA non disponibile: (.+)$/,'MEGA storage unavailable: $1'],[/^Sessione MEGA rimossa da questo browser\.$/,'MEGA session removed from this browser.'],
+ [/^Download (.+)…$/,'Downloading $1…'],[/^Caricamento (.+)…$/,'Uploading $1…'],[/^Salvataggio non riuscito: (.+)$/,'Save failed: $1'],[/^Importazione completata\.$/,'Import complete.'],
+ [/^Spostare (\d+) elemento nel Cestino MEGA\?$/,'Move $1 item to the MEGA Trash?'],[/^Spostare (\d+) elementi nel Cestino MEGA\?$/,'Move $1 items to the MEGA Trash?'],
+ [/^Creare una copia di «(.+)»\?$/,'Create a copy of “$1”?'],[/^Progetto «(.+)» esportato\.$/,'Project “$1” exported.'],
+ [/^Dispositivo: (.+)$/,'Device: $1'],[/^Cloud: (.+)$/,'Cloud: $1'],
  [/^(\d+) prompt pronti per l’importazione\.$/,'$1 prompts ready to import.'],[/^1 prompt pronto per l’importazione\.$/,'1 prompt ready to import.'],
  [/^(\d+) prompt importati$/,'$1 prompts imported'],[/^1 prompt importato$/,'1 prompt imported'],
  [/^(\d+) elementi importati\.$/,'$1 items imported.'],[/^1 elemento importato\.$/,'1 item imported.'],
  [/^1 di (\d+)$/,'1 of $1'],
  [/^«(.+)» è pronto, ma questo browser non può inviarlo tramite il menu di sistema\.$/,'“$1” is ready, but this browser cannot send it through the system share menu.'],
  [/^Condivisione non riuscita: (.+)$/,'Sharing failed: $1'],[/^Importazione non riuscita: (.+)$/,'Import failed: $1'],
- [/^Connessione non riuscita: (.+)$/,'Connection failed: $1'],[/^Invio non riuscito: (.+)$/,'Sending failed: $1'],[/^Destinatario: (.+)$/,'Recipient: $1'],
+ [/^Connessione non riuscita: (.+)$/,'Connection failed: $1'],[/^Invio non riuscito: (.+)$/,'Sending failed: $1'],[/^Destinatario: (.+)$/,'Recipient: $1'],[/^Connessione WebRTC non riuscita: (.+)$/,'WebRTC connection failed: $1'],
  [/^Il progetto «(.+)» supera il limite di (.+)$/,'Project “$1” exceeds the $2 limit'],
  [/^Il trasferimento supera il limite complessivo di (.+)$/,'The transfer exceeds the total limit of $1'],
  [/^Il file «(.+)» è incompleto$/,'File “$1” is incomplete'],[/^Verifica non riuscita per «(.+)»$/,'Verification failed for “$1”'],

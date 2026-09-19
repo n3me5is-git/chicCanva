@@ -100,6 +100,7 @@ async function menuBoard(page, language) {
     });
     await shot(page, '#aiCard', `${language}-ai-panel`);
     await shot(page, '#exportCard', `${language}-export-panel`);
+    await shot(page, '#cloudStorageCard', `${language}-cloud-panel`);
     await page.evaluate(() => document.querySelector('#p2pTransferDialog').showModal());
     await shot(page, '#p2pTransferDialog', `${language}-p2p-dialog`);
     await page.evaluate(() => document.querySelector('#p2pTransferDialog').close());

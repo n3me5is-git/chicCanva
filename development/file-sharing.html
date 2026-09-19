@@ -22,6 +22,7 @@
   <section id="p2pStartView" class="p2p-view">
     <div class="p2p-choice-grid"><button class="p2p-choice" id="p2pChooseSend" type="button"><strong>Invia progetti</strong><span>Scegli i progetti e crea un codice monouso.</span></button><button class="p2p-choice" id="p2pChooseReceive" type="button"><strong>Ricevi progetti</strong><span>Inserisci un codice oppure scansiona il QR.</span></button></div>
     <p class="help p2p-privacy">I file passano direttamente tra i dispositivi. Il collegamento richiede Internet per il signaling e può non riuscire su reti molto restrittive.</p>
+    <button class="p2p-text-link" id="p2pOpenRelaySettings" type="button">Configura un relay personalizzato</button>
   </section>
   <section id="p2pSendSetupView" class="p2p-view hidden">
     <button class="btn p2p-back" data-p2p-back type="button">← Indietro</button>
@@ -58,4 +59,13 @@
     <div class="p2p-camera-frame"><video id="p2pScannerVideo" playsinline muted></video><span class="p2p-camera-guide"></span></div>
     <p id="p2pScannerStatus" class="status" aria-live="polite">Inquadra il QR mostrato dall’altro dispositivo.</p>
   </section>
+  <section id="p2pRelaySettingsView" class="p2p-view hidden">
+    <button class="btn p2p-back" id="p2pCloseRelaySettings" type="button">← Indietro</button>
+    <h3>Relay di signaling personalizzato</h3>
+    <p class="help">Il relay personalizzato viene aggiunto ai relay interni. In questo modo due dispositivi mantengono sempre relay comuni anche se hanno impostazioni diverse.</p>
+    <label>Indirizzo relay WSS<input class="field" id="p2pCustomRelayUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="wss://relay.example.org"></label>
+    <div class="row p2p-relay-actions"><button class="btn accent" id="p2pSaveRelay" type="button">Salva relay</button><button class="btn" id="p2pRemoveRelay" type="button">Rimuovi relay personalizzato</button></div>
+    <p id="p2pRelaySettingsStatus" class="status" aria-live="polite"></p>
+  </section>
+  <div id="p2pSignalingError" class="p2p-signaling-error hidden" role="alert"><span id="p2pSignalingErrorText">Nessun relay di signaling è raggiungibile.</span><button class="p2p-text-link" id="p2pErrorRelaySettings" type="button">Configura relay</button></div>
 </dialog>

@@ -223,6 +223,10 @@ La cartella [`docs/`](docs/) contiene:
 
 ## Licenza
 
-Il codice e la documentazione originali di chicCanva sono distribuiti con licenza MIT. I componenti incorporati o richiamati mantengono le proprie licenze: in particolare Fabric.js, jsPDF, ONNX Runtime, Trystero 0.23.1, `@noble/secp256k1` 3.1.0 e il generatore QR Project Nayuki sono MIT; PDF.js e jsQR 1.4.0 sono Apache-2.0; IMG.LY background removal è AGPL-3.0; la grafica OpenMoji è CC BY-SA 4.0; ogni font mantiene la licenza della propria famiglia.
+Il codice e la documentazione originali di chicCanva sono distribuiti con licenza MIT. I componenti incorporati o richiamati mantengono le proprie licenze: in particolare Fabric.js, jsPDF, ONNX Runtime, Trystero 0.25.3, `@noble/secp256k1` 3.2.0 e `nayuki-qr-code-generator` 1.8.0 sono MIT; PDF.js e jsQR 1.4.0 sono Apache-2.0; IMG.LY background removal è AGPL-3.0; la grafica OpenMoji è CC BY-SA 4.0; ogni font mantiene la licenza della propria famiglia.
 
 La licenza MIT non sostituisce gli obblighi AGPL o CC BY-SA delle relative parti. Chi pubblica o modifica una build deve conservare attribuzioni e sorgenti richiesti. Consulta [`LICENSE`](LICENSE) e [Sicurezza, privacy e licenze](docs/SECURITY_PRIVACY_LICENSING.md).
+
+### Cloud Storage MEGA
+
+Quando chicCanva è pubblicata su HTTPS può collegarsi esplicitamente a un account MEGA tramite il client non ufficiale MEGAJS 1.3.10, distribuito con licenza MIT. Il navigatore integrato legge il Cloud Drive e consente modifiche soltanto dentro `chicCanva Cloud`; import ed export riusano gli stessi flussi locali. Backup e sincronizzazione sono opzionali, successivi all'autosalvataggio locale e disattivati per impostazione predefinita. Password e codice 2FA non vengono salvati; l'eventuale sessione ricordata è cifrata nel database del browser. L'esecuzione su localhost non è indicata come ambiente supportato per il connettore Cloud.

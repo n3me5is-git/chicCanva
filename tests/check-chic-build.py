@@ -10,7 +10,7 @@ for hidden_model in ('rundiffusion/juggernaut-lightning-flux','hidream-ai/hidrea
 scripts=re.findall(r'<script>([\s\S]*?)</script>',s)
 body=s[s.index('\n<body>'):s.rindex('<script>')]
 ids=re.findall(r'\bid="([^"]+)"',body)
-refs=re.findall(r"\$\('([^']+)'\)",scripts[-1])
+refs=re.findall(r"\$\('([A-Za-z][A-Za-z0-9_:-]*)'\)",scripts[-1])
 assert len(ids)==len(set(ids)), 'Duplicate IDs'
 assert not set(refs)-set(ids), set(refs)-set(ids)
 for name in ['chicCanva.html','chicCanva_server.bat']:
@@ -75,6 +75,9 @@ assert 'syncPuterFetchControls' in s and 'openPuterLoginSection' in s and 'data-
 assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHelper' in s and 'constrainCropHelper' in s
 assert 'exportImageToClipboard' in s and 'writeImageBlobToClipboard' in s
 assert 'canNativeShareFile' in s and 'syncFileShareAvailability' in s and 'navigation.canShare({files:' in s
+assert {'cloudStorageCard','cloudExplorerDialog','cloudAutomaticBackup','cloudAutomaticSync','cloudCleanupBtn','resumeCloudMemory','resumeCloudParallel'}.issubset(ids)
+assert all(value in s for value in ["CLOUD_ROOT_NAME='chicCanva Cloud'","CLOUD_BACKUP_NAME='.backups'","CLOUD_SYNC_NAME='.synch'",'AES-GCM','mega.Storage.fromJSON','MEGAJS 1.3.10'])
+assert (vendor/'megajs-1.3.10.js').stat().st_size>200000 and (vendor/'megajs-LICENSE.txt').is_file()
 assert s.count('class="transfer-separator"')>=2 and 'class="btn import-compact" id="importJsonPanel"' in s and 'class="btn import-compact" id="importPromptLibraryBtn"' in s
 assert 'layoutCanvasViewport' in s and "fitStageZoom({light:true,preserve:false})" in s and "$('resetCropActiveBtn').onclick=resetActiveCrop" in s
 assert {'imageInspector','changeResolutionBtn','resolutionDialog','memoryFootprint','objectLockAction'}.issubset(ids)
@@ -116,7 +119,7 @@ assert 'id="context-menus-guide"' in guide and 'id="context-menus-guide"' in gui
 assert '<section class="guide-reference guide-icon-reference" id="icons"' in guide and '<section class="guide-reference guide-context-reference" id="context-menus-guide"' in guide
 assert all(section.count('class="guide-visual guide-real-ui"')>=1 for section in guide.split('<section class="guide-topic"')[1:])
 guide_assets=root/'development/guide-assets'
-assert all((guide_assets/f'{language}-{name}.png').stat().st_size>2000 for language in ('it','en') for name in ('workspace','mobile-workspace','toolbar','page-panel','special-panel','text-panel','font-panel','emoji-panel','clipart-panel','shapes-panel','images-panel','image-effects-panel','background-panel','colorizer-panel','canvas-panel','memory-dialog','ai-panel','annotations','context-menus','preview-panel','export-panel'))
+assert all((guide_assets/f'{language}-{name}.png').stat().st_size>2000 for language in ('it','en') for name in ('workspace','mobile-workspace','toolbar','page-panel','special-panel','text-panel','font-panel','emoji-panel','clipart-panel','shapes-panel','images-panel','image-effects-panel','background-panel','colorizer-panel','canvas-panel','memory-dialog','ai-panel','annotations','context-menus','preview-panel','export-panel','cloud-panel'))
 assert guide in s and 'build-docs.py' in (root/'development/build-workspace.py').read_text(encoding='utf-8')
 assert (root/'CONTEXT.md').is_file() and (root/'LICENSE').is_file()
 print(f'{len(ids)} unique IDs; all references present; local build, documentation and protected image proxy valid; PWA bundle and icons valid; no Fontsource API dependency.')

@@ -78,10 +78,10 @@ The repository root `LICENSE` licenses original chicCanva code under MIT and rec
 | Openclipart artwork | User-selected external clipart | Openclipart represents its artwork as public-domain/CC0; retain source information and verify an individual item if provenance matters |
 | Puter JavaScript service/API | Optional generation/network/account usage | Loaded remotely; the upstream Puter repository is AGPL-3.0-only, while hosted-service use is also governed by Puter's current terms and selected provider/service terms |
 | Gemma 4 31B through Puter | Optional translation for search text not covered locally | User-pays Puter service and selected model/provider terms |
-| Trystero 0.23.1 (`trystero`, `trystero/core`, `trystero/nostr`) | P2P room signaling and WebRTC data transfer | MIT; bundled notices in `development/vendor/trystero*-LICENSE.txt` |
-| `@noble/secp256k1` 3.1.0 | Nostr signing dependency bundled through Trystero | MIT; `development/vendor/noble-secp256k1-LICENSE.txt` |
+| Trystero 0.25.3 (`trystero`, `@trystero-p2p/core`, `@trystero-p2p/nostr`) | P2P room signaling and WebRTC data transfer | MIT; bundled notices in `development/vendor/trystero*-LICENSE.txt` |
+| `@noble/secp256k1` 3.2.0 | Nostr signing dependency bundled through Trystero | MIT; `development/vendor/noble-secp256k1-LICENSE.txt` |
 | jsQR 1.4.0 | Local decoding of camera QR frames | Apache-2.0; `development/vendor/jsQR-LICENSE.txt` |
-| QR Code generator by Project Nayuki, commit `3c6d0b3cefb4e049dc337e82237c9644399716a8` | Local SVG QR generation | MIT; `development/vendor/nayuki-qr-LICENSE.txt` |
+| `nayuki-qr-code-generator` 1.8.0 | Local SVG QR generation | MIT; `development/vendor/nayuki-qr-LICENSE.txt` |
 
 ### AGPL release implication
 
@@ -144,4 +144,10 @@ For each vendored update:
 
 ## 9. Sharing privacy boundaries
 
-Native sharing passes a user-selected generated file to the operating system's share sheet. The PWA share target stores received files temporarily in the application's origin until the user imports or cancels them. P2P transfer uses public Nostr relays for signaling and WebRTC for encrypted peer transport; relay operators can observe connection metadata, and a direct WebRTC peer may learn network-address information exposed by the browser. Project bytes are exchanged only after explicit actions on both devices. QR camera access begins only after the user presses Scan and its tracks are stopped when scanning ends.
+Native sharing passes a user-selected generated file to the operating system's share sheet. The PWA share target stores received files temporarily in the application's origin until the user imports or cancels them. P2P transfer uses public Nostr relays for signaling and WebRTC for encrypted peer transport; relay operators can observe connection metadata, and a direct WebRTC peer may learn network-address information exposed by the browser. A custom relay URL is non-secret configuration stored in origin `localStorage`; it is validated as credential-free `wss://` and added to the common internal fallback rather than replacing it. Project bytes are exchanged only after explicit actions on both devices. QR camera access begins only after the user presses Scan and its tracks are stopped when scanning ends.
+
+## MEGA privacy, security, and license boundary
+
+MEGAJS 1.3.10 is an unofficial browser client, vendored under the MIT license (`development/vendor/megajs-LICENSE.txt`). MEGA login and file operations are explicit network actions. Password and 2FA code exist only long enough to construct the client and are cleared after the login attempt. If the user enables remembered session, MEGA's resumable session object is encrypted with AES-GCM using a non-extractable Web Crypto key stored separately in the same browser origin. This protects against casual database inspection, but it cannot protect a logged-in web session from malicious JavaScript served by the same compromised origin; MEGAJS documents this general browser limitation. Logout deletes the key and ciphertext.
+
+The explorer downloads selected remote bytes only for preview or explicit import. Preview object URLs are revoked on replacement or close. Backup and Sync send editable project JSON, including retained history when present, to the user's MEGA account. Deployments must disclose that data transfer and serve the application over trusted HTTPS. MEGA service terms and account policies still apply.

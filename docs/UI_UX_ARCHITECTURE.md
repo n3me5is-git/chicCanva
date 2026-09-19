@@ -206,3 +206,11 @@ Small share-icon buttons sit beside the corresponding large export buttons and u
 Incoming PWA content always opens a confirmation dialog after workspace recovery. Each file type presents only relevant decisions, and every route includes Cancel. Prompt Library append/replace is one shared dialog contract across manual import, PWA receipt, and P2P receipt; append can optionally replace entries with the same name.
 
 The P2P dialog changes views instead of stacking dialogs: choose Send/Receive, configure, wait/connect, select incoming content, and monitor progress. Mobile uses the standard full-viewport treatment; desktop preserves the modal margin and rounded surface. Camera preview stays visible while scanning, reports denial or decoding errors in place, and has an explicit close path. Long names remain inside the item row and cannot push actions beyond the viewport.
+
+## Cloud Storage interaction model
+
+Cloud Storage is a normal collapsible sidebar card and a quick-jump category immediately before Export. Signed-out state shows credentials, optional 2FA, remembered-session choice, and plain security guidance. Signed-in state shows account identity, used/available quota, logout, and the explorer entry point.
+
+The custom explorer follows the application's dialog, toolbar, tooltip, focus, destructive-action, and mobile fullscreen patterns. Folders sort before files, long names ellipsize, and selection details appear beside the list on desktop or as an overlay preview on mobile. The toolbar exposes only valid operations. Root and external MEGA folders are read-only; edit controls activate only below `chicCanva Cloud`. Deletion wording consistently says that items move to the MEGA Trash.
+
+When MEGA is connected, export actions open a destination dialog. Cloud destination then opens the explorer rooted at `chicCanva Cloud` with no path above it and a clear **Save here** action. Memory settings retain Backup, Sync, and hidden-warning choices while disconnected but disable their controls. A sync conflict is modal and requires Reload from Cloud or Continue locally; continuing leaves a warning badge unless hidden in settings.

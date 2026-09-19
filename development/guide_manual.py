@@ -93,6 +93,7 @@ def exact_ui_sample(topic_id: str, language: str) -> str:
         "vista": [("toolbar", bi("Toolbar: vista, pagina e strumenti di modifica", "Toolbar: view, page, and editing controls"))],
         "selezione": [("toolbar", bi("Strumenti di selezione e modifica nella toolbar", "Selection and editing tools in the toolbar"))],
         "autosave": [("memory-dialog", bi("Finestra Memoria, salvataggio e ripristino", "Memory, save, and restore window"))],
+        "cloud-storage": [("cloud-panel", bi("Sezione Cloud Storage e accesso MEGA", "Cloud Storage section and MEGA sign-in"))],
         "recipe-poster": [("workspace", bi("Area di lavoro per comporre un cartellone", "Workspace for composing a poster"))],
         "recipe-flashcards": [("page-panel", bi("Gestione delle pagine per creare una serie di schede", "Page management for creating a set of cards"))],
         "recipe-coloring": [("image-effects-panel", bi("Strumenti immagine per preparare una pagina da colorare", "Image tools for preparing a colouring page"))],

@@ -1,0 +1,25 @@
+<dialog id="cloudExplorerDialog" class="chic-dialog cloud-explorer-dialog">
+  <div class="cloud-dialog-head"><div><h2 id="cloudExplorerTitle">Cloud Storage</h2><p class="help" id="cloudExplorerModeHelp"></p></div><button class="iconbtn" id="closeCloudExplorer" aria-label="Chiudi" data-tip="Chiudi">×</button></div>
+  <div class="cloud-toolbar" role="toolbar" aria-label="Strumenti Cloud Storage">
+    <button class="iconbtn" id="cloudBackBtn" data-tip="Indietro" aria-label="Indietro">←</button>
+    <button class="iconbtn" id="cloudRefreshBtn" data-tip="Aggiorna" aria-label="Aggiorna">↻</button>
+    <button class="iconbtn cloud-write-action" id="cloudNewFolderBtn" data-tip="Nuova cartella" aria-label="Nuova cartella">＋</button>
+    <button class="iconbtn cloud-write-action" id="cloudEditBtn" data-tip="Modalità modifica" aria-label="Modalità modifica">✓</button>
+    <button class="iconbtn cloud-selection-action" id="cloudRenameBtn" data-tip="Rinomina" aria-label="Rinomina">✎</button>
+    <button class="iconbtn cloud-selection-action" id="cloudCloneBtn" data-tip="Duplica" aria-label="Duplica">⧉</button>
+    <button class="iconbtn cloud-selection-action" id="cloudMoveBtn" data-tip="Sposta" aria-label="Sposta">↪</button>
+    <button class="iconbtn cloud-selection-action danger" id="cloudDeleteBtn" data-tip="Sposta nel cestino" aria-label="Sposta nel cestino">⌫</button>
+  </div>
+  <nav class="cloud-breadcrumb" id="cloudBreadcrumb" aria-label="Percorso Cloud Storage"></nav>
+  <div class="cloud-browser-body"><div class="cloud-file-list" id="cloudFileList" role="listbox" aria-multiselectable="true"></div><aside class="cloud-preview" id="cloudPreview"><div class="cloud-preview-empty">Seleziona un file per visualizzarne i dettagli.</div></aside></div>
+  <div class="cloud-progress hidden" id="cloudProgress"><div><span id="cloudProgressLabel">Operazione in corso…</span><strong id="cloudProgressValue"></strong></div><progress id="cloudProgressBar" max="100"></progress></div>
+  <div class="status" id="cloudExplorerStatus" role="status"></div>
+  <div class="cloud-dialog-actions"><button class="btn" id="cloudCancelExplorer" type="button">Annulla</button><button class="btn accent hidden" id="cloudConfirmSave" type="button">Salva qui</button><button class="btn accent hidden" id="cloudImportSelected" type="button">Importa selezionati</button></div>
+</dialog>
+<dialog id="cloudDestinationDialog" class="chic-dialog"><h2>Dove vuoi salvare?</h2><p id="cloudDestinationInfo"></p><div class="cloud-destination-actions"><button class="btn" id="cloudSaveDevice" type="button">Salva sul dispositivo</button><button class="btn accent" id="cloudSaveRemote" type="button">Salva su Cloud</button></div><button class="btn" id="cloudDestinationCancel" type="button">Annulla</button></dialog>
+<dialog id="cloudTextDialog" class="chic-dialog"><h2 id="cloudTextTitle">Nome</h2><label id="cloudTextLabel">Nome<input class="field" id="cloudTextInput" maxlength="180"></label><div class="row"><button class="btn accent" id="cloudTextConfirm">Conferma</button><button class="btn" id="cloudTextCancel">Annulla</button></div></dialog>
+<dialog id="cloudConfirmDialog" class="chic-dialog"><h2 id="cloudConfirmTitle">Conferma operazione</h2><p id="cloudConfirmMessage"></p><div class="row"><button class="btn danger" id="cloudConfirmYes">Conferma</button><button class="btn" id="cloudConfirmNo">Annulla</button></div></dialog>
+<dialog id="cloudMoveDialog" class="chic-dialog cloud-move-dialog"><h2>Sposta in una cartella</h2><div id="cloudMoveTree" class="cloud-move-tree"></div><div class="row"><button class="btn accent" id="cloudMoveConfirm">Sposta qui</button><button class="btn" id="cloudMoveCancel">Annulla</button></div></dialog>
+<dialog id="cloudCleanupDialog" class="chic-dialog"><h2>Pulizia Cloud Storage</h2><p>Scegli quali dati spostare nel Cestino MEGA.</p><button class="btn cloud-wide" id="cloudClearInstanceBackups">Backup di questa istanza</button><button class="btn cloud-wide danger" id="cloudClearAllBackups">Tutti i backup</button><button class="btn cloud-wide danger" id="cloudClearSync">Dati di sincronizzazione</button><button class="btn cloud-wide" id="cloudCleanupCancel">Annulla</button></dialog>
+<dialog id="cloudConflictDialog" class="chic-dialog cloud-conflict-dialog"><h2>Sessione Cloud modificata</h2><p>Un altro dispositivo ha aggiornato questa sessione. Le modifiche correnti restano salvate soltanto in questo browser finché non scegli come continuare.</p><div class="row"><button class="btn accent" id="cloudConflictReload">Ricarica dal Cloud</button><button class="btn" id="cloudConflictLocal">Continua solo localmente</button></div></dialog>
+<button id="cloudOutOfSyncBadge" class="cloud-sync-badge hidden" type="button" data-tip="Sincronizzazione Cloud sospesa" aria-label="Sincronizzazione Cloud sospesa">☁̸</button>

@@ -90,4 +90,8 @@ Semantic reference annotations follow that exception narrowly: the structural in
 
 ## Sharing localization
 
-File type IDs, manifest message names, MIME types, checksums, room derivation, and JSON keys remain stable internal values. Visible button labels, tooltips, confirmations, progress, errors, imported-name suffixes, and unsupported-format messages have canonical Italian source strings and English catalog entries. User filenames, project names, prompt titles, tags, and prompt bodies are never translated. The Italian → English → Italian round trip covers the native-share fallback, PWA import dialogs, Prompt Library merge dialog, and every P2P view.
+File type IDs, manifest message names, MIME types, checksums, room derivation, relay URLs, and JSON keys remain stable internal values. Visible button labels, tooltips, confirmations, relay connection states, signaling errors, imported-name suffixes, and unsupported-format messages have canonical Italian source strings and English catalog entries. User filenames, project names, prompt titles, tags, prompt bodies, and custom relay addresses are never translated. The Italian → English → Italian round trip covers the native-share fallback, PWA import dialogs, Prompt Library merge dialog, P2P relay settings, and every P2P view.
+
+## Cloud localization
+
+MEGA account values, filenames, folder names, project names, node IDs, session IDs, manifest keys, and the reserved folders `chicCanva Cloud`, `.backups`, and `.synch` remain unchanged. Sidebar copy, login fields, tooltips, quota labels, explorer commands, confirmations, progress, startup choices, backup logs, and conflict states use the central Italian-source catalogue. Dynamic file metadata uses `appLocale()` for dates, sizes, and percentages. The user guide documents the same workflow in both languages from one bilingual source.

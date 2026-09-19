@@ -79,7 +79,7 @@ function applySettledCanvasRaster(logicalWidth,logicalHeight,force=false){
  canvas.__chicRenderScale=scale;
  if(force||changed||canvas.getWidth()!==logicalWidth||canvas.getHeight()!==logicalHeight){canvas.setDimensions({width:logicalWidth,height:logicalHeight});const expectedWidth=Math.round(logicalWidth*scale),expectedHeight=Math.round(logicalHeight*scale);if((canvas.lowerCanvasEl.width!==expectedWidth||canvas.lowerCanvasEl.height!==expectedHeight)&&canvas._initRetinaScaling)canvas._initRetinaScaling()}
 }
-let sidebarViewportFrame=0,sidebarViewportOptions=null,sidebarResizeZoomMode=null,canvasViewportTransitionDepth=0,canvasViewportTransitionZoomMode=null,canvasViewportTransitionFrame=0,canvasViewportTransitionTimer=0;
+let sidebarViewportFrame=0,sidebarViewportOptions=null,sidebarResizeZoomMode=null,canvasViewportTransitionDepth=0,canvasViewportTransitionZoomMode=null,canvasViewportTransitionFrame=0,canvasViewportTransitionTimer=0,canvasViewportTransitionForceRaster=false,canvasViewportLastWidth=0,canvasViewportLastHeight=0;
 function canvasFitZoom(){
  if(!currentPage)return null;const wrap=$('stageWrap'),logicalWidth=currentPage.widthMm*PX_PER_MM,logicalHeight=currentPage.heightMm*PX_PER_MM;
  return zoomMode==='fit'?Math.min((wrap.clientWidth-48)/logicalWidth,(wrap.clientHeight-64)/logicalHeight):Number(zoomMode)
@@ -88,13 +88,13 @@ function applySidebarViewportPreview(){
  sidebarViewportFrame=0;if(!sidebarViewportOptions||!currentPage)return;const options=sidebarViewportOptions;sidebarViewportOptions=null;layoutCanvasViewport(canvasFitZoom(),options)
 }
 function beginCanvasViewportTransition(){
- if(canvasViewportTransitionDepth++===0){canvasViewportTransitionZoomMode=zoomMode;clearTimeout(canvasViewportTransitionTimer);canvasViewportTransitionTimer=0;if(canvasViewportTransitionFrame){cancelAnimationFrame(canvasViewportTransitionFrame);canvasViewportTransitionFrame=0}$('stageWrap')?.classList.add('viewport-settling')}
+ if(canvasViewportTransitionDepth++===0){canvasViewportTransitionForceRaster=true;canvasViewportTransitionZoomMode=zoomMode;clearTimeout(canvasViewportTransitionTimer);canvasViewportTransitionTimer=0;if(canvasViewportTransitionFrame){cancelAnimationFrame(canvasViewportTransitionFrame);canvasViewportTransitionFrame=0}$('stageWrap')?.classList.add('viewport-settling')}
 }
 function settleCanvasViewportTransition(){
- canvasViewportTransitionFrame=0;if(canvasViewportTransitionDepth||!currentPage)return;const preserved=canvasViewportTransitionZoomMode??zoomMode;canvasViewportTransitionZoomMode=null;zoomMode=preserved;$('stageWrap')?.classList.remove('viewport-settling');fitStageZoom({forceRaster:true,preserve:false})
+ canvasViewportTransitionFrame=0;if(canvasViewportTransitionDepth||!currentPage)return;const preserved=canvasViewportTransitionZoomMode??zoomMode,forceRaster=canvasViewportTransitionForceRaster;canvasViewportTransitionZoomMode=null;canvasViewportTransitionForceRaster=false;zoomMode=preserved;$('stageWrap')?.classList.remove('viewport-settling');fitStageZoom({forceRaster,preserve:false})
 }
 function scheduleCanvasViewportLayout(){
- if(!currentPage)return;if(canvasViewportTransitionZoomMode===null)canvasViewportTransitionZoomMode=zoomMode;zoomMode=canvasViewportTransitionZoomMode;
+ if(!currentPage)return;const wrap=$('stageWrap');if(!canvasViewportTransitionDepth&&!canvasViewportTransitionForceRaster&&wrap.clientWidth===canvasViewportLastWidth&&wrap.clientHeight===canvasViewportLastHeight)return;if(canvasViewportTransitionZoomMode===null)canvasViewportTransitionZoomMode=zoomMode;zoomMode=canvasViewportTransitionZoomMode;
  if(canvasViewportTransitionDepth){fitStageZoom({light:true,preserve:false});return}
  if(canvasViewportTransitionFrame){cancelAnimationFrame(canvasViewportTransitionFrame);canvasViewportTransitionFrame=0}clearTimeout(canvasViewportTransitionTimer);
  fitStageZoom({light:true,preserve:false});canvasViewportTransitionTimer=setTimeout(()=>{canvasViewportTransitionTimer=0;canvasViewportTransitionFrame=requestAnimationFrame(()=>{canvasViewportTransitionFrame=requestAnimationFrame(settleCanvasViewportTransition)})},50)
@@ -109,7 +109,7 @@ function layoutCanvasViewport(nextZoom,{light=false,preserve=true,forceRaster=fa
  if(light){const settled=Math.max(.001,canvas.__chicCssZoom||viewZoom),ratio=viewZoom/settled;shell.style.setProperty('--pinch-scale',String(ratio));Object.assign(shell.style,{left:left+'px',top:top+'px'});space.style.width=spaceWidth+'px';space.style.height=spaceHeight+'px'}else{applySettledCanvasRaster(logicalWidth,logicalHeight,forceRaster);canvas.__chicCssZoom=viewZoom;shell.style.setProperty('--pinch-scale','1');canvas.setDimensions({width:displayWidth+'px',height:displayHeight+'px'},{cssOnly:true});space.style.width=spaceWidth+'px';space.style.height=spaceHeight+'px';Object.assign(shell.style,{width:displayWidth+'px',height:displayHeight+'px',left:left+'px',top:top+'px'});applyGrid()}
  updateZoomControl();
  if(isFit){wrap.scrollLeft=0;wrap.scrollTop=0}else if(anchor){wrap.scrollLeft=left+anchor.x*viewZoom-wrap.clientWidth/2;wrap.scrollTop=top+anchor.y*viewZoom-wrap.clientHeight/2}
- if(!light){canvas.calcOffset();canvas.getObjects().forEach(object=>object.setCoords?.());exportRegion?.setCoords?.();cropSession?.rect?.setCoords?.();canvas.requestRenderAll()}
+ if(!light){canvasViewportLastWidth=wrap.clientWidth;canvasViewportLastHeight=wrap.clientHeight;canvas.calcOffset();canvas.getObjects().forEach(object=>object.setCoords?.());exportRegion?.setCoords?.();cropSession?.rect?.setCoords?.();canvas.requestRenderAll()}
 }
 fitStageZoom=function(options={}){
  if(!currentPage)return;
