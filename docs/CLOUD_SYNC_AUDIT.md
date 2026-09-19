@@ -1,12 +1,12 @@
 # Cloud Sync verification — 2026-09-19
 
-The corrected chicCanva 1.14.6 synchronization flow passes **21/21 checks** in isolated Chromium contexts at both 1440×1000 and 390×844. No test reads credentials or writes to a real MEGA account.
+The corrected chicCanva 1.14.7 synchronization flow passes **22/22 dedicated checks** in isolated Chromium contexts at both 1440×1000 and 390×844. No test reads credentials or writes to a real MEGA account.
 
 ## Reproduction and limits
 
 Run `node tests/run-cloud-sync-audit.cjs` with Playwright available through `NODE_PATH`. The runner injects `tests/cloud-sync-audit.js` into the generated application closure, uses fresh browser storage, aborts external requests, and substitutes an in-memory MEGA node tree. It writes `tests/cloud-sync-audit-results.json` and exits with status 1 if any contract fails.
 
-The suite verifies complete publication and recovery, manifest-last ordering, failure recovery, immutable revision folders, unchanged-payload deduplication, ten-minute scheduling, polling conflicts, reload from Cloud, persistent warnings, active and expired locks, stale writers, empty storage, session discovery, and the non-dismissible conflict decision on desktop and mobile.
+The suite verifies complete publication and recovery, manifest-last ordering, failure recovery, immutable revision folders, unchanged-payload deduplication, manual publication with quota refresh, ten-minute scheduling, polling conflicts, reload from Cloud, persistent warnings, active and expired locks, stale writers, empty storage, session discovery, and the non-dismissible conflict decision on desktop and mobile.
 
 The simulation does not establish live MEGA network consistency, throttling, or genuinely simultaneous distributed writes. MEGA does not expose an application-level atomic compare-and-swap, so coordination remains deliberately best-effort. Safety comes from three checks: read the current manifest before claiming a lock, verify the short-lived lock after refresh, and compare the manifest again before publication.
 

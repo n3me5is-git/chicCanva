@@ -38,6 +38,7 @@ async function runCloudSyncAudit(){
   check('successful revision replaces old data only after publication',!session().children.includes(firstRevision)&&events.indexOf('upload:current.json')<events.indexOf('delete:'+firstRevision.name));
   now+=1000;events=[];await cloudSyncWorkspace(JSON.stringify(data('second')),'same-content');
   check('unchanged content does not upload another revision',!events.some(item=>item==='upload:workspace.json'),events.join(', '));
+  const realQuotaRefresh=refreshCloudQuota;let syncQuotaRefreshes=0;refreshCloudQuota=async()=>{syncQuotaRefreshes++};await cloudSyncWorkspace(JSON.stringify(data('second')),'manual',{force:true,source:'manual'});refreshCloudQuota=realQuotaRefresh;check('manual Sync forces publication and refreshes MEGA quota',syncQuotaRefreshes===1&&latestCloudRun('sync')?.source==='manual'&&latestCloudRun('sync')?.outcome==='success');
   const realSetTimeout=window.setTimeout;let scheduledDelay;
   try{window.setTimeout=(callback,delay)=>{scheduledDelay=delay;return 0};chicCloudAutosaveCommitted({payload:JSON.stringify(data('next')),saved:'next'});check('sync-only mode respects ten minutes between successful uploads',scheduledDelay>CLOUD_UPLOAD_INTERVAL-10000&&scheduledDelay<=CLOUD_UPLOAD_INTERVAL,'scheduled after '+scheduledDelay+' ms')}
   finally{window.setTimeout=realSetTimeout;cloudPendingSnapshot=null;cloudBackupTimer=0}

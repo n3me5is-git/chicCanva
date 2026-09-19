@@ -36,9 +36,14 @@
         "details": ""
       },
       {
+        "name": "manual Sync forces publication and refreshes MEGA quota",
+        "passed": true,
+        "details": ""
+      },
+      {
         "name": "sync-only mode respects ten minutes between successful uploads",
         "passed": true,
-        "details": "scheduled after 599000 ms"
+        "details": "scheduled after 600000 ms"
       },
       {
         "name": "polling suspends a stale client and opens the conflict dialog",
@@ -148,9 +153,14 @@
         "details": ""
       },
       {
+        "name": "manual Sync forces publication and refreshes MEGA quota",
+        "passed": true,
+        "details": ""
+      },
+      {
         "name": "sync-only mode respects ten minutes between successful uploads",
         "passed": true,
-        "details": "scheduled after 599000 ms"
+        "details": "scheduled after 600000 ms"
       },
       {
         "name": "polling suspends a stale client and opens the conflict dialog",

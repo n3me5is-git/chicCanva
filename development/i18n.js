@@ -1053,6 +1053,26 @@ Continua solo localmente\tContinue locally only
 Sincronizzazione Cloud sospesa\tCloud synchronization paused
 Ultima sincronizzazione\tLast synchronization
 Copie MEGA\tMEGA copies
+Esegui ora\tRun now
+Log Cloud\tCloud log
+Log Automatic Backup\tAutomatic Backup log
+Log Automatic Synch\tAutomatic Sync log
+Ultimi 100 tentativi conservati in questo browser.\tLast 100 attempts retained in this browser.
+Mai eseguito.\tNever run.
+Nessuna operazione registrata.\tNo operations recorded.
+Operazione avviata\tOperation started
+Operazione completata\tOperation completed
+Nessuna modifica da caricare\tNo changes to upload
+Sessione più recente rilevata: sincronizzazione sospesa\tNewer session detected: synchronization paused
+Sincronizzazione sospesa\tSynchronization paused
+Operazione già in corso\tOperation already running
+Stato non disponibile\tStatus unavailable
+Avvio manuale\tManual run
+Avvio automatico\tAutomatic run
+Backup manuale completato\tManual backup completed
+Sincronizzazione manuale completata\tManual synchronization completed
+progetto\tproject
+progetti\tprojects
 Nascondi l’indicatore di sincronizzazione sospesa\tHide the paused synchronization indicator
 Le impostazioni restano memorizzate quando MEGA è scollegato, ma diventano operative soltanto dopo la connessione.\tSettings are retained while MEGA is disconnected, but become active only after connection.
 Pulisci copie Cloud\tClean Cloud copies

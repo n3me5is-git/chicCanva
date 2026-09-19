@@ -215,7 +215,11 @@ The custom explorer follows the application's dialog, toolbar, tooltip, focus, d
 
 When MEGA is connected, export actions open a destination dialog. Cloud destination then opens the explorer rooted at `chicCanva Cloud` with no path above it and a clear **Save here** action. Memory settings retain Backup, Sync, and hidden-warning choices while disconnected but disable their controls. A sync conflict is modal, ignores Escape, and requires Reload from Cloud or Continue locally. Reload remains available while synchronization is suspended and reconnects the browser to the remote session; continuing leaves a warning badge unless hidden in settings. A newly logged-in browser that discovers `.synch` uses the same explicit choice rather than silently replacing local work.
 
+Backup and Synch each have a compact status/action row under their checkbox. The status wraps independently from the two equal-priority **Run now** and **Log** buttons; mobile stacks status above the buttons. The log dialog lists newest attempts first, uses localized outcome/source labels, leaves service error details as text, and remains internally scrollable for 100 entries. Manual actions are disabled while disconnected or while another Cloud run is active.
+
 
 ### Cloud explorer preview and connection feedback
 
 The explorer temporarily hosts the shared tooltip in the modal top layer and restores it on close or Escape. Selecting a folder exposes an Open action in its details; double-click uses the same navigation helper. Dot-prefixed nodes, including `.backups` and `.synch`, are always included without filtering. Image previews show encoded file size and decoded pixel dimensions on a checkerboard; PDF frames expand into the remaining preview height. A generation counter rejects stale preview downloads after another selection or close. Memory settings use a separate live connection status, preserving the backup result log. The bilingual account explanation links to MEGA and the guide recommends a dedicated account; saved session data are encrypted locally and cloud files are transferred directly to MEGA.
+
+The Memory dialog provides the same non-destructive close operation through a top-right X and the footer Close button. Both controls remain localized and keyboard accessible.
