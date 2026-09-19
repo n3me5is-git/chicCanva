@@ -1,0 +1,226 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "results": [
+      {
+        "name": "complete publication and recovery",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "manifest published after all payload files",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "project upload failure preserves published data",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "manifest upload failure preserves published data",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "successful revision replaces old data only after publication",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "unchanged content does not upload another revision",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "sync-only mode respects ten minutes between successful uploads",
+        "passed": true,
+        "details": "scheduled after 599000 ms"
+      },
+      {
+        "name": "polling suspends a stale client and opens the conflict dialog",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Reload from Cloud receives the current snapshot after suspension",
+        "passed": true,
+        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":2,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"file\":\"alpha.json\"},{\"id\":\"beta\",\"name\":\"Beta\",\"file\":\"beta.json\"}],\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
+      },
+      {
+        "name": "Continue locally closes the dialog and keeps the warning visible",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "out-of-sync warning survives UI refresh without local edits",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a later client cannot displace the first active writer",
+        "passed": true,
+        "details": "writer-z"
+      },
+      {
+        "name": "a competing writer with a later alphabetical ID is blocked",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "temporary lock blocks a second writer but an abandoned lock expires",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a stale client cannot overwrite a newer revision after lease expiry",
+        "passed": true,
+        "details": "writer-z"
+      },
+      {
+        "name": "same-millisecond failed publication leaves the old payload intact",
+        "passed": true,
+        "details": "published"
+      },
+      {
+        "name": "empty cloud is handled without an exception",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a fresh browser can discover an existing cloud session",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "clearing Synch detaches local metadata for a clean next upload",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "clearing backups resets deduplication metadata",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "conflict dialog cannot be dismissed with Escape",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "results": [
+      {
+        "name": "complete publication and recovery",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "manifest published after all payload files",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "project upload failure preserves published data",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "manifest upload failure preserves published data",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "successful revision replaces old data only after publication",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "unchanged content does not upload another revision",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "sync-only mode respects ten minutes between successful uploads",
+        "passed": true,
+        "details": "scheduled after 599000 ms"
+      },
+      {
+        "name": "polling suspends a stale client and opens the conflict dialog",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Reload from Cloud receives the current snapshot after suspension",
+        "passed": true,
+        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":2,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"file\":\"alpha.json\"},{\"id\":\"beta\",\"name\":\"Beta\",\"file\":\"beta.json\"}],\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
+      },
+      {
+        "name": "Continue locally closes the dialog and keeps the warning visible",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "out-of-sync warning survives UI refresh without local edits",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a later client cannot displace the first active writer",
+        "passed": true,
+        "details": "writer-z"
+      },
+      {
+        "name": "a competing writer with a later alphabetical ID is blocked",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "temporary lock blocks a second writer but an abandoned lock expires",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a stale client cannot overwrite a newer revision after lease expiry",
+        "passed": true,
+        "details": "writer-z"
+      },
+      {
+        "name": "same-millisecond failed publication leaves the old payload intact",
+        "passed": true,
+        "details": "published"
+      },
+      {
+        "name": "empty cloud is handled without an exception",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a fresh browser can discover an existing cloud session",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "clearing Synch detaches local metadata for a clean next upload",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "clearing backups resets deduplication metadata",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "conflict dialog cannot be dismissed with Escape",
+        "passed": true
+      }
+    ]
+  }
+]

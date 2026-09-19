@@ -1003,6 +1003,10 @@ La fotocamera richiede HTTPS e un browser compatibile\tThe camera requires HTTPS
 Richiesta accesso alla fotocamera…\tRequesting camera access…
 Codice ricevuto. Premi Connetti per continuare.\tCode received. Press Connect to continue.
 file\tfile
+Serve un account MEGA, anche gratuito.\tYou need a MEGA account; a free account works too.
+Visita MEGA\tVisit MEGA
+Il collegamento a MEGA avviene dal browser. chicCanva non conserva password o codice 2FA; se scegli Salva sessione, conserva solo i dati di sessione cifrati in questo browser.\tYour browser connects to MEGA. chicCanva does not retain your password or 2FA code; if you choose Save session, it stores only encrypted session data in this browser.
+Chiudi anteprima\tClose preview
 Cloud\tCloud
 Apri Cloud\tOpen Cloud
 Cloud Storage\tCloud Storage
@@ -1041,9 +1045,13 @@ Tutti i backup\tAll backups
 Dati di sincronizzazione\tSynchronization data
 Sessione Cloud modificata\tCloud session changed
 Un altro dispositivo ha aggiornato questa sessione. Le modifiche correnti restano salvate soltanto in questo browser finché non scegli come continuare.\tAnother device updated this session. Current changes remain saved only in this browser until you choose how to continue.
+Sessione Cloud disponibile\tCloud session available
+È stata trovata una sessione Synch su MEGA. Puoi caricarla e collegare questo browser oppure continuare con i progetti locali.\tA Synch session was found on MEGA. You can load it and connect this browser, or continue with the local projects.
+Nessuna sessione Synch disponibile.\tNo Synch session is available.
 Ricarica dal Cloud\tReload from Cloud
 Continua solo localmente\tContinue locally only
 Sincronizzazione Cloud sospesa\tCloud synchronization paused
+Ultima sincronizzazione\tLast synchronization
 Copie MEGA\tMEGA copies
 Nascondi l’indicatore di sincronizzazione sospesa\tHide the paused synchronization indicator
 Le impostazioni restano memorizzate quando MEGA è scollegato, ma diventano operative soltanto dopo la connessione.\tSettings are retained while MEGA is disconnected, but become active only after connection.
