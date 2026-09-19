@@ -105,7 +105,7 @@ CHAPTERS = [
 {
 "id":"cloud-storage","title":B("Salvare e riprendere con MEGA","Save and resume with MEGA"),"icon":"cloud",
 "lead":B("Cloud Storage collega il tuo account MEGA per aprire e conservare progetti, immagini, PDF e Prompt Library. chicCanva crea una cartella dedicata e lascia il resto del Cloud in sola lettura.","Cloud Storage connects your MEGA account so you can open and keep projects, images, PDFs, and the Prompt Library. chicCanva creates a dedicated folder and keeps the rest of the Cloud read-only."),
-"where":B("Sezione Cloud Storage, prima del Centro Esporta. È supportata quando chicCanva è pubblicata su HTTPS.","Cloud Storage section, before the Export centre. It is supported when chicCanva is hosted over HTTPS."),
+"where":B("Sezione Cloud Storage, prima del Centro Esporta. È supportata su HTTPS e durante le prove locali tramite localhost.","Cloud Storage section, before the Export centre. It is supported over HTTPS and during local testing through localhost."),
 "options":rows(
 (("Accedi a MEGA","Sign in to MEGA"),("Collega l’account; il codice 2FA è facoltativo.","Connects the account; the 2FA code is optional."),("Quando vuoi usare file già presenti o salvare una copia online.","When you want to use existing files or save an online copy.")),
 (("Salva sessione nel browser","Save session in this browser"),("Riconnette MEGA senza richiedere ogni volta la password.","Reconnects MEGA without asking for the password every time."),("Usalo solo su un dispositivo personale o gestito da te.","Use it only on a personal device or one you manage.")),

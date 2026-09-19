@@ -1007,7 +1007,7 @@ Cloud\tCloud
 Apri Cloud\tOpen Cloud
 Cloud Storage\tCloud Storage
 Apri, salva e sincronizza progetti con MEGA.\tOpen, save, and synchronize projects with MEGA.
-Cloud Storage è disponibile solo quando chicCanva è pubblicata su HTTPS.	Cloud Storage is available only when chicCanva is hosted over HTTPS.
+Cloud Storage è disponibile su HTTPS oppure in esecuzione locale tramite localhost.	Cloud Storage is available over HTTPS or when running locally through localhost.
 Email MEGA\tMEGA email
 Usa autenticazione a due fattori\tUse two-factor authentication
 Codice 2FA\t2FA code

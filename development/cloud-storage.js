@@ -5,7 +5,7 @@ let cloudMeta=readCloudMeta();
 
 function readCloudMeta(){try{return{backupInstanceId:uid('backup'),syncSessionId:uid('sync'),writerId:uid('writer'),lastRevision:0,lastBackupAt:0,...JSON.parse(localStorage.getItem(CLOUD_META_KEY)||'{}')}}catch(error){return{backupInstanceId:uid('backup'),syncSessionId:uid('sync'),writerId:uid('writer'),lastRevision:0,lastBackupAt:0}}}
 function writeCloudMeta(){try{localStorage.setItem(CLOUD_META_KEY,JSON.stringify(cloudMeta))}catch(error){}}
-function cloudAvailable(){return !!(globalThis.isSecureContext&&globalThis.crypto?.subtle&&globalThis.mega?.Storage&&(location.protocol==='https:'||['localhost','127.0.0.1','::1'].includes(location.hostname)))}
+function cloudAvailable({protocol=location.protocol,hostname=location.hostname,secure=globalThis.isSecureContext,subtle=globalThis.crypto?.subtle,Storage=mega?.Storage}={}){const loopback=['localhost','127.0.0.1','::1','[::1]'].includes(String(hostname||'').toLowerCase());return!!((protocol==='https:'||loopback)&&secure&&subtle&&Storage)}
 function cloudConnected(){return cloudStorage?.status==='ready'&&!!cloudRoot}
 function cloudStatus(message,error=false){const element=$('cloudStatus');if(element){setLocalizedText(element,message||'');element.classList.toggle('error',!!error)}}
 function cloudExplorerStatus(message,error=false){const element=$('cloudExplorerStatus');if(element){setLocalizedText(element,message||'');element.classList.toggle('error',!!error)}}

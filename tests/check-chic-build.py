@@ -76,6 +76,7 @@ assert 'cropSourceGeometry' in s and 'cropHelperCorners' in s and 'cropBoxFromHe
 assert 'exportImageToClipboard' in s and 'writeImageBlobToClipboard' in s
 assert 'canNativeShareFile' in s and 'syncFileShareAvailability' in s and 'navigation.canShare({files:' in s
 assert {'cloudStorageCard','cloudExplorerDialog','cloudAutomaticBackup','cloudAutomaticSync','cloudCleanupBtn','resumeCloudMemory','resumeCloudParallel'}.issubset(ids)
+assert 'Storage=mega?.Storage' in s and 'globalThis.mega?.Storage' not in s
 assert all(value in s for value in ["CLOUD_ROOT_NAME='chicCanva Cloud'","CLOUD_BACKUP_NAME='.backups'","CLOUD_SYNC_NAME='.synch'",'AES-GCM','mega.Storage.fromJSON','MEGAJS 1.3.10'])
 assert (vendor/'megajs-1.3.10.js').stat().st_size>200000 and (vendor/'megajs-LICENSE.txt').is_file()
 assert s.count('class="transfer-separator"')>=2 and 'class="btn import-compact" id="importJsonPanel"' in s and 'class="btn import-compact" id="importPromptLibraryBtn"' in s
