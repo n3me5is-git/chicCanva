@@ -12,7 +12,7 @@ The simulation does not establish live MEGA network consistency, throttling, or 
 
 ## Runtime contract
 
-- The first changed snapshot is queued promptly when no Cloud upload occurred in the previous ten minutes. Later changes coalesce into the latest pending snapshot.
+- The first changed snapshot is queued for 30 seconds when no Cloud upload occurred in the previous ten minutes. Later changes replace the single pending snapshot without postponing its deadline.
 - Identical workspace payloads do not create another Synch revision.
 - Each attempt uses a unique, immutable revision directory. Project files and `workspace.json` upload before `current.json`; older revisions are deleted only after publication succeeds.
 - A 90-second lease protects only the publication attempt. It is released in `finally`; an abandoned lease expires and cannot block Synch permanently.

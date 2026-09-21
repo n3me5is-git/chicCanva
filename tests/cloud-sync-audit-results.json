@@ -6,7 +6,12 @@
     },
     "results": [
       {
-        "name": "complete publication and recovery",
+        "name": "MEGA stream download reports incremental byte progress",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "complete v2 publication and recovery",
         "passed": true,
         "details": ""
       },
@@ -16,7 +21,12 @@
         "details": ""
       },
       {
-        "name": "project upload failure preserves published data",
+        "name": "Cloud copy browser lists and rebuilds Synch revisions",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "snapshot upload failure preserves published data",
         "passed": true,
         "details": ""
       },
@@ -26,7 +36,7 @@
         "details": ""
       },
       {
-        "name": "successful revision replaces old data only after publication",
+        "name": "successful v2 revision publishes current last and retains prior recovery metadata",
         "passed": true,
         "details": ""
       },
@@ -37,6 +47,16 @@
       },
       {
         "name": "manual Sync forces publication and refreshes MEGA quota",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "polling recognizes a revision written by this browser",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Memory shows live Cloud operation progress",
         "passed": true,
         "details": ""
       },
@@ -53,10 +73,15 @@
       {
         "name": "Reload from Cloud receives the current snapshot after suspension",
         "passed": true,
-        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":2,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"file\":\"alpha.json\"},{\"id\":\"beta\",\"name\":\"Beta\",\"file\":\"beta.json\"}],\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
+        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":4,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"pageCount\":0,\"pageNames\":[],\"logicalBytes\":84},{\"id\":\"beta\",\"name\":\"Beta\",\"pageCount\":0,\"pageNames\":[],\"logicalBytes\":30}],\"logicalBytes\":265,\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
       },
       {
         "name": "Continue locally closes the dialog and keeps the warning visible",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a locally continued session stays suspended without reopening the dialog",
         "passed": true,
         "details": ""
       },
@@ -91,12 +116,37 @@
         "details": "published"
       },
       {
+        "name": "a small edit reuses the unchanged large asset block",
+        "passed": true,
+        "details": "upload:writer-z.json, upload:workspace.json, upload:manifest.json, upload:current.json, delete:current.json, delete:writer-z.json"
+      },
+      {
+        "name": "Cloud copy browser lists and rebuilds Backup revisions",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Cloud copies modal exposes Backup and Synch from its shared entry flow",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Explore copies filters and selects the requested Cloud copy",
+        "passed": true,
+        "details": ""
+      },
+      {
         "name": "empty cloud is handled without an exception",
         "passed": true,
         "details": ""
       },
       {
         "name": "a fresh browser can discover an existing cloud session",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "removing a Synch session disables linked clients on their next poll",
         "passed": true,
         "details": ""
       },
@@ -123,7 +173,12 @@
     },
     "results": [
       {
-        "name": "complete publication and recovery",
+        "name": "MEGA stream download reports incremental byte progress",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "complete v2 publication and recovery",
         "passed": true,
         "details": ""
       },
@@ -133,7 +188,12 @@
         "details": ""
       },
       {
-        "name": "project upload failure preserves published data",
+        "name": "Cloud copy browser lists and rebuilds Synch revisions",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "snapshot upload failure preserves published data",
         "passed": true,
         "details": ""
       },
@@ -143,7 +203,7 @@
         "details": ""
       },
       {
-        "name": "successful revision replaces old data only after publication",
+        "name": "successful v2 revision publishes current last and retains prior recovery metadata",
         "passed": true,
         "details": ""
       },
@@ -154,6 +214,16 @@
       },
       {
         "name": "manual Sync forces publication and refreshes MEGA quota",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "polling recognizes a revision written by this browser",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Memory shows live Cloud operation progress",
         "passed": true,
         "details": ""
       },
@@ -170,10 +240,15 @@
       {
         "name": "Reload from Cloud receives the current snapshot after suspension",
         "passed": true,
-        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":2,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"file\":\"alpha.json\"},{\"id\":\"beta\",\"name\":\"Beta\",\"file\":\"beta.json\"}],\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
+        "details": "{\"saved\":\"remote\",\"project\":{\"version\":7,\"workspace\":{\"version\":1,\"activeId\":\"alpha\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"payload\":{\"version\":7,\"value\":\"remote\",\"history\":{\"entries\":[{\"value\":\"remote\"}],\"cursor\":0}}},{\"id\":\"beta\",\"name\":\"Beta\",\"payload\":{\"version\":7,\"value\":\"remote\"}}]}},\"manifest\":{\"version\":4,\"revision\":2000000024001,\"writerId\":\"writer-z\",\"updatedAt\":\"remote\",\"folder\":\"revision-2000000024001-writer-z-piscdj28\",\"projects\":[{\"id\":\"alpha\",\"name\":\"Alpha\",\"pageCount\":0,\"pageNames\":[],\"logicalBytes\":84},{\"id\":\"beta\",\"name\":\"Beta\",\"pageCount\":0,\"pageNames\":[],\"logicalBytes\":30}],\"logicalBytes\":265,\"payloadHash\":\"2238410d21212f991219cb2912a9524fb23fa2c82c14cf6be6faae1c4062812f\"},\"sessionId\":\"shared\"}"
       },
       {
         "name": "Continue locally closes the dialog and keeps the warning visible",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "a locally continued session stays suspended without reopening the dialog",
         "passed": true,
         "details": ""
       },
@@ -208,12 +283,37 @@
         "details": "published"
       },
       {
+        "name": "a small edit reuses the unchanged large asset block",
+        "passed": true,
+        "details": "upload:writer-z.json, upload:workspace.json, upload:manifest.json, upload:current.json, delete:current.json, delete:writer-z.json"
+      },
+      {
+        "name": "Cloud copy browser lists and rebuilds Backup revisions",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Cloud copies modal exposes Backup and Synch from its shared entry flow",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "Explore copies filters and selects the requested Cloud copy",
+        "passed": true,
+        "details": ""
+      },
+      {
         "name": "empty cloud is handled without an exception",
         "passed": true,
         "details": ""
       },
       {
         "name": "a fresh browser can discover an existing cloud session",
+        "passed": true,
+        "details": ""
+      },
+      {
+        "name": "removing a Synch session disables linked clients on their next poll",
         "passed": true,
         "details": ""
       },

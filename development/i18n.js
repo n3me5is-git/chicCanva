@@ -119,6 +119,7 @@ Azioni pagina\tPage actions
 Vuoi eliminare questa pagina?\tDelete this page?
 Conferma\tConfirm
 Chiudi\tClose
+In coda fino alle\tQueued until
 Annulla disegno\tCancel drawing
 Fit pagina\tFit page
 Riduci zoom\tZoom out
@@ -1019,6 +1020,7 @@ Salva sessione nel browser\tSave session in this browser
 Password e codice 2FA non vengono salvati. La sessione è cifrata nel database di questo browser.\tPassword and 2FA code are never saved. The session is encrypted in this browser database.
 Accedi a MEGA\tSign in to MEGA
 Spazio MEGA\tMEGA storage
+Aggiorna spazio\tRefresh storage
 Apri Cloud Storage\tOpen Cloud Storage
 Strumenti Cloud Storage\tCloud Storage tools
 Indietro\tBack
@@ -1039,7 +1041,11 @@ Conferma operazione\tConfirm operation
 Sposta in una cartella\tMove to a folder
 Sposta qui\tMove here
 Pulizia Cloud Storage\tCloud Storage cleanup
-Scegli quali dati spostare nel Cestino MEGA.\tChoose which data to move to the MEGA Trash.
+Scegli quali dati eliminare. Nel passaggio successivo potrai usare il Cestino MEGA oppure eliminarli definitivamente.\tChoose which data to delete. In the next step you can use the MEGA Trash or delete it permanently.
+Come vuoi eliminare?\tHow do you want to delete?
+Gli elementi nel Cestino MEGA possono essere gestiti o ripristinati soltanto dal sito o dall’app ufficiale MEGA.\tItems in the MEGA Trash can be managed or restored only through the official MEGA website or app.
+Sposta nel Cestino MEGA\tMove to MEGA Trash
+Elimina definitivamente\tDelete permanently
 Backup di questa istanza\tBackups from this instance
 Tutti i backup\tAll backups
 Dati di sincronizzazione\tSynchronization data
@@ -1079,6 +1085,28 @@ Pulisci copie Cloud\tClean Cloud copies
 Cloud Storage non collegato.\tCloud Storage is not connected.
 Riprendi dal dispositivo\tResume from device
 Riprendi dal Cloud\tResume from Cloud
+Caricamento sessione Cloud…\tLoading Cloud session…
+Esporta JSON compresso\tExport compressed JSON
+Riduce lo spazio del file senza perdere qualità. L’importazione riconosce automaticamente file normali e compressi.\tReduces file size without losing quality. Import automatically recognizes normal and compressed files.
+Recupero Cloud non riuscito\tCloud recovery failed
+Gestisci copie Cloud\tManage Cloud copies
+Copie Cloud\tCloud copies
+Esplora Backup e Synch, apri progetti o ricostruisci un file portabile.\tBrowse Backup and Sync copies, open projects, or rebuild a portable file.
+Seleziona una copia Cloud.\tSelect a Cloud copy.
+Caricamento copia Cloud…\tLoading Cloud copy…
+Ricerca copie Cloud…\tSearching Cloud copies…
+Nessuna copia Cloud disponibile.\tNo Cloud copies are available.
+Apri come nuovi progetti\tOpen as new projects
+Esporta JSON ricostruito\tExport rebuilt JSON
+Esplora copie\tBrowse copies
+Copia Cloud ricostruita.\tRebuilt Cloud copy.
+Elimina copia\tDelete copy
+Elimina copia Cloud\tDelete Cloud copy
+Eliminare questo Backup?\tDelete this Backup?
+Eliminare questa sessione Synch? Automatic Synch verrà disattivato su tutte le istanze collegate.\tDelete this Sync session? Automatic Sync will be disabled on all linked instances.
+La sessione Synch non esiste più. Sincronizzazione disattivata.\tThe Sync session no longer exists. Synchronization has been disabled.
+pagina\tpage
+pagine\tpages
 Apri Cloud insieme ai progetti locali\tOpen Cloud alongside local projects
 Cloud Drive\tCloud Drive
 Cartella\tFolder
@@ -1100,13 +1128,17 @@ Backup della Prompt Library.\tPrompt Library backup.
 Ultimo backup\tLast backup
 Operazione Cloud non riuscita\tCloud operation failed
 Dati Cloud spostati nel Cestino MEGA\tCloud data moved to the MEGA Trash
+Dati Cloud eliminati definitivamente\tCloud data deleted permanently
+Eliminare tutti i dati di sincronizzazione?\tDelete all synchronization data?
+Eliminare i backup di questa istanza?\tDelete backups from this instance?
+Eliminare tutti i backup?\tDelete all backups?
 `.trim().split('\n').filter(Boolean).map(line=>{const i=line.indexOf('\t');return[line.slice(0,i),line.slice(i+1)]}));
 
 const I18N_PATTERNS=[
  [/^Inserisci email e password MEGA\.$/,'Enter your MEGA email and password.'],[/^Accesso a MEGA…$/,'Signing in to MEGA…'],[/^Cloud Storage collegato\.$/,'Cloud Storage connected.'],
  [/^Accesso non riuscito: (.+)$/,'Sign-in failed: $1'],[/^Spazio MEGA non disponibile: (.+)$/,'MEGA storage unavailable: $1'],[/^Sessione MEGA rimossa da questo browser\.$/,'MEGA session removed from this browser.'],
  [/^Download (.+)…$/,'Downloading $1…'],[/^Caricamento (.+)…$/,'Uploading $1…'],[/^Salvataggio non riuscito: (.+)$/,'Save failed: $1'],[/^Importazione completata\.$/,'Import complete.'],
- [/^Spostare (\d+) elemento nel Cestino MEGA\?$/,'Move $1 item to the MEGA Trash?'],[/^Spostare (\d+) elementi nel Cestino MEGA\?$/,'Move $1 items to the MEGA Trash?'],
+ [/^Eliminare (\d+) elemento selezionato\?$/,'Delete $1 selected item?'],[/^Eliminare (\d+) elementi selezionati\?$/,'Delete $1 selected items?'],
  [/^Creare una copia di «(.+)»\?$/,'Create a copy of “$1”?'],[/^Progetto «(.+)» esportato\.$/,'Project “$1” exported.'],
  [/^Dispositivo: (.+)$/,'Device: $1'],[/^Cloud: (.+)$/,'Cloud: $1'],
  [/^(\d+) prompt pronti per l’importazione\.$/,'$1 prompts ready to import.'],[/^1 prompt pronto per l’importazione\.$/,'1 prompt ready to import.'],
